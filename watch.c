@@ -420,7 +420,11 @@ watch_data_in_func(void *cookie, socket_t so, const struct sockaddr *from, mbuf_
 	if(watch_firewall_rules_changed(&firewall))
 	{
 		//update rule and set in cookie
-		watch_rule* rule = watch_firewall_get_rule(&firewall, );
+		watch_rule* rule = watch_firewall_find_rule(&firewall, 
+													NULL, NULL, 
+													0, 0, 0, 
+													0, 
+													NULL);
 		if(rule == NULL)
 		{
 			scookie->state == COOKIE_RULE_STATE_NOT;

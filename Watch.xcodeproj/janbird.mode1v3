@@ -276,7 +276,9 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>25</integer>
+									<integer>14</integer>
+									<integer>4</integer>
+									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -319,7 +321,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>memory.c</string>
+								<string>firewall.h</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -327,21 +329,26 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>memory.c</string>
+										<string>firewall.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>DF178CA60FA4CD24002BC8F4</string>
+										<string>DFF84A650FAF36370033269F</string>
 										<key>history</key>
 										<array>
 											<string>DF3D1E9F0FA466DD00EFBBF2</string>
-											<string>DF3D1EA00FA466DD00EFBBF2</string>
-											<string>DF3D1EB40FA466DD00EFBBF2</string>
+											<string>DFF84A5E0FAF36370033269F</string>
+											<string>DFF84A5F0FAF36370033269F</string>
+											<string>DFF84A600FAF36370033269F</string>
+											<string>DFF84A610FAF36370033269F</string>
 										</array>
 										<key>prevStack</key>
 										<array>
 											<string>DF157B1D0F91D8250046C31B</string>
 											<string>DF3D1EB30FA466DD00EFBBF2</string>
+											<string>DFF84A620FAF36370033269F</string>
+											<string>DFF84A630FAF36370033269F</string>
+											<string>DFF84A640FAF36370033269F</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -399,9 +406,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>DF178CA70FA4CD24002BC8F4</string>
+				<string>DFF84A660FAF36370033269F</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>DF178CA80FA4CD24002BC8F4</string>
+				<string>DFF84A670FAF36370033269F</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -548,8 +555,8 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>/Users/janbird/XCodeProjects/Watch/Watch.xcodeproj</string>
+		<string>DF7F27080F0541FC0084F62D</string>
+		<string>/Users/janbird/XCodeProjects/watchfirewall/Watch.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 59 1680 969 0 0 1680 1028 </string>
@@ -582,14 +589,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1039, 420}}</string>
+								<string>{{0, 0}, {1458, 644}}</string>
 								<key>RubberWindowFrame</key>
-								<string>548 235 1039 702 0 0 1680 1028 </string>
+								<string>171 102 1458 926 0 0 1680 1028 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>420pt</string>
+							<string>644pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -606,9 +613,9 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 425}, {1039, 236}}</string>
+								<string>{{0, 649}, {1458, 236}}</string>
 								<key>RubberWindowFrame</key>
-								<string>548 235 1039 702 0 0 1680 1028 </string>
+								<string>171 102 1458 926 0 0 1680 1028 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXBuildResultsModule</string>
@@ -617,7 +624,7 @@
 						</dict>
 					</array>
 					<key>Proportion</key>
-					<string>661pt</string>
+					<string>885pt</string>
 				</dict>
 			</array>
 			<key>Name</key>
@@ -631,14 +638,14 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>DF7F27080F0541FC0084F62D</string>
-				<string>DF157B140F91CF820046C31B</string>
+				<string>DFF84A4B0FAF34F70033269F</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.buildV3</string>
 			<key>WindowString</key>
-			<string>548 235 1039 702 0 0 1680 1028 </string>
+			<string>171 102 1458 926 0 0 1680 1028 </string>
 			<key>WindowToolGUID</key>
 			<string>DF7F27080F0541FC0084F62D</string>
 			<key>WindowToolIsVisible</key>

@@ -26,8 +26,7 @@ watch_rule* watch_firewall_find_rule(watch_firewall *firewall,
 	watch_rule *current_rule = firewall->rules;
 	
 	while(current_rule)
-	{
-		s
+	{		
 	}
 	
 	return NULL;
