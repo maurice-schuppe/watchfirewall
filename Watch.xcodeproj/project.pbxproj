@@ -1,0 +1,413 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		32A4FEBC0562C75700D090E7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		32A4FEBE0562C75700D090E7 /* watch.c in Sources */ = {isa = PBXBuildFile; fileRef = 1A224C3CFF42312311CA2CB7 /* watch.c */; settings = {ATTRIBUTES = (); }; };
+		DF04F61E0F7F611B001E5512 /* rule.h in Headers */ = {isa = PBXBuildFile; fileRef = DF04F61C0F7F611B001E5512 /* rule.h */; };
+		DF04F61F0F7F611B001E5512 /* rule.c in Sources */ = {isa = PBXBuildFile; fileRef = DF04F61D0F7F611B001E5512 /* rule.c */; };
+		DF04F6200F7F611B001E5512 /* rule.c in Sources */ = {isa = PBXBuildFile; fileRef = DF04F61D0F7F611B001E5512 /* rule.c */; };
+		DF18434A0F89B9C70058E488 /* cookie.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1843480F89B9C70058E488 /* cookie.h */; };
+		DF18434B0F89B9C70058E488 /* cookie.c in Sources */ = {isa = PBXBuildFile; fileRef = DF1843490F89B9C70058E488 /* cookie.c */; };
+		DF18470A0F89137B009A2B16 /* firewall.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1847080F89137B009A2B16 /* firewall.h */; };
+		DF18470B0F89137B009A2B16 /* firewall.c in Sources */ = {isa = PBXBuildFile; fileRef = DF1847090F89137B009A2B16 /* firewall.c */; };
+		DF1847150F8916C3009A2B16 /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1847130F8916C3009A2B16 /* memory.h */; };
+		DF1847160F8916C3009A2B16 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = DF1847140F8916C3009A2B16 /* memory.c */; };
+		DF30088F0F3D811100D714EB /* messages.h in Headers */ = {isa = PBXBuildFile; fileRef = DF30088E0F3D811100D714EB /* messages.h */; };
+		DF431F6E0F07B14400ADB9CB /* ServerConnection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF431F6D0F07B14400ADB9CB /* ServerConnection.cpp */; };
+		DF7F269C0F04D8730084F62D /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF7F26990F04D7F90084F62D /* Console.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		DF7F266D0F04D6AF0084F62D /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc.4_2;
+			fileType = sourcecode.cpp;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+		DF7F266E0F04D6E40084F62D /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc.4_2;
+			fileType = sourcecode.asm;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+/* End PBXBuildRule section */
+
+/* Begin PBXFileReference section */
+		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1A224C3CFF42312311CA2CB7 /* watch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = watch.c; sourceTree = "<group>"; };
+		32A4FEC30562C75700D090E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		32A4FEC40562C75800D090E7 /* Watch.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Watch.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF04F61C0F7F611B001E5512 /* rule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rule.h; sourceTree = "<group>"; };
+		DF04F61D0F7F611B001E5512 /* rule.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rule.c; sourceTree = "<group>"; };
+		DF0F09F60F250DA400DBDD52 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		DF1843480F89B9C70058E488 /* cookie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cookie.h; sourceTree = "<group>"; };
+		DF1843490F89B9C70058E488 /* cookie.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cookie.c; sourceTree = "<group>"; };
+		DF1847080F89137B009A2B16 /* firewall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = firewall.h; sourceTree = "<group>"; };
+		DF1847090F89137B009A2B16 /* firewall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = firewall.c; sourceTree = "<group>"; };
+		DF1847130F8916C3009A2B16 /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memory.h; sourceTree = "<group>"; };
+		DF1847140F8916C3009A2B16 /* memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memory.c; sourceTree = "<group>"; };
+		DF30088E0F3D811100D714EB /* messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = messages.h; sourceTree = "<group>"; };
+		DF431F6C0F07B14400ADB9CB /* ServerConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerConnection.h; sourceTree = "<group>"; };
+		DF431F6D0F07B14400ADB9CB /* ServerConnection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ServerConnection.cpp; sourceTree = "<group>"; };
+		DF7F26680F04D5AC0084F62D /* WatchConsole */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = WatchConsole; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF7F26980F04D7F90084F62D /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
+		DF7F26990F04D7F90084F62D /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
+		DF82061B0F1A64CB0046C608 /* Kernel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework.static; name = Kernel.framework; path = System/Library/Frameworks/Kernel.framework; sourceTree = SDKROOT; };
+		DFE970B40F0DFC2B0054D9EB /* protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = protocol.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		32A4FEBF0562C75700D090E7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DF7F26660F04D5AC0084F62D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		089C166AFE841209C02AAC07 /* Watch */ = {
+			isa = PBXGroup;
+			children = (
+				DF0F09F60F250DA400DBDD52 /* IOKit.framework */,
+				DF82061B0F1A64CB0046C608 /* Kernel.framework */,
+				247142CAFF3F8F9811CA285C /* Source */,
+				089C167CFE841241C02AAC07 /* Resources */,
+				19C28FB6FE9D52B211CA2CBB /* Products */,
+			);
+			name = Watch;
+			sourceTree = "<group>";
+		};
+		089C167CFE841241C02AAC07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				32A4FEC30562C75700D090E7 /* Info.plist */,
+				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		19C28FB6FE9D52B211CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				32A4FEC40562C75800D090E7 /* Watch.kext */,
+				DF7F26680F04D5AC0084F62D /* WatchConsole */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		247142CAFF3F8F9811CA285C /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				1A224C3CFF42312311CA2CB7 /* watch.c */,
+				DF7F26980F04D7F90084F62D /* Console.h */,
+				DF7F26990F04D7F90084F62D /* Console.cpp */,
+				DF431F6C0F07B14400ADB9CB /* ServerConnection.h */,
+				DF431F6D0F07B14400ADB9CB /* ServerConnection.cpp */,
+				DFE970B40F0DFC2B0054D9EB /* protocol.h */,
+				DF30088E0F3D811100D714EB /* messages.h */,
+				DF04F61C0F7F611B001E5512 /* rule.h */,
+				DF04F61D0F7F611B001E5512 /* rule.c */,
+				DF1847080F89137B009A2B16 /* firewall.h */,
+				DF1847090F89137B009A2B16 /* firewall.c */,
+				DF1847130F8916C3009A2B16 /* memory.h */,
+				DF1847140F8916C3009A2B16 /* memory.c */,
+				DF1843480F89B9C70058E488 /* cookie.h */,
+				DF1843490F89B9C70058E488 /* cookie.c */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		32A4FEBA0562C75700D090E7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF30088F0F3D811100D714EB /* messages.h in Headers */,
+				DF04F61E0F7F611B001E5512 /* rule.h in Headers */,
+				DF18470A0F89137B009A2B16 /* firewall.h in Headers */,
+				DF1847150F8916C3009A2B16 /* memory.h in Headers */,
+				DF18434A0F89B9C70058E488 /* cookie.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		32A4FEB80562C75700D090E7 /* Watch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB91C308733DAC0010E9CD /* Build configuration list for PBXNativeTarget "Watch" */;
+			buildPhases = (
+				32A4FEBA0562C75700D090E7 /* Headers */,
+				32A4FEBB0562C75700D090E7 /* Resources */,
+				32A4FEBD0562C75700D090E7 /* Sources */,
+				32A4FEBF0562C75700D090E7 /* Frameworks */,
+				32A4FEC00562C75700D090E7 /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Watch;
+			productInstallPath = "$(SYSTEM_LIBRARY_DIR)/Extensions";
+			productName = Watch;
+			productReference = 32A4FEC40562C75800D090E7 /* Watch.kext */;
+			productType = "com.apple.product-type.kernel-extension";
+		};
+		DF7F26670F04D5AC0084F62D /* WatchConsole */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DF7F266C0F04D5CB0084F62D /* Build configuration list for PBXNativeTarget "WatchConsole" */;
+			buildPhases = (
+				DF7F26650F04D5AC0084F62D /* Sources */,
+				DF7F26660F04D5AC0084F62D /* Frameworks */,
+			);
+			buildRules = (
+				DF7F266E0F04D6E40084F62D /* PBXBuildRule */,
+				DF7F266D0F04D6AF0084F62D /* PBXBuildRule */,
+			);
+			dependencies = (
+			);
+			name = WatchConsole;
+			productName = WatchConsole;
+			productReference = DF7F26680F04D5AC0084F62D /* WatchConsole */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		089C1669FE841209C02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "Watch" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 089C166AFE841209C02AAC07 /* Watch */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				32A4FEB80562C75700D090E7 /* Watch */,
+				DF7F26670F04D5AC0084F62D /* WatchConsole */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		32A4FEBB0562C75700D090E7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				32A4FEBC0562C75700D090E7 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		32A4FEC00562C75700D090E7 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		32A4FEBD0562C75700D090E7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				32A4FEBE0562C75700D090E7 /* watch.c in Sources */,
+				DF04F61F0F7F611B001E5512 /* rule.c in Sources */,
+				DF18470B0F89137B009A2B16 /* firewall.c in Sources */,
+				DF1847160F8916C3009A2B16 /* memory.c in Sources */,
+				DF18434B0F89B9C70058E488 /* cookie.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DF7F26650F04D5AC0084F62D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF7F269C0F04D8730084F62D /* Console.cpp in Sources */,
+				DF431F6E0F07B14400ADB9CB /* ServerConnection.cpp in Sources */,
+				DF04F6200F7F611B001E5512 /* rule.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		089C167DFE841241C02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C167EFE841241C02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB91C408733DAC0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
+				MODULE_NAME = com.janbird.watch;
+				MODULE_START = watch_start;
+				MODULE_STOP = watch_stop;
+				MODULE_VERSION = 1.0.0;
+				PRODUCT_NAME = Watch;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Debug;
+		};
+		1DEB91C508733DAC0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
+				GCC_MODEL_TUNING = G5;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
+				MODULE_NAME = com.janbird.watch;
+				MODULE_START = Watch_start;
+				MODULE_STOP = Watch_stop;
+				MODULE_VERSION = 1.0.0;
+				PRODUCT_NAME = Watch;
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Release;
+		};
+		1DEB91C808733DAC0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_KERNEL_DEVELOPMENT = YES;
+				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
+				GCC_FAST_OBJC_DISPATCH = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = 4.2;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_PREPROCESS = YES;
+				LINK_WITH_STANDARD_LIBRARIES = NO;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB91C908733DAC0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+			};
+			name = Release;
+		};
+		DF7F266A0F04D5AD0084F62D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = 4.2;
+				INSTALL_PATH = /usr/local/bin;
+				LINK_WITH_STANDARD_LIBRARIES = YES;
+				PREBINDING = NO;
+				PRODUCT_NAME = WatchConsole;
+			};
+			name = Debug;
+		};
+		DF7F266B0F04D5AD0084F62D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_VERSION = 4.2;
+				ICC_OPT_IPO_FOR_SINGLE_FILE_COMPILATION = YES;
+				ICC_OPT_USE_ARCH_IA32 = SSE41;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = WatchConsole;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB91C308733DAC0010E9CD /* Build configuration list for PBXNativeTarget "Watch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91C408733DAC0010E9CD /* Debug */,
+				1DEB91C508733DAC0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "Watch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91C808733DAC0010E9CD /* Debug */,
+				1DEB91C908733DAC0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DF7F266C0F04D5CB0084F62D /* Build configuration list for PBXNativeTarget "WatchConsole" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DF7F266A0F04D5AD0084F62D /* Debug */,
+				DF7F266B0F04D5AD0084F62D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 089C1669FE841209C02AAC07 /* Project object */;
+}
