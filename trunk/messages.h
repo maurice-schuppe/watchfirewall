@@ -32,21 +32,11 @@
 #define MESSAGE_REGISTER_FOR_INFO 22
 #define MESSAGE_UNREGSTER_FROM_INFO 23
 
-typedef struct _watch_message_header 
+struct Message 
 {
 	u_int16_t length;
 	u_int16_t message_type;	 
-} watch_message_header;
+};
 
-
-//void create_string_message(char* text)
-//{
-//	int size = strlen(text);
-//	char *buffer = OSMalloc(size + 4, osmalloc_tag);
-//	((watch_message_header)buffer)->length = size + 4;
-//	((watch_message_header)buffer)->message_type = 1;
-//	strcpy((), )
-//	
-//}
 
 #endif

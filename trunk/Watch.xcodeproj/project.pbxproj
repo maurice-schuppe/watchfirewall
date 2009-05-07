@@ -8,16 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		32A4FEBC0562C75700D090E7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
-		32A4FEBE0562C75700D090E7 /* watch.c in Sources */ = {isa = PBXBuildFile; fileRef = 1A224C3CFF42312311CA2CB7 /* watch.c */; settings = {ATTRIBUTES = (); }; };
+		32A4FEBE0562C75700D090E7 /* watch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A224C3CFF42312311CA2CB7 /* watch.cpp */; settings = {ATTRIBUTES = (); }; };
+		3D93F09C0FB1D1B30021BCD5 /* client.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D93F09A0FB1D1B30021BCD5 /* client.h */; };
+		3D93F09D0FB1D1B30021BCD5 /* client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D93F09B0FB1D1B30021BCD5 /* client.cpp */; };
 		DF04F61E0F7F611B001E5512 /* rule.h in Headers */ = {isa = PBXBuildFile; fileRef = DF04F61C0F7F611B001E5512 /* rule.h */; };
-		DF04F61F0F7F611B001E5512 /* rule.c in Sources */ = {isa = PBXBuildFile; fileRef = DF04F61D0F7F611B001E5512 /* rule.c */; };
-		DF04F6200F7F611B001E5512 /* rule.c in Sources */ = {isa = PBXBuildFile; fileRef = DF04F61D0F7F611B001E5512 /* rule.c */; };
+		DF04F61F0F7F611B001E5512 /* rule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF04F61D0F7F611B001E5512 /* rule.cpp */; };
 		DF18434A0F89B9C70058E488 /* cookie.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1843480F89B9C70058E488 /* cookie.h */; };
-		DF18434B0F89B9C70058E488 /* cookie.c in Sources */ = {isa = PBXBuildFile; fileRef = DF1843490F89B9C70058E488 /* cookie.c */; };
+		DF18434B0F89B9C70058E488 /* cookie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF1843490F89B9C70058E488 /* cookie.cpp */; };
 		DF18470A0F89137B009A2B16 /* firewall.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1847080F89137B009A2B16 /* firewall.h */; };
-		DF18470B0F89137B009A2B16 /* firewall.c in Sources */ = {isa = PBXBuildFile; fileRef = DF1847090F89137B009A2B16 /* firewall.c */; };
+		DF18470B0F89137B009A2B16 /* firewall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF1847090F89137B009A2B16 /* firewall.cpp */; };
 		DF1847150F8916C3009A2B16 /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1847130F8916C3009A2B16 /* memory.h */; };
-		DF1847160F8916C3009A2B16 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = DF1847140F8916C3009A2B16 /* memory.c */; };
+		DF1847160F8916C3009A2B16 /* memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF1847140F8916C3009A2B16 /* memory.cpp */; };
 		DF30088F0F3D811100D714EB /* messages.h in Headers */ = {isa = PBXBuildFile; fileRef = DF30088E0F3D811100D714EB /* messages.h */; };
 		DF431F6E0F07B14400ADB9CB /* ServerConnection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF431F6D0F07B14400ADB9CB /* ServerConnection.cpp */; };
 		DF7F269C0F04D8730084F62D /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF7F26990F04D7F90084F62D /* Console.cpp */; };
@@ -44,18 +45,20 @@
 
 /* Begin PBXFileReference section */
 		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		1A224C3CFF42312311CA2CB7 /* watch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = watch.c; sourceTree = "<group>"; };
+		1A224C3CFF42312311CA2CB7 /* watch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = watch.cpp; sourceTree = "<group>"; };
 		32A4FEC30562C75700D090E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		32A4FEC40562C75800D090E7 /* Watch.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Watch.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D93F09A0FB1D1B30021BCD5 /* client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = client.h; sourceTree = "<group>"; };
+		3D93F09B0FB1D1B30021BCD5 /* client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = client.cpp; sourceTree = "<group>"; };
 		DF04F61C0F7F611B001E5512 /* rule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rule.h; sourceTree = "<group>"; };
-		DF04F61D0F7F611B001E5512 /* rule.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rule.c; sourceTree = "<group>"; };
+		DF04F61D0F7F611B001E5512 /* rule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rule.cpp; sourceTree = "<group>"; };
 		DF0F09F60F250DA400DBDD52 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		DF1843480F89B9C70058E488 /* cookie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cookie.h; sourceTree = "<group>"; };
-		DF1843490F89B9C70058E488 /* cookie.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cookie.c; sourceTree = "<group>"; };
+		DF1843490F89B9C70058E488 /* cookie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cookie.cpp; sourceTree = "<group>"; };
 		DF1847080F89137B009A2B16 /* firewall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = firewall.h; sourceTree = "<group>"; };
-		DF1847090F89137B009A2B16 /* firewall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = firewall.c; sourceTree = "<group>"; };
+		DF1847090F89137B009A2B16 /* firewall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = firewall.cpp; sourceTree = "<group>"; };
 		DF1847130F8916C3009A2B16 /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memory.h; sourceTree = "<group>"; };
-		DF1847140F8916C3009A2B16 /* memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memory.c; sourceTree = "<group>"; };
+		DF1847140F8916C3009A2B16 /* memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = memory.cpp; sourceTree = "<group>"; };
 		DF30088E0F3D811100D714EB /* messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = messages.h; sourceTree = "<group>"; };
 		DF431F6C0F07B14400ADB9CB /* ServerConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerConnection.h; sourceTree = "<group>"; };
 		DF431F6D0F07B14400ADB9CB /* ServerConnection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ServerConnection.cpp; sourceTree = "<group>"; };
@@ -117,7 +120,7 @@
 		247142CAFF3F8F9811CA285C /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				1A224C3CFF42312311CA2CB7 /* watch.c */,
+				1A224C3CFF42312311CA2CB7 /* watch.cpp */,
 				DF7F26980F04D7F90084F62D /* Console.h */,
 				DF7F26990F04D7F90084F62D /* Console.cpp */,
 				DF431F6C0F07B14400ADB9CB /* ServerConnection.h */,
@@ -125,13 +128,15 @@
 				DFE970B40F0DFC2B0054D9EB /* protocol.h */,
 				DF30088E0F3D811100D714EB /* messages.h */,
 				DF04F61C0F7F611B001E5512 /* rule.h */,
-				DF04F61D0F7F611B001E5512 /* rule.c */,
+				DF04F61D0F7F611B001E5512 /* rule.cpp */,
 				DF1847080F89137B009A2B16 /* firewall.h */,
-				DF1847090F89137B009A2B16 /* firewall.c */,
+				DF1847090F89137B009A2B16 /* firewall.cpp */,
 				DF1847130F8916C3009A2B16 /* memory.h */,
-				DF1847140F8916C3009A2B16 /* memory.c */,
+				DF1847140F8916C3009A2B16 /* memory.cpp */,
 				DF1843480F89B9C70058E488 /* cookie.h */,
-				DF1843490F89B9C70058E488 /* cookie.c */,
+				DF1843490F89B9C70058E488 /* cookie.cpp */,
+				3D93F09A0FB1D1B30021BCD5 /* client.h */,
+				3D93F09B0FB1D1B30021BCD5 /* client.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -148,6 +153,7 @@
 				DF18470A0F89137B009A2B16 /* firewall.h in Headers */,
 				DF1847150F8916C3009A2B16 /* memory.h in Headers */,
 				DF18434A0F89B9C70058E488 /* cookie.h in Headers */,
+				3D93F09C0FB1D1B30021BCD5 /* client.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,11 +242,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				32A4FEBE0562C75700D090E7 /* watch.c in Sources */,
-				DF04F61F0F7F611B001E5512 /* rule.c in Sources */,
-				DF18470B0F89137B009A2B16 /* firewall.c in Sources */,
-				DF1847160F8916C3009A2B16 /* memory.c in Sources */,
-				DF18434B0F89B9C70058E488 /* cookie.c in Sources */,
+				32A4FEBE0562C75700D090E7 /* watch.cpp in Sources */,
+				DF04F61F0F7F611B001E5512 /* rule.cpp in Sources */,
+				DF18470B0F89137B009A2B16 /* firewall.cpp in Sources */,
+				DF1847160F8916C3009A2B16 /* memory.cpp in Sources */,
+				DF18434B0F89B9C70058E488 /* cookie.cpp in Sources */,
+				3D93F09D0FB1D1B30021BCD5 /* client.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,7 +257,6 @@
 			files = (
 				DF7F269C0F04D8730084F62D /* Console.cpp in Sources */,
 				DF431F6E0F07B14400ADB9CB /* ServerConnection.cpp in Sources */,
-				DF04F6200F7F611B001E5512 /* rule.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
