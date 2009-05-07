@@ -32,7 +32,7 @@
 #include "cookie.h"
 
 
-#define MYBUNDLEID "com.janbird.watch.kext"
+
 #define PRINT_MESSAGES
 #define COOKIE_CONST 1234567
 
@@ -234,7 +234,7 @@ watch_send_text_message_sokect_info_opt(char *operation_name, socket_t so, void*
 	if(oSMallocTag == NULL)
 		return ENOMEM;
 	
-	char* text_buffer = OSMalloc(1000, oSMallocTag);
+	char* text_buffer = (char*)OSMalloc(1000, oSMallocTag);
 	if(text_buffer == NULL)
 		return ENOMEM;
 	
@@ -353,7 +353,7 @@ errno_t
 watch_attach_func(void	**cookie, socket_t so)
 {
 	
-	char *ch = OSMalloc(30, oSMallocTag);
+	char *ch = (char*)OSMalloc(30, oSMallocTag);
 	if(ch == NULL)
 	{
 		printf("error allocation memory");
@@ -374,7 +374,7 @@ watch_attach_func(void	**cookie, socket_t so)
 void	
 watch_detach_func(void	*cookie, socket_t so)
 {
-	watch_send_text_message_sokect_info_opt("detach", so, cookie, 0);
+	watch_send_text_message_sokect_info_opt((char*)"detach", so, cookie, 0);
 	if(cookie)
 	{
 		OSDecrementAtomic(&attached_sokets);
@@ -410,41 +410,41 @@ watch_getsockname_func(void *cookie, socket_t so, struct sockaddr **sa)
 errno_t	
 watch_data_in_func(void *cookie, socket_t so, const struct sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
-	OSIncrementAtomic8(cookie + 5);
+	OSIncrementAtomic8((SInt8*)cookie + 5);
 	//watch_send_text_message("data in", so, cookie);
 	return 0;
 	
 	//check fo socket changes
-	watch_socket_cookie *scookie = (watch_socket_cookie*)cookie;
+	SocketCookie *scookie = (SocketCookie*)cookie;
 	
-	if(watch_firewall_rules_changed(&firewall))
+	if(Firewall::instance->IsChanged(0))
 	{
 		//update rule and set in cookie
-		watch_rule* rule = watch_firewall_find_rule(&firewall, 
+		Rule* rule = Firewall::instance->FindRule( 
 													NULL, NULL, 
 													0, 0, 0, 
 													0, 
 													NULL);
 		if(rule == NULL)
 		{
-			scookie->state == COOKIE_RULE_STATE_NOT;
+			scookie->state == CookieStateNOT;
 		}
 		
 	}
 	
 	switch (scookie->state) 
 	{
-		case COOKIE_RULE_STATE_NOT:
+		case CookieStateNOT:
 			//send ask
-			scookie->state = COOKIE_RULE_STATE_ASK;
-			scookie->aks_rule_time = time();//TODO: insert header
+			scookie->state = CookieStateASK;
+			//scookie->aks_rule_time = time();//TODO: insert header
 		
-		case COOKIE_RULE_STATE_ASK:
+		case CookieStateASK:
 			//cashe requiest
 			return EJUSTRETURN;
-		case COOKIE_RULE_STATE_ALLOWED:
+		case CookieStateALLOWED:
 			return 0;
-		case COOKIE_RULE_STATE_NOT_ALLOWED:
+		case CookieStateNOT_ALLOWED:
 			return -1;//fix return value
 		default:
 			break;
@@ -458,7 +458,7 @@ watch_data_in_func(void *cookie, socket_t so, const struct sockaddr *from, mbuf_
 errno_t	
 watch_data_out_func(void *cookie, socket_t so, const struct sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
-	OSIncrementAtomic8(cookie + 5);
+	OSIncrementAtomic8((SInt8*)cookie + 5);
 	//watch_send_text_message("data out", so, cookie);
 	return 0;
 }
@@ -467,7 +467,7 @@ watch_data_out_func(void *cookie, socket_t so, const struct sockaddr *to, mbuf_t
 errno_t	
 watch_connect_in_func(void *cookie, socket_t so, const struct sockaddr *from)
 {
-	OSIncrementAtomic8(cookie + 5);
+	OSIncrementAtomic8((SInt8*)cookie + 5);
 	//watch_send_text_message("connect in", so, cookie);
 	return 0;
 	
@@ -484,7 +484,7 @@ watch_connect_in_func(void *cookie, socket_t so, const struct sockaddr *from)
 errno_t	
 watch_connect_out_func(void *cookie, socket_t so, const struct sockaddr *to)
 {
-	OSIncrementAtomic8(cookie + 5);
+	OSIncrementAtomic8((SInt8*)cookie + 5);
 	//watch_send_text_message("connect out", so, cookie);
 	return 0;
 }
@@ -554,7 +554,7 @@ watch_accept_func(void *cookie, socket_t so_listen, socket_t so, const struct so
 static struct sflt_filter watch_sflt_filter = {
 0xBABABABC,					/* sflt_handle - use a registered creator type - <http://developer.apple.com/datatype/> */
 SFLT_GLOBAL | SFLT_EXTENDED,/* sf_flags */
-MYBUNDLEID,					/* sf_name - cannot be nil else param err results */
+(char*)MYBUNDLEID,					/* sf_name - cannot be nil else param err results */
 watch_unregistered_func,	/* sf_unregistered_func */
 watch_attach_func,			/* sf_attach_func - cannot be nil else param err results */			
 watch_detach_func,			/* sf_detach_func - cannot be nil else param err results */
@@ -570,18 +570,22 @@ watch_setoption_func,		/* sf_setoption_func */
 watch_getoption_func,		/* sf_getoption_func */
 watch_listen_func,			/* sf_listen_func */
 watch_ioctl_func,			/* sf_ioctl_func */
-{sizeof(struct sflt_filter_ext), watch_accept_func, {NULL,NULL,NULL,NULL,NULL}} /*sf_filter_ext */
+{sizeof(sflt_filter::sflt_filter_ext), watch_accept_func, {NULL,NULL,NULL,NULL,NULL}} /*sf_filter_ext */
 };
 
 
 
 #pragma mark kext routine
-	
+
+extern "C" {
+
 kern_return_t 
 watch_start (kmod_info_t * ki, void * d)
 {	
 	
 	printf("watch kext start\n");	
+	
+	Firewall::initInstance();
 	
 	oSMallocTag = OSMalloc_Tagalloc("com.janbird.watch.kext", OSMT_DEFAULT);
 	
@@ -648,7 +652,7 @@ watch_stop (kmod_info_t * ki, void * d)
 	if(attached_sokets > 0)
 		return EBUSY;
 	
-	watch_kernel_control_send_to_all("exit", 5);
+	watch_kernel_control_send_to_all((void*)"exit", 5);
 	
 	//lck_mtx_lock(gmutex);
 	
@@ -691,3 +695,4 @@ watch_stop (kmod_info_t * ki, void * d)
     return KERN_SUCCESS;
 }
 
+}

@@ -266,27 +266,27 @@ int main()
 {	
 	//test forum function
 	
-	g(6);
-	return 0;
-	
-	unsigned from ,o = 10;
-	from = find(99, &o);
-	
-	for(unsigned val =2 ; val < 100; val++)
-	{
-		unsigned last;
-		for(int from = 1; from < val; from++)
-			if(last = findx(val, from))
-				printSum(val, from, last - from + 1);		
-	}	
-	
-	for(unsigned val =10000000 ; val < 10000100; val++)
-	{
-		unsigned from, count;
-		for(count = 2 ;from = findp(val, &count); count++)
-			printSum(val, from, count);
-	}
-	return 0;
+//	g(6);
+//	return 0;
+//	
+//	unsigned from ,o = 10;
+//	from = find(99, &o);
+//	
+//	for(unsigned val =2 ; val < 100; val++)
+//	{
+//		unsigned last;
+//		for(int from = 1; from < val; from++)
+//			if(last = findx(val, from))
+//				printSum(val, from, last - from + 1);		
+//	}	
+//	
+//	for(unsigned val =10000000 ; val < 10000100; val++)
+//	{
+//		unsigned from, count;
+//		for(count = 2 ;from = findp(val, &count); count++)
+//			printSum(val, from, count);
+//	}
+//	return 0;
 	
 	//end test forum function
 	

@@ -13,49 +13,76 @@
 
 #include <sys/param.h>
 #include <sys/socket.h>
+#include <libkern/c++/OSString.h>
+#include <IOKit/IOLib.h>
 
-
-typedef struct _watch_rule
+struct RuleSimple
 {
 	size_t size;//this + process name + file path + sockaddress 
 	u_int32_t id;
-
+	
 	u_int16_t process_name_size;
 	u_int16_t process_name_offset;//0 for all
 	u_int16_t file_path_size;
 	u_int16_t file_path_offset;//0 for all
-
+	
 	u_int16_t sock_domain;//0 for all
 	u_int16_t sock_type;//0 for all
 	u_int16_t sock_protocol;// 0 fro all	
 	u_int16_t sockadress_offset;// 0 for all
-
+	
 	u_int8_t direction;//0 both. 1 incoming, 2 outgoung
 	u_int8_t allow;//0 denny, 1 allow
+};
 
-	//char* process_name;
-	//char* file_path;
-	//sockaddr 
+class Rule: public OSObject
+{
+	OSDeclareDefaultStructors(Rule)
 	
+	UInt32 id;
 	
-} watch_rule;
+	OSString *processName;
+	OSString *filePath;
+	
+	UInt16 sock_domain;//0 for all
+	UInt16 sock_type;//0 for all
+	UInt16 sock_protocol;// 0 fro all	
+	UInt16 sockadress_offset;// 0 for all
+	
+	UInt8 direction;//0 both. 1 incoming, 2 outgoung
+	UInt8 allow;//0 denny, 1 allow
+	
+	UInt16 references;
+	UInt8 state;
+	
+	IOLock *lock;
 
-typedef struct _ask_watch_rule
+public:
+	
+	bool init(u_int32_t id, char* process_name, char* file_path, 
+						  UInt16 sock_domain, UInt16 sock_type, 
+						  UInt16 sock_protocol, struct sockaddr* sockadress, 
+						  UInt8 direction, UInt8 allow);
+	virtual void free();
+	
+	bool isApplicable();
+};
+
+struct RuleNode
+{
+	Rule *rule;
+	RuleNode *next;
+};
+
+struct AskRule
 {
 	size_t size;
-	watch_rule rule;
+	RuleSimple rule;
 	pid_t pid;
 	uid_t uid;
-} watch_ask_rule;
+};
 
 
-watch_rule* init_rule(watch_rule* this, 
-					  u_int32_t id, char* process_name, size_t process_name_size, 
-					  char* file_path, 
-					  size_t file_path_size, u_int16_t sock_domain, u_int16_t sock_type, 
-					  u_int16_t sock_protocol, struct sockaddr* sockadress, size_t sockaddress_size, 
-					  u_int8_t direction, u_int8_t allow);
-
-int compare_rule(watch_rule *left, watch_rule *rigth);
+int compare_rule(Rule *left, Rule *rigth);
 
 #endif
