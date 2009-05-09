@@ -6,67 +6,163 @@
  *  Copyright 2009 __MyCompanyName__. All rights reserved.
  *
  */
-#include <IOKit/IOLib.h>
 
 #include "client.h"
 
 OSDefineMetaClassAndStructors(Client, OSObject)
 
-bool 
-Client::initWithClient(kern_ctl_ref* ptr_kernelKontrolReference, UInt32 unit, ClientState clientState)
+void 
+Client::ClearQueue(ClientMessageNode *root)
 {
-	this->ptr_kernelKontrolReference = ptr_kernelKontrolReference;
-	this->unit = unit;
-	this->state = clientState;
-	return true;
+	while(root)
+	{
+		ClientMessageNode *curr = root;
+		root = root->next;
+		delete(curr);
+	}
+}
+
+bool 
+Client::initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
+{
+	if(this->lockQueue = IOSimpleLockAlloc())
+	{
+		if(this->lockWorkThread = IOLockAlloc())
+		{
+			IOLockLock(this->lockWorkThread);
+			this->kernelKontrolReference = kernelKontrolReference;
+			this->unit = unit;
+			
+			if(this->thread == IOCreateThread(SendThread, this))
+			{
+				return true;
+			}
+			
+			IOLockFree(this->lockWorkThread);
+			IOLog("client can't create thread");//TODO: refactor
+		}
+		
+		IOSimpleLockFree(this->lockQueue);
+		IOLog("client can't create lock thread");//TODO: refactor
+	}
+	
+	IOLog("client can't create lock client");//TODO: refactor
+	return false;
 }
 
 void
 Client::free()
 {
+	//send exit thread
+	
+	OSIncrementAtomic(&this->exitState);
+	IOLockUnlock(this->lockWorkThread);
+	
+	ClearQueue(this->messageQueueRoot);
+	
+	if(this->lockQueue)
+	{
+		IOSimpleLockFree(this->lockQueue);
+		this->lockQueue = NULL;
+	}
+	
+	if(this->lockWorkThread)
+	{
+		IOLockFree(this->lockWorkThread);
+		this->lockWorkThread = NULL;
+	}
+	
 	OSObject::free();
 }
 
 void 
 Client::Send(Message* message)
 {
-	//Send threaded
-	
-	if(!(*this->ptr_kernelKontrolReference))
+	if(message == NULL)
 		return;
 	
-	size_t space = 0;
-
-	do{
-		if(!ctl_getenqueuespace(*this->ptr_kernelKontrolReference, this->unit, &space))
-		{
-			if(space >= message->length)
-				break;
-			
-			IOSleep(50);
-		}
+	ClientMessageNode * node = new ClientMessageNode();//???
+	node->message = message;
 	
-	}while(space < message->length);
-
-	ctl_enqueuedata(*this->ptr_kernelKontrolReference, this->unit, message, message->length, 0);
-
+	IOSimpleLockLock(this->lockQueue);
+	
+	if(this->messageQueueLast == NULL)
+	{
+		this->messageQueueLast = node;
+		this->messageQueueRoot = node;
+	}
+	else
+		this->messageQueueLast->next = node;
+	
+	IOSimpleLockUnlock(this->lockQueue);
+	IOLockUnlock(this->lockWorkThread);
 }
 
-OSDefineMetaClassAndStructors(ClientNode, OSObject)
-
-void
-ClientNode::free()
+void 
+Client::SendThread(void* arg)
 {
-	if(this->client) this->client->release();
-	OSObject::free();
+	Client* client = (Client*)arg;
+	size_t space = 0;
+	ClientMessageNode *node = NULL;
+	
+	while(1)
+	{
+		IOLockLock(client->lockWorkThread);
+		
+		if(client->exitState)
+			goto exit;
+		
+		while(1)
+		{
+			IOSimpleLockLock(client->lockQueue);
+			//get first node
+			node = client->messageQueueRoot;
+			client->messageQueueRoot = NULL;
+			client->messageQueueLast = NULL;
+			
+			IOSimpleLockUnlock(client->lockQueue);
+			
+			while(node)
+			{
+				for(UInt32 count = 4; count; count--)
+				{
+					if(client->exitState)
+						goto exitAndClearQueue;
+					
+					if(!ctl_getenqueuespace(client->kernelKontrolReference, client->unit, &space))
+					{
+						if(space >= node->message->length)
+						{
+							if(client->exitState)
+								goto exitAndClearQueue;
+							
+							ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message, node->message->length, 0);
+							break;
+						}
+
+						if(client->exitState)
+							goto exitAndClearQueue;
+						
+						IOSleep(50);
+						
+						if(client->exitState)
+							goto exitAndClearQueue;
+					}
+				}
+				
+				ClientMessageNode *deleteNode = node;
+				node = node->next;
+				delete(deleteNode);//???
+				
+			}
+		}
+	}
+	
+exitAndClearQueue:
+	ClearQueue(node);
+exit:
+	IOExitThread();
 }
 
 
-bool 
-ClientNode::init(Client* client, ClientNode *node)
-{
-	this->client = client;
-	this->client->retain();
-	this->next = node;
-	return true;
-}
+

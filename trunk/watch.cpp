@@ -585,7 +585,8 @@ watch_start (kmod_info_t * ki, void * d)
 	
 	printf("watch kext start\n");	
 	
-	Firewall::initInstance();
+	if(!Firewall::Open())
+		return KERN_FAILURE;
 	
 	oSMallocTag = OSMalloc_Tagalloc("com.janbird.watch.kext", OSMT_DEFAULT);
 	

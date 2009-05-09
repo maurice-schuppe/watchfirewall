@@ -15,6 +15,20 @@ OSDefineMetaClassAndStructors(Firewall, OSObject)
 
 Firewall *Firewall::instance = NULL;
 
+
+
+protocol Firewall::protocols[] =
+{
+{0xBACAF000, PF_INET, SOCK_STREAM, IPPROTO_TCP, 0},
+{0xBACAF001, PF_INET, SOCK_DGRAM, IPPROTO_UDP, 0},
+{0xBACAF002, PF_INET, SOCK_RAW, IPPROTO_ICMP, 0},
+{0xBACAF003, PF_INET6, SOCK_STREAM, IPPROTO_TCP, 0},
+{0xBACAF004, PF_INET6, SOCK_DGRAM, IPPROTO_UDP, 0},
+{0xBACAF005, PF_INET6, SOCK_RAW, IPPROTO_ICMP, 0}//,
+//{0xBACAF006, PF_UNIX, SOCK_STREAM, 0, 0}
+
+};
+
 sflt_filter Firewall::sfltFilter = {
 0xBABABABC,					/* sflt_handle - use a registered creator type - <http://developer.apple.com/datatype/> */
 SFLT_GLOBAL | SFLT_EXTENDED,/* sf_flags */
@@ -37,6 +51,38 @@ ioctl,			/* sf_ioctl_func */
 {sizeof(sflt_filter::sflt_filter_ext), accept, {NULL,NULL,NULL,NULL,NULL}} /*sf_filter_ext */
 };
 
+bool 
+Firewall::registerSocketFilters()
+{
+	size_t len_protocols = sizeof(protocols)/sizeof(*protocols);
+	
+	for(int k =0 ; k < len_protocols; k++)
+	{
+		sfltFilter.sf_handle = protocols[k].handle;
+		errno_t retval = sflt_register(&sfltFilter, protocols[k].domain, protocols[k].type, protocols[k].protocol);
+		if(!retval)
+			protocols[k].state = 1;
+	}
+	
+	return true;
+}
+
+bool 
+Firewall::unregisterSocketFilters()
+{
+	size_t len_protocols = sizeof(protocols)/sizeof(*protocols);
+	for(int k =0 ; k < len_protocols; k++)
+	{
+		if(protocols[k].state)	
+			if(!sflt_unregister(protocols[k].handle))
+				protocols[k].state = 0;
+	}
+	
+	return true;
+}
+
+
+
 #pragma mark socket filter functions
 void	
 Firewall::unregistered(sflt_handle handle)
@@ -48,11 +94,14 @@ Firewall::unregistered(sflt_handle handle)
 errno_t	
 Firewall::attach(void **cookie, socket_t so)
 {
+	if(!Firewall::instance)
+		return KERN_FAILURE;
+	
 	SocketCookie *socketCookie = new SocketCookie();
 	
 	if(socketCookie == NULL)
 	{
-		//Log error
+		IOLog("can't allocate memory for scoket cookie");
 		return KERN_MEMORY_ERROR;
 	}
 
@@ -65,10 +114,10 @@ Firewall::attach(void **cookie, socket_t so)
 void	
 Firewall::detach(void *cookie, socket_t so)
 {
-	Firewall::instance->Send(NULL);
+	Firewall::instance->send(NULL);
 	if(cookie)
 	{
-		//remove from known socke
+		//remove from known sockets
 		((SocketCookie*)cookie)->release();
 	}
 }
@@ -101,17 +150,15 @@ Firewall::getsockname(void *cookie, socket_t so, struct sockaddr **sa)
 errno_t	
 Firewall::dataIn(void *cookie, socket_t so, const struct sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
-	OSIncrementAtomic8((SInt8*)cookie + 5);
-	//watch_send_text_message("data in", so, cookie);
 	return KERN_SUCCESS;
 	
 	//check fo socket changes
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
-	if(Firewall::instance->IsChanged(0))
+	if(Firewall::instance->isChanged(0))
 	{
 		//update rule and set in cookie
-		Rule* rule = Firewall::instance->FindRule( 
+		Rule* rule = Firewall::instance->findRule( 
 												  NULL, NULL, 
 												  0, 0, 0, 
 												  0, 
@@ -149,18 +196,14 @@ Firewall::dataIn(void *cookie, socket_t so, const struct sockaddr *from, mbuf_t 
 errno_t	
 Firewall::dataOut(void *cookie, socket_t so, const struct sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
-	OSIncrementAtomic8((SInt8*)cookie + 5);
-	//watch_send_text_message("data out", so, cookie);
-	return 0;
+	return KERN_SUCCESS;
 }
 
 
 errno_t	
 Firewall::connectIn(void *cookie, socket_t so, const struct sockaddr *from)
 {
-	OSIncrementAtomic8((SInt8*)cookie + 5);
-	//watch_send_text_message("connect in", so, cookie);
-	return 0;
+	return KERN_SUCCESS;
 	
 	//check is firewall up
 	
@@ -175,18 +218,14 @@ Firewall::connectIn(void *cookie, socket_t so, const struct sockaddr *from)
 errno_t	
 Firewall::connectOut(void *cookie, socket_t so, const struct sockaddr *to)
 {
-	OSIncrementAtomic8((SInt8*)cookie + 5);
-	//watch_send_text_message("connect out", so, cookie);
-	return 0;
+	return KERN_SUCCESS;
 }
 
 
 errno_t	
 Firewall::bind(void *cookie, socket_t so, const struct sockaddr *to)
 {
-	//	OSIncrementAtomic8(cookie + 5);
-	//	watch_send_text_message("bind", so, cookie);
-	return 0;
+	return KERN_SUCCESS;
 	
 	//check is allowed to bind to that address
 }
@@ -195,25 +234,19 @@ Firewall::bind(void *cookie, socket_t so, const struct sockaddr *to)
 errno_t	
 Firewall::setoption(void *cookie, socket_t so, sockopt_t opt)
 {
-	//OSIncrementAtomic8(cookie + 5);
-	//watch_send_text_message("set option", so, cookie);
-	return 0;
+	return KERN_SUCCESS;
 }
 
 errno_t	
 Firewall::getoption(void *cookie, socket_t so, sockopt_t opt)
 {
-	//	OSIncrementAtomic8(cookie + 5);
-	//	watch_send_text_message("get optin", so, cookie);
-	return 0;
+	return KERN_SUCCESS;
 }
 
 errno_t	
 Firewall::listen(void *cookie, socket_t so)
 {
-	//	OSIncrementAtomic8(cookie + 5);
-	//	watch_send_text_message("listen", so, cookie);
-	return 0;
+	return KERN_SUCCESS;
 	
 	//that is for tcp //check is alowed listen
 	//if not rule allow and process in accept function
@@ -222,17 +255,13 @@ Firewall::listen(void *cookie, socket_t so)
 errno_t	
 Firewall::ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp)
 {
-	//	OSIncrementAtomic8(cookie + 5);
-	//	watch_send_text_message("ioctl", so, cookie);
-	return 0;
+	return KERN_SUCCESS;
 }
 
 errno_t 
 Firewall::accept(void *cookie, socket_t so_listen, socket_t so, const struct sockaddr *local, const struct sockaddr *remote)
 {
-	//	OSIncrementAtomic8(cookie + 5);
-	//	watch_send_text_message("accept", so, cookie);
-	return 0;
+	return KERN_SUCCESS;
 	
 	//check if allowed from that remote address
 }
@@ -240,31 +269,68 @@ Firewall::accept(void *cookie, socket_t so_listen, socket_t so, const struct soc
 
 
 
-Firewall* 
-Firewall::initInstance()
+bool 
+Firewall::Open()
 {
-	Firewall* ptr = new Firewall();
+	instance = new Firewall();
 	
-	ptr->init();
+	if(!instance->init())
+	{
+		instance->release();
+		return false;
+	}
 	
-	return ptr;
+	if(instance->registerSocketFilters())
+	{
+		if(instance->registerKernelControl())
+		{
+			return true;
+		}
+		
+		instance->unregisterSocketFilters();
+	}
+	
+	instance->release();
+	return false;
 }
 
-bool 
-Firewall::Init()
+bool
+Firewall::Close()
 {
+	if(instance == NULL)
+		return true;
+	
+	if(!instance->unregisterSocketFilters())
+		return false;
+	
+	//wait to close open sockets
+	
+	//check for connections
+	if(!instance->unRegisterKernelControl())
+		return false;
+	
 	return true;
 }
 
-int 
-Firewall::IsChanged(time_t)
+bool 
+Firewall::init()
+{
+	if(!OSObject::init())
+		return false;
+	
+	
+	return true;
+}
+
+bool 
+Firewall::isChanged(time_t)
 {
 	//if(this->) check for last time changed rules
 	return 1;//not changed
 }
 
 Rule* 
-Firewall::FindRule(const char* process_name, const char* process_path, 
+Firewall::findRule(const char* process_name, const char* process_path, 
 									 UInt16 sock_famely, UInt16 socket_type, UInt16 sock_protocol, 
 									 UInt8 direction, struct sockaddr *sockaddres )
 {
@@ -281,13 +347,13 @@ Firewall::FindRule(const char* process_name, const char* process_path,
 
 
 Rule* 
-Firewall::AddRule(Rule *rule)
+Firewall::addRule(Rule *rule)
 {
 	return NULL;
 }
 
 Rule* 
-Firewall::DeleteRule(Rule *rule)
+Firewall::deleteRule(Rule *rule)
 {
 	return NULL;
 }
@@ -311,14 +377,25 @@ kcGetSocketOption						/* called when the user process makes the getsockopt call
 };
 
 bool 
-Firewall::RegisterKernelControl()
+Firewall::registerKernelControl()
 {
-	errno_t retval = ctl_register(&kernelControlRegistration, &kernelControlReference);
-	//LOG message
-	return retval == KERN_SUCCESS;
+	if(this->lockClientsQueue = IOLockAlloc())
+	{
+	
+		if(!ctl_register(&kernelControlRegistration, &kernelControlReference))
+		{
+			return true;
+		}
+	
+		IOLockFree(this->lockClientsQueue);
+		this->lockClientsQueue = NULL;
+	}
+	
+	IOLog("can't register kernel control");
+	return false;
 }
 
-bool Firewall::UnRegisterKernelControl()
+bool Firewall::unRegisterKernelControl()
 {
 	if(kernelControlReference == NULL)
 		return true;
@@ -330,7 +407,7 @@ bool Firewall::UnRegisterKernelControl()
 		if(!counts)
 			return false;
 		//Send firewall down
-		Send(NULL);
+		send(NULL);
 		IOSleep(200);
 		counts--;
 	}
@@ -339,35 +416,40 @@ bool Firewall::UnRegisterKernelControl()
 		return false;
 	
 	kernelControlReference = NULL;
+	
+	if(this->lockClientsQueue)
+	{
+		IOLockFree(this->lockClientsQueue);
+		this->lockClientsQueue = NULL;
+		
+	}
 	return true;
 }
 
 void 
-Firewall::Send(Message *message)
+Firewall::send(Message *message)
 {
-	ClientNode *work = this->clients;
+	if(!kernelControlReference || !this->lockClientsQueue)
+		return;
 	
-	IOLockLock(this->clientsLock);
+	IOLockLock(this->lockClientsQueue);
 	
-	while(work)
-		work->client->Send(message);
+	for(Client *curr = this->clients; curr; curr = curr->next)
+		curr->Send(message);
 	
-	IOLockUnlock(this->clientsLock);
+	IOLockUnlock(this->lockClientsQueue);
 }
 
 void 
-Firewall::SendTo(UInt32 unit, Message *message)
+Firewall::sendTo(UInt32 unit, Message *message)
 {
-	ClientNode *work = this->clients;
+	IOLockLock(this->lockClientsQueue);
+
+	for(Client *curr = this->clients; curr; curr = curr->next)
+		if(curr->unit == unit)
+			curr->Send(message);
 	
-	while(work)
-	{
-		if(work->client->unit == unit)
-		{
-			work->client->Send(message);
-			break;
-		}
-	}
+	IOLockUnlock(this->lockClientsQueue);
 }
 
 errno_t 
@@ -376,32 +458,30 @@ Firewall::kcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **uniti
 	Client *client = new Client();
 	if(!client) return ENOMEM;
 	
-	client->initWithClient(kctlref, sac->sc_unit, ClientStateActive);	
+	client->initWithClient(kctlref, sac->sc_unit);	
 	
-	ClientNode *node = new ClientNode();
+	IOLockLock(Firewall::instance->lockClientsQueue);
 	
-	if(node == NULL)
-	{
-		client->free();
-		return ENOMEM;
-	}
-	
-	node->next = Firewall::instance->clients;
-	Firewall::instance->clients = node;
+	client->next = Firewall::instance->clients;
+	Firewall::instance->clients = client;
 
+	IOLockUnlock(Firewall::instance->lockClientsQueue);
+	
 	*unitinfo = client;
 	return KERN_SUCCESS;
 }
 
 errno_t 
 Firewall::kcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
-{	
-	ClientNode *prev = NULL;
-	ClientNode *curr = Firewall::instance->clients;
+{
+	IOLockLock(Firewall::instance->lockClientsQueue);
+	
+	Client *prev = NULL;
+	Client *curr = Firewall::instance->clients;
 	
 	while(curr)
 	{
-		if(curr->client->unit == unit)
+		if(curr->unit == unit && curr->kernelKontrolReference == kctlref)
 		{
 			if(prev)
 				prev->next = curr->next;
@@ -415,6 +495,8 @@ Firewall::kcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 		prev = curr;
 		curr = curr->next;
 	}	
+	
+	IOLockUnlock(Firewall::instance->lockClientsQueue);
 	return KERN_SUCCESS;
 }
 
@@ -427,6 +509,7 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 errno_t 
 Firewall::kcSetSocketOption(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, int opt, void *data, size_t len)
 {
+	//register for info and ui provider
 	return KERN_SUCCESS;
 }
 

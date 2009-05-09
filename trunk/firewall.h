@@ -7,8 +7,22 @@
  *
  */
 
+#include <mach/vm_types.h>
+#include <mach/kmod.h>
+#include <sys/socket.h>
+#include <sys/kpi_socket.h>
+#include <sys/kpi_mbuf.h>
+#include <sys/kpi_socket.h>
 #include <sys/kpi_socketfilter.h>
+#include <sys/systm.h>
+#include <sys/proc.h>
+#include <sys/mbuf.h>
+#include <netinet/in.h>
+#include <kern/locks.h>
+#include <kern/assert.h>
+#include <kern/debug.h>
 #include <sys/kern_control.h>
+#include <IOKit/IOLib.h>
 #include <IOKit/IOLocks.h>
 
 #include "rule.h"
@@ -18,36 +32,50 @@
 
 #define MYBUNDLEID "com.janbird.watch.kext"
 
+struct protocol
+{
+	sflt_handle handle;
+	int domain;
+	int type;
+	int protocol;
+	int state;
+};
+
 class Firewall : OSObject
 {
 	OSDeclareDefaultStructors(Firewall)
 	
 public:
-	bool firewall_up;
-	bool monitor_up;
-	int count_attached_sockets;
-	int capacity_rules;
-	int count_rules;
+	bool firewallUp;
+	bool monitorUp;
+	UInt32 countAttachedSockets;
+	UInt32 capacityRules;
+	UInt32 countRules;
 	RuleNode *rules;
 	
 public:
 
 	static Firewall *instance;
-	static Firewall *initInstance();
+	static bool Open();
+	static bool Close();
 	
-	bool Init();
+	bool init();
 	
-	int IsChanged(time_t);
-	Rule* FindRule(const char* process_name, const char* process_path, 
+	bool isChanged(time_t);
+	Rule* findRule(const char* process_name, const char* process_path, 
 										 UInt16 sock_famely, UInt16 socket_type, UInt16 sock_protocol, 
 										 UInt8 direction, struct sockaddr *sockaddres );
 	
 	
-	Rule* AddRule(Rule *rule);
-	Rule* DeleteRule(Rule *rule);
+	Rule* addRule(Rule *rule);
+	Rule* deleteRule(Rule *rule);
 	
 #pragma mark soket filter functions
 
+	bool registerSocketFilters();
+	bool unregisterSocketFilters();
+	
+	static protocol protocols[];
 	static sflt_filter sfltFilter;
 	
 	static void		unregistered(sflt_handle handle);
@@ -69,22 +97,22 @@ public:
 	
 #pragma mark clent functions
 	kern_ctl_ref kernelControlReference;
-	IOLock *clientsLock;
 	static kern_ctl_reg kernelControlRegistration; 
+
+	IOLock *lockClientsQueue;
+	Client *clients;
 	
-	bool RegisterKernelControl();
-	bool UnRegisterKernelControl();
+	bool registerKernelControl();
+	bool unRegisterKernelControl();
 	
 	static errno_t kcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **unitinfo);
 	static errno_t kcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo);
 	static errno_t kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m, int flags);
 	static errno_t kcSetSocketOption(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, int opt, void *data, size_t len);
 	static errno_t kcGetSocketOption(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, int opt, void *data, size_t *len);
-	
-	ClientNode *clients;
 
-	void Send(Message *message);
-	void SendTo(UInt32 unit, Message *message);
+	void send(Message *message);
+	void sendTo(UInt32 unit, Message *message);
 	
 };
 
