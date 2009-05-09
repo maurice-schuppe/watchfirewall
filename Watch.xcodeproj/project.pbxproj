@@ -11,6 +11,8 @@
 		32A4FEBE0562C75700D090E7 /* watch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A224C3CFF42312311CA2CB7 /* watch.cpp */; settings = {ATTRIBUTES = (); }; };
 		3D93F09C0FB1D1B30021BCD5 /* client.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D93F09A0FB1D1B30021BCD5 /* client.h */; };
 		3D93F09D0FB1D1B30021BCD5 /* client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D93F09B0FB1D1B30021BCD5 /* client.cpp */; };
+		3D95B2A80FB4B8B90035C7D8 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D95B2A60FB4B8B90035C7D8 /* common.h */; };
+		3D95B2A90FB4B8B90035C7D8 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D95B2A70FB4B8B90035C7D8 /* common.cpp */; };
 		DF04F61E0F7F611B001E5512 /* rule.h in Headers */ = {isa = PBXBuildFile; fileRef = DF04F61C0F7F611B001E5512 /* rule.h */; };
 		DF04F61F0F7F611B001E5512 /* rule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF04F61D0F7F611B001E5512 /* rule.cpp */; };
 		DF18434A0F89B9C70058E488 /* cookie.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1843480F89B9C70058E488 /* cookie.h */; };
@@ -50,6 +52,8 @@
 		32A4FEC40562C75800D090E7 /* Watch.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Watch.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D93F09A0FB1D1B30021BCD5 /* client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = client.h; sourceTree = "<group>"; };
 		3D93F09B0FB1D1B30021BCD5 /* client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = client.cpp; sourceTree = "<group>"; };
+		3D95B2A60FB4B8B90035C7D8 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		3D95B2A70FB4B8B90035C7D8 /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = common.cpp; sourceTree = "<group>"; };
 		DF04F61C0F7F611B001E5512 /* rule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rule.h; sourceTree = "<group>"; };
 		DF04F61D0F7F611B001E5512 /* rule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rule.cpp; sourceTree = "<group>"; };
 		DF0F09F60F250DA400DBDD52 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
@@ -137,6 +141,8 @@
 				DF1843490F89B9C70058E488 /* cookie.cpp */,
 				3D93F09A0FB1D1B30021BCD5 /* client.h */,
 				3D93F09B0FB1D1B30021BCD5 /* client.cpp */,
+				3D95B2A60FB4B8B90035C7D8 /* common.h */,
+				3D95B2A70FB4B8B90035C7D8 /* common.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -154,6 +160,7 @@
 				DF1847150F8916C3009A2B16 /* memory.h in Headers */,
 				DF18434A0F89B9C70058E488 /* cookie.h in Headers */,
 				3D93F09C0FB1D1B30021BCD5 /* client.h in Headers */,
+				3D95B2A80FB4B8B90035C7D8 /* common.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +255,7 @@
 				DF1847160F8916C3009A2B16 /* memory.cpp in Sources */,
 				DF18434B0F89B9C70058E488 /* cookie.cpp in Sources */,
 				3D93F09D0FB1D1B30021BCD5 /* client.cpp in Sources */,
+				3D95B2A90FB4B8B90035C7D8 /* common.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,7 +298,7 @@
 				MODULE_STOP = watch_stop;
 				MODULE_VERSION = 1.0.0;
 				PRODUCT_NAME = Watch;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				WRAPPER_EXTENSION = kext;
 			};
 			name = Debug;

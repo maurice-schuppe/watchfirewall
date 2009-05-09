@@ -10,42 +10,44 @@
 #include <libkern/OSTypes.h>
 #include <libkern/c++/OSObject.h>
 #include <sys/kern_control.h>
+#include <IOKit/IOLocks.h>
+#include <IOKit/IOLib.h>
 
 #include "messages.h"
 
 
-enum ClientState
+struct ClientMessageNode 
 {
-	ClientStateActive = 1,
-	ClientStateClosed = 2
+	Message *message;
+	ClientMessageNode *next;
 };
 
 class Client: public OSObject
 {
 	OSDeclareDefaultStructors(Client)
+
 	
+protected:
+	static void ClearQueue(ClientMessageNode *root);
 public:
-	kern_ctl_ref *ptr_kernelKontrolReference;
+	kern_ctl_ref kernelKontrolReference;
 	UInt32 unit;
-	ClientState state;
 	
-	bool initWithClient(kern_ctl_ref* ptr_kernelKontrolReference, UInt32 unit, ClientState clientState);
+	volatile SInt32 exitState;
+	IOSimpleLock *lockQueue;
+	IOLock *lockWorkThread;
+	IOThread thread;
+	ClientMessageNode *messageQueueRoot;
+	ClientMessageNode *messageQueueLast;
 	
+	Client* next;
+	
+	bool initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit);
+
 	virtual void free();
-	
+
 	void Send(Message* message);
+	static void SendThread(void* arg);
 
 };
 
-class ClientNode: public OSObject
-{
-	OSDeclareDefaultStructors(ClientNode)
-
-public:
-	Client *client;
-	ClientNode *next;
-	
-	bool init(Client* client, ClientNode *node);
-	
-	virtual void free();
-};

@@ -14,17 +14,20 @@
 OSDefineMetaClassAndStructors(Rule, OSObject)
 
 bool Rule::init(
-				u_int32_t id, 
+				UInt32 id, 
 				char* process_name, 
 				char* file_path, 
-				u_int16_t sock_domain, 
-				u_int16_t sock_type, 
-				u_int16_t sock_protocol, 
+				UInt16 sock_domain, 
+				UInt16 sock_type, 
+				UInt16 sock_protocol, 
 				struct sockaddr* sockadress, 
-				u_int8_t direction, 
-				u_int8_t allow)
+				UInt8 direction, 
+				UInt8 allow)
 {	
 	//clear memory
+	if(!OSObject::init())
+		return false;
+	
 	this->id = id;
 	if(process_name && !(this->processName = OSString::withCString(process_name)))
 		return false;
