@@ -14,6 +14,7 @@
 #include <IOKit/IOLib.h>
 
 #include "messages.h"
+#include "simpleBase.h"
 
 
 struct ClientMessageNode 
@@ -22,9 +23,9 @@ struct ClientMessageNode
 	ClientMessageNode *next;
 };
 
-class Client: public OSObject
+class Client : public SimpleBase//: public OSObject
 {
-	OSDeclareDefaultStructors(Client)
+	//OSDeclareDefaultStructors(Client)
 
 	
 protected:
@@ -45,6 +46,8 @@ public:
 	bool initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit);
 
 	virtual void free();
+	void closeSignal();
+
 
 	void Send(Message* message);
 	static void SendThread(void* arg);

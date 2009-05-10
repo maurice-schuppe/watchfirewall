@@ -41,9 +41,9 @@ struct protocol
 	int state;
 };
 
-class Firewall : OSObject
+class Firewall //: OSObject
 {
-	OSDeclareDefaultStructors(Firewall)
+	//OSDeclareDefaultStructors(Firewall)
 	
 public:
 	bool firewallUp;
@@ -58,8 +58,6 @@ public:
 	static Firewall *instance;
 	static bool Open();
 	static bool Close();
-	
-	bool init();
 	
 	bool isChanged(time_t);
 	Rule* findRule(const char* process_name, const char* process_path, 

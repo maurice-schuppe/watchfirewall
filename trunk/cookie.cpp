@@ -9,13 +9,3 @@
 
 #include "cookie.h"
 
-#define super    OSObject
-
-OSDefineMetaClassAndStructors(SocketCookie, OSObject);
-
-void
-SocketCookie::free()
-{
-	if(rule) rule->release();
-	super::free();
-}

@@ -16,6 +16,8 @@
 #include <libkern/c++/OSString.h>
 #include <IOKit/IOLib.h>
 
+#include "simpleBase.h"
+
 struct RuleSimple
 {
 	size_t size;//this + process name + file path + sockaddress 
@@ -35,9 +37,9 @@ struct RuleSimple
 	UInt8 allow;//0 denny, 1 allow
 };
 
-class Rule: public OSObject
+class Rule: public SimpleBase
 {
-	OSDeclareDefaultStructors(Rule)
+	//OSDeclareDefaultStructors(Rule)
 	
 	UInt32 id;
 	
