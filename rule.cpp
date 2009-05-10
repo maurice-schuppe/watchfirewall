@@ -11,7 +11,7 @@
 
 #include "rule.h"
 
-OSDefineMetaClassAndStructors(Rule, OSObject)
+//OSDefineMetaClassAndStructors(Rule, OSObject)
 
 bool Rule::init(
 				UInt32 id, 
@@ -24,10 +24,6 @@ bool Rule::init(
 				UInt8 direction, 
 				UInt8 allow)
 {	
-	//clear memory
-	if(!OSObject::init())
-		return false;
-	
 	this->id = id;
 	if(process_name && !(this->processName = OSString::withCString(process_name)))
 		return false;
@@ -57,7 +53,7 @@ void Rule::free()
 	if(this->processName)
 		this->processName->release();
 	
-	OSObject::free();
+	SimpleBase::free();
 }
 
 int compare_rule(Rule *left, Rule *rigth)

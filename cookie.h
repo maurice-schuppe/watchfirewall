@@ -20,10 +20,8 @@ enum SocketCookieState
 	CookieStateNOT_ALLOWED = 8
 };
 
-class SocketCookie: public OSObject
+class SocketCookie
 {
-	OSDeclareDefaultStructors(SocketCookie)
-
 public:
 	pid_t pid;
 	pid_t p_pid;
@@ -36,9 +34,6 @@ public:
 	
 	struct sockaddr *from_address;
 	struct sockaddr *to_address;
-	
-public:
-	virtual void free();
 	
 };
 

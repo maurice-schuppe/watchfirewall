@@ -10,7 +10,7 @@
 #include "firewall.h"
 
 
-OSDefineMetaClassAndStructors(Firewall, OSObject)
+//OSDefineMetaClassAndStructors(Firewall, OSObject)
 
 
 Firewall *Firewall::instance = NULL;
@@ -24,8 +24,8 @@ protocol Firewall::protocols[] =
 {0xBACAF002, PF_INET, SOCK_RAW, IPPROTO_ICMP, 0},
 {0xBACAF003, PF_INET6, SOCK_STREAM, IPPROTO_TCP, 0},
 {0xBACAF004, PF_INET6, SOCK_DGRAM, IPPROTO_UDP, 0},
-{0xBACAF005, PF_INET6, SOCK_RAW, IPPROTO_ICMP, 0}//,
-//{0xBACAF006, PF_UNIX, SOCK_STREAM, 0, 0}
+{0xBACAF005, PF_INET6, SOCK_RAW, IPPROTO_ICMP, 0}/*,
+{0xBACAF006, PF_UNIX, SOCK_STREAM, 0, 0}*/
 
 };
 
@@ -78,6 +78,7 @@ Firewall::unregisterSocketFilters()
 				protocols[k].state = 0;
 	}
 	
+	IOLog("unregister soket filters \n");
 	return true;
 }
 
@@ -94,6 +95,12 @@ Firewall::unregistered(sflt_handle handle)
 errno_t	
 Firewall::attach(void **cookie, socket_t so)
 {
+	IOLog("attach \n");
+	//return KERN_FAILURE;
+	Message *messsage = Message::createText("socket %d attach", so);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 	if(!Firewall::instance)
 		return KERN_FAILURE;
 	
@@ -102,7 +109,7 @@ Firewall::attach(void **cookie, socket_t so)
 	if(socketCookie == NULL)
 	{
 		IOLog("can't allocate memory for scoket cookie");
-		return KERN_MEMORY_ERROR;
+		return ENOMEM;
 	}
 
 	*cookie = socketCookie;
@@ -113,43 +120,58 @@ Firewall::attach(void **cookie, socket_t so)
 
 void	
 Firewall::detach(void *cookie, socket_t so)
-{
-	Firewall::instance->send(NULL);
+{//
+	return;
+	
+	if(!Firewall::instance)
+		return;
+
+	Message *messsage = Message::createText("socket %d detach", so);
+	Firewall::instance->send(messsage);
+	messsage->release();
+
 	if(cookie)
 	{
 		//remove from known sockets
-		((SocketCookie*)cookie)->release();
+		delete (SocketCookie*)cookie;
 	}
 }
 
 void	
 Firewall::notify(void *cookie, socket_t so, sflt_event_t event, void *param)
 {
-	//	OSIncrementAtomic8(cookie + 5);
-	//	watch_send_text_message("notify", so, cookie);
+	if(!Firewall::instance)
+		return;
 }
 
 int		
 Firewall::getpeername(void *cookie, socket_t so, struct sockaddr **sa)
 {
-	//	OSIncrementAtomic8(cookie + 5);
-	//	watch_send_text_message("getpeername", so, cookie);
-	return 0;
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+	
+	return KERN_SUCCESS;
 }
 
 
 int		
 Firewall::getsockname(void *cookie, socket_t so, struct sockaddr **sa)
 {
-	//	OSIncrementAtomic8(cookie + 5);
-	//	watch_send_text_message("getsockname", so, cookie);
-	return 0;
+
+	return KERN_SUCCESS;
 }
 
 
 errno_t	
 Firewall::dataIn(void *cookie, socket_t so, const struct sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+
+//	Message *messsage = Message::createText("socket %d data in", so);
+//	Firewall::instance->send(messsage);
+//	messsage->release();
+	
 	return KERN_SUCCESS;
 	
 	//check fo socket changes
@@ -196,6 +218,13 @@ Firewall::dataIn(void *cookie, socket_t so, const struct sockaddr *from, mbuf_t 
 errno_t	
 Firewall::dataOut(void *cookie, socket_t so, const struct sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+	
+//	Message *messsage = Message::createText("socket %d data out", so);
+//	Firewall::instance->send(messsage);
+//	messsage->release();
+	
 	return KERN_SUCCESS;
 }
 
@@ -272,31 +301,37 @@ Firewall::accept(void *cookie, socket_t so_listen, socket_t so, const struct soc
 bool 
 Firewall::Open()
 {
-	instance = new Firewall();
-	
-	if(!instance->init())
+	if(!instance)
 	{
-		instance->release();
+		instance = new Firewall();
+		
+		if(!instance)
+			return false;
+		
+		if(instance->registerSocketFilters())
+		{
+			if(instance->registerKernelControl())
+			{
+				IOLog("instance created \n");
+				return true;
+			}
+			
+			instance->unregisterSocketFilters();
+		}
+		
+		delete instance;
 		return false;
 	}
 	
-	if(instance->registerSocketFilters())
-	{
-		if(instance->registerKernelControl())
-		{
-			return true;
-		}
-		
-		instance->unregisterSocketFilters();
-	}
-	
-	instance->release();
-	return false;
+	IOLog("firewall instance exist \n");
+	return true;
 }
 
 bool
 Firewall::Close()
 {
+	IOLog("fireall instance begin destroed \n");
+
 	if(instance == NULL)
 		return true;
 	
@@ -309,15 +344,9 @@ Firewall::Close()
 	if(!instance->unRegisterKernelControl())
 		return false;
 	
-	return true;
-}
-
-bool 
-Firewall::init()
-{
-	if(!OSObject::init())
-		return false;
+	delete instance;
 	
+	IOLog("fireall instance destroed \n");
 	
 	return true;
 }
@@ -400,20 +429,27 @@ bool Firewall::unRegisterKernelControl()
 	if(kernelControlReference == NULL)
 		return true;
 
-	//send to all close
+	Message *message = Message::createClose();
+	if(!message)
+		return false;
+	
 	int counts = 3;
 	while(clients)
 	{
 		if(!counts)
 			return false;
 		//Send firewall down
-		send(NULL);
+		//send(message);
 		IOSleep(200);
 		counts--;
 	}
 	
+	message->release();
+	
 	if(ctl_deregister(kernelControlReference))	
 		return false;
+	
+	IOLog("unregister kernel control \n");
 	
 	kernelControlReference = NULL;
 	
@@ -455,10 +491,20 @@ Firewall::sendTo(UInt32 unit, Message *message)
 errno_t 
 Firewall::kcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **unitinfo)
 {
+	if(!Firewall::instance)
+		return KERN_FAILURE;
+	
+	IOLog("Client joined \n");
+	
 	Client *client = new Client();
 	if(!client) return ENOMEM;
 	
-	client->initWithClient(kctlref, sac->sc_unit);	
+	if(client->initWithClient(kctlref, sac->sc_unit) == false)
+	{
+		IOLog("can't create client");
+		delete client;
+		return ENOMEM;
+	}
 	
 	IOLockLock(Firewall::instance->lockClientsQueue);
 	
@@ -468,12 +514,17 @@ Firewall::kcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **uniti
 	IOLockUnlock(Firewall::instance->lockClientsQueue);
 	
 	*unitinfo = client;
+	IOLog("Client registred \n");
 	return KERN_SUCCESS;
 }
 
 errno_t 
 Firewall::kcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 {
+	IOLog("Client disconecting \n");
+	//return KERN_SUCCESS;
+
+	
 	IOLockLock(Firewall::instance->lockClientsQueue);
 	
 	Client *prev = NULL;
@@ -488,7 +539,8 @@ Firewall::kcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 			else
 				Firewall::instance->clients = curr->next;
 			
-			curr->free();
+			curr->closeSignal();
+			curr->release();
 			break;
 		}
 		
@@ -497,6 +549,7 @@ Firewall::kcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 	}	
 	
 	IOLockUnlock(Firewall::instance->lockClientsQueue);
+	IOLog("Client disconected \n");
 	return KERN_SUCCESS;
 }
 

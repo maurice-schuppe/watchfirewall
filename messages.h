@@ -2,42 +2,28 @@
 #define WATCH_MESSAGES_H
 
 
-//from server
-#define MESSAGE_TEXT 1 //dymmu
-#define MESSAGE_ASK_RULE 2
+#include <IOKit/IOLib.h>
+#include "messageType.h"
+#include "simpleBase.h"
 
-#define MESSAGE_INFO_RULE_ADDED 10
-#define MESSAGE_INFO_RULE_DELETED 11
-#define MESSAGE_INFO_RULE_DISABLED 12
-#define MESSAGE_INFO_RULE_ENABLED 13
 
-#define MESSAGE_INFO_SOCKET_REJECTED 21
-#define MESSAGE_INFO_SOCKET_ALLOWED 22
-#define MESSAGE_INFO_SOCKET_DATA_IN 23
-#define MESSAGE_INFO_SOCKET_DATA_OUT 24
-#define MESSAGE_INFO_SOCKET_UP 25
-#define MESSAGE_INFO_SOCKET_DOWN 26
-#define MESSAGE_INFO_SOCKET_ASK_RULE 27
 
-#define MESSAGE_INFO_FIREWALL_UP 31
-#define MESSAGE_INFO_FIREWALL_DOWN 32
-
-#define MESSAGE_INFO_CLOSED 40
-
-//from client
-#define MESSAGE_DELETE_RULE 50
-#define MESSAGE_ADD_RULE 51
-#define MESSAGE_OPEN_FIREWALL 52
-#define MESSAGE_CLOSE_FIREWALL 53
-#define MESSAGE_REGISTER_FOR_ASK_RULE 54
-#define MESSAGE_UNREGISTER_FROM_ASK_RULE 55
-#define MESSAGE_REGISTER_FOR_INFO 56
-#define MESSAGE_UNREGSTER_FROM_INFO 57
-
-struct Message 
+class Message : public SimpleBase
 {
-	UInt16 length;
-	UInt16 message_type;	 
+public:
+	//UInt16 length;
+	//UInt16 type;
+	char *buffer;
+	
+	UInt16 length(){ return (buffer) ? *(UInt16*)buffer : 0;}
+	UInt16 type(){ return (buffer) ? *(UInt16*)(buffer + sizeof(UInt16)) : 0;}
+	
+	virtual void free();
+	//helper for debug
+	void IOLog();
+
+	static Message *createText(const char* format,...);
+	static Message *createClose();//TODO: static
 };
 
 

@@ -9,7 +9,7 @@
 
 #include "client.h"
 
-OSDefineMetaClassAndStructors(Client, OSObject)
+//OSDefineMetaClassAndStructors(Client, OSObject)
 
 void 
 Client::ClearQueue(ClientMessageNode *root)
@@ -17,6 +17,7 @@ Client::ClearQueue(ClientMessageNode *root)
 	while(root)
 	{
 		ClientMessageNode *curr = root;
+		curr->message->release();
 		root = root->next;
 		delete(curr);
 	}
@@ -25,39 +26,45 @@ Client::ClearQueue(ClientMessageNode *root)
 bool 
 Client::initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 {
+	::IOLog("client state refernces: %d; thread: %d; lQueue: %d; lThread: %d; nest: %d \n", this->references, this->thread, this->lockQueue, this->lockWorkThread, this->next);
+	
 	if(this->lockQueue = IOSimpleLockAlloc())
 	{
 		if(this->lockWorkThread = IOLockAlloc())
 		{
-			IOLockLock(this->lockWorkThread);
 			this->kernelKontrolReference = kernelKontrolReference;
 			this->unit = unit;
 			
-			if(this->thread == IOCreateThread(SendThread, this))
+			if(this->thread = IOCreateThread(Client::SendThread, this))
 			{
+				::IOLog("client created \n");
+				this->references = 1;
 				return true;
 			}
 			
 			IOLockFree(this->lockWorkThread);
-			IOLog("client can't create thread");//TODO: refactor
+			::IOLog("client can't create thread \n");//TODO: refactor
 		}
 		
 		IOSimpleLockFree(this->lockQueue);
-		IOLog("client can't create lock thread");//TODO: refactor
+		::IOLog("client can't create lock thread \n");//TODO: refactor
 	}
 	
-	IOLog("client can't create lock client");//TODO: refactor
+	::IOLog("client can't create lock client \n");//TODO: refactor
 	return false;
+}
+
+void 
+Client::closeSignal()
+{
+	OSIncrementAtomic(&this->exitState);
+	IOLockWakeup(this->lockWorkThread, 0, false);//(this->lockWorkThread);
 }
 
 void
 Client::free()
 {
 	//send exit thread
-	
-	OSIncrementAtomic(&this->exitState);
-	IOLockUnlock(this->lockWorkThread);
-	
 	ClearQueue(this->messageQueueRoot);
 	
 	if(this->lockQueue)
@@ -72,19 +79,26 @@ Client::free()
 		this->lockWorkThread = NULL;
 	}
 	
-	OSObject::free();
+	SimpleBase::free();
 }
 
 void 
 Client::Send(Message* message)
 {
-	if(message == NULL)
+	if(message == NULL || this->exitState)
 		return;
 	
-	ClientMessageNode * node = new ClientMessageNode();//???
-	node->message = message;
+	//message->IOLog();
 	
-	IOSimpleLockLock(this->lockQueue);
+	ClientMessageNode * node = new ClientMessageNode();
+	if(!node)
+		return;
+
+	message->retain();
+	node->message = message;
+	node->next = NULL;
+	
+	IOInterruptState istate = IOSimpleLockLockDisableInterrupt(this->lockQueue);
 	
 	if(this->messageQueueLast == NULL)
 	{
@@ -94,73 +108,88 @@ Client::Send(Message* message)
 	else
 		this->messageQueueLast->next = node;
 	
-	IOSimpleLockUnlock(this->lockQueue);
-	IOLockUnlock(this->lockWorkThread);
+	IOSimpleLockUnlockEnableInterrupt(this->lockQueue, istate);
+	//IOLockLock(this->lockWorkThread);
+	IOLockWakeup(this->lockWorkThread, 0, false);
 }
 
 void 
 Client::SendThread(void* arg)
 {
 	Client* client = (Client*)arg;
+	client->retain();
 	size_t space = 0;
 	ClientMessageNode *node = NULL;
+	IOLockLock(client->lockWorkThread);
 	
+	//::IOLog("in client thread \n");
+	
+	//int state = 0;
 	while(1)
 	{
-		IOLockLock(client->lockWorkThread);
+		::IOLog("work thread go to sleep \n");
+
+		IOLockSleep(client->lockWorkThread, 0, THREAD_UNINT);
+		::IOLog("work thread weakup \n");
 		
 		if(client->exitState)
 			goto exit;
 		
-		while(1)
+		IOInterruptState istate = IOSimpleLockLockDisableInterrupt(client->lockQueue);
+		//get first node
+		node = client->messageQueueRoot;
+		client->messageQueueRoot = NULL;
+		client->messageQueueLast = NULL;
+		
+		IOSimpleLockUnlockEnableInterrupt(client->lockQueue, istate);
+		
+		while(node)
 		{
-			IOSimpleLockLock(client->lockQueue);
-			//get first node
-			node = client->messageQueueRoot;
-			client->messageQueueRoot = NULL;
-			client->messageQueueLast = NULL;
-			
-			IOSimpleLockUnlock(client->lockQueue);
-			
-			while(node)
+//				::IOLog("in thread send message");
+//				node->message->IOLog();
+			for(UInt32 count = 4; count; count--)
 			{
-				for(UInt32 count = 4; count; count--)
+				if(client->exitState)
+					goto exitAndClearQueue;
+				
+				if(!ctl_getenqueuespace(client->kernelKontrolReference, client->unit, &space))
 				{
+					if(space >= node->message->length())
+					{
+						if(client->exitState)
+							goto exitAndClearQueue;
+						
+						ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message->buffer, node->message->length(), 0);
+						::IOLog("message sended \n");
+						break;
+					}
+
 					if(client->exitState)
 						goto exitAndClearQueue;
 					
-					if(!ctl_getenqueuespace(client->kernelKontrolReference, client->unit, &space))
-					{
-						if(space >= node->message->length)
-						{
-							if(client->exitState)
-								goto exitAndClearQueue;
-							
-							ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message, node->message->length, 0);
-							break;
-						}
-
-						if(client->exitState)
-							goto exitAndClearQueue;
-						
-						IOSleep(50);
-						
-						if(client->exitState)
-							goto exitAndClearQueue;
-					}
+					IOSleep(50);
+					
+					if(client->exitState)
+						goto exitAndClearQueue;
 				}
-				
-				ClientMessageNode *deleteNode = node;
-				node = node->next;
-				delete(deleteNode);//???
-				
 			}
+			
+			ClientMessageNode *deleteNode = node;
+			node = node->next;
+			deleteNode->message->release();
+			delete(deleteNode);//???
 		}
 	}
 	
 exitAndClearQueue:
 	ClearQueue(node);
 exit:
+	IOLockUnlock(client->lockWorkThread);
+	client->release();
+	
+	IOSleep(2000);
+	::IOLog("work thread exit \n");
+
 	IOExitThread();
 }
 
