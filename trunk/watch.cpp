@@ -86,7 +86,7 @@ watch_data_in_func(void *cookie, socket_t so, const struct sockaddr *from, mbuf_
 	//check fo socket changes
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
-	if(Firewall::instance->isChanged(0))
+	if(Firewall::instance->isRulesChanged(0))
 	{
 		//update rule and set in cookie
 		Rule* rule = Firewall::instance->findRule( 
