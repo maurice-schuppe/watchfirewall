@@ -12,7 +12,7 @@
 void
 Message::IOLog()
 {
-	::IOLog("message: %p; length: %d; type: %d; ref: %d \n", this, this->length(), this->type(), this->references);
+	::IOLog("message: %p; length: %d; type: %d; ref: %d \n", this, this->getLength(), this->getType(), this->references);
 }
 
 void 
@@ -40,7 +40,7 @@ Message::createText(const char* format,...)
 		return NULL;
 	
     *((UInt16*) ch) = vsnprintf(ch + 2 * sizeof(UInt16), 256 - 2 * sizeof(UInt16) - 1, format, argList) + 1 + 2 * sizeof(UInt16);
-	*(UInt16*)(ch + sizeof(UInt16)) = MESSAGE_TEXT;
+	*(UInt16*)(ch + sizeof(UInt16)) = MessageTypeText;
 	message->references = 1;
 	message->buffer = ch;
 	//TODO: check length
@@ -50,13 +50,18 @@ Message::createText(const char* format,...)
 }
 
 Message*
-Message::createClose()
+Message::createFirewallClose()
 {
+	::IOLog("begin create firewall close \n");
 	Message *message = new Message();
-	//message->type = MESSAGE_INFO_CLOSED;
-	//message->length = sizeof(Message);
-	message->references = 1;
-	
+	if(message)
+	{
+		::IOLog("message buffer %p \n", message->buffer);
+		message->setType(MessageTypeFirewallClosed);
+		message->setLength(4);
+		message->references = 1;
+	}
+	::IOLog("end create firewall close \n");
 	return message;
 }
 

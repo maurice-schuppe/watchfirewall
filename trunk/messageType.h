@@ -10,36 +10,50 @@
 #ifndef WATCH_MESSAGES_TYPE_H
 #define WATCH_MESSAGES_TYPE_H
 
-//from server
-#define MESSAGE_TEXT 1 //dymmu
-#define MESSAGE_ASK_RULE 2
+enum MessagesClass
+{
+	MessageClassInfoRule	= 0x0100,
+	MessageClassInfoSocket	= 0x0200,
+	MessageClassAsk			= 0x0400,
+	MessageClassFirewall	= 0x0800,
+	MessageClassClient		= 0x1000,
+	MessageClassCommon		= 0x2000
+};
 
-#define MESSAGE_INFO_RULE_ADDED 10
-#define MESSAGE_INFO_RULE_DELETED 11
-#define MESSAGE_INFO_RULE_DISABLED 12
-#define MESSAGE_INFO_RULE_ENABLED 13
+enum ServerMessagesType 
+{
+	MessageTypeText					= MessageClassCommon | 0x01, //dymmu
+	MessageTypeAskRule				= MessageClassAsk |  0x01,
+	
+	MessageTypeRuleAdded			= MessageClassInfoRule | 0x01,
+	MessageTypeRuleDeleted			= MessageClassInfoRule | 0x02,
+	MessageTypeRuleDisabled			= MessageClassInfoRule | 0x03,
+	MessageTypeRuleEnbled			= MessageClassInfoRule | 0x04,
+	
+	MessageTypeSocketRejected		= MessageClassInfoSocket | 0x05,
+	MessageTypeSocketAllowed		= MessageClassInfoSocket | 0x06,
+	MessageTypeSocketDataIN			= MessageClassInfoSocket | 0x07,
+	MessageTypeSocketDataOUT		= MessageClassInfoSocket | 0x08,
+	MessageTypeSocketOpen			= MessageClassInfoSocket | 0x09,
+	MessageTypeSocketClosed			= MessageClassInfoSocket | 0x0A,
+	MessageTypeSocketAskRule		= MessageClassInfoSocket | 0x0B,
+	
+	MessageTypeFirewallActivated	= MessageClassFirewall | 0x01,
+	MessageTypeFirewallDeactivated	= MessageClassFirewall | 0x02,
+	
+	MessageTypeFirewallClosed		= MessageClassFirewall | 0x03
+};
 
-#define MESSAGE_INFO_SOCKET_REJECTED 21
-#define MESSAGE_INFO_SOCKET_ALLOWED 22
-#define MESSAGE_INFO_SOCKET_DATA_IN 23
-#define MESSAGE_INFO_SOCKET_DATA_OUT 24
-#define MESSAGE_INFO_SOCKET_UP 25
-#define MESSAGE_INFO_SOCKET_DOWN 26
-#define MESSAGE_INFO_SOCKET_ASK_RULE 27
-
-#define MESSAGE_INFO_FIREWALL_UP 31
-#define MESSAGE_INFO_FIREWALL_DOWN 32
-
-#define MESSAGE_INFO_CLOSED 40
-
-//from client
-#define MESSAGE_DELETE_RULE 50
-#define MESSAGE_ADD_RULE 51
-#define MESSAGE_OPEN_FIREWALL 52
-#define MESSAGE_CLOSE_FIREWALL 53
-#define MESSAGE_REGISTER_FOR_ASK_RULE 54
-#define MESSAGE_UNREGISTER_FROM_ASK_RULE 55
-#define MESSAGE_REGISTER_FOR_INFO 56
-#define MESSAGE_UNREGSTER_FROM_INFO 57
+enum ClientMessagesType
+{
+	MessageTypeDeleteRule			= MessageClassClient | 0x01,
+	MessageTypeAddRule				= MessageClassClient | 0x02,
+	MessageTypeActivateFirewall		= MessageClassClient | 0x03,
+	MessageTypeDeactivateFirewall	= MessageClassClient | 0x04,
+	MessageTypeRegisterForAsk		= MessageClassClient | 0x05,
+	MessageTypeUnregisterAsk		= MessageClassClient | 0x06,
+	MessageTypeRegisterForInfo		= MessageClassClient | 0x07,
+	MessageTypeUnregisterInfo		= MessageClassClient | 0x08
+};
 
 #endif

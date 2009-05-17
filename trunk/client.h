@@ -16,7 +16,6 @@
 #include "messages.h"
 #include "simpleBase.h"
 
-
 struct ClientMessageNode 
 {
 	Message *message;
@@ -33,6 +32,8 @@ protected:
 public:
 	kern_ctl_ref kernelKontrolReference;
 	UInt32 unit;
+	
+	UInt32 registredMessageClases;
 	
 	volatile SInt32 exitState;
 	IOSimpleLock *lockQueue;

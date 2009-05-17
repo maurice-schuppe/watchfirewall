@@ -11,19 +11,36 @@
 class Message : public SimpleBase
 {
 public:
-	//UInt16 length;
-	//UInt16 type;
 	char *buffer;
+	char embededBuffer[5];
 	
-	UInt16 length(){ return (buffer) ? *(UInt16*)buffer : 0;}
-	UInt16 type(){ return (buffer) ? *(UInt16*)(buffer + sizeof(UInt16)) : 0;}
+	UInt16 getLength(){ return (buffer) ? *(UInt16*)buffer : *(UInt16*)embededBuffer;}
+	UInt16 getType(){ return (buffer) ? *(UInt16*)(buffer + sizeof(UInt16)) : *(UInt16*)(embededBuffer + sizeof(UInt16)) ;}
+	
+	void setLength(UInt16 length)
+	{
+		if(buffer)
+			*(UInt16*)buffer = length;
+		else
+			*(UInt16*)embededBuffer = length;
+		
+	}
+	void setType(UInt16 type)
+	{
+		if(buffer)
+			*(UInt16*)(buffer + sizeof(UInt16)) = type;
+		else
+			*(UInt16*)(embededBuffer + sizeof(UInt16)) = type;
+	}
+	
+	char* getBuffer(){ return (buffer) ? buffer : embededBuffer; }
 	
 	virtual void free();
 	//helper for debug
 	void IOLog();
 
 	static Message *createText(const char* format,...);
-	static Message *createClose();//TODO: static
+	static Message *createFirewallClose();//TODO: static
 };
 
 

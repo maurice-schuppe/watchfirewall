@@ -28,6 +28,8 @@ Client::initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 {
 	::IOLog("client state refernces: %d; thread: %d; lQueue: %d; lThread: %d; nest: %d \n", this->references, this->thread, this->lockQueue, this->lockWorkThread, this->next);
 	
+	this->registredMessageClases = MessageClassFirewall | MessageClassCommon;
+	
 	if(this->lockQueue = IOSimpleLockAlloc())
 	{
 		if(this->lockWorkThread = IOLockAlloc())
@@ -57,6 +59,7 @@ Client::initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 void 
 Client::closeSignal()
 {
+	::IOLog("cliend send close signal\n");
 	OSIncrementAtomic(&this->exitState);
 	IOLockWakeup(this->lockWorkThread, 0, false);//(this->lockWorkThread);
 }
@@ -65,7 +68,10 @@ void
 Client::free()
 {
 	//send exit thread
+	::IOLog("client begin destroed\n");
 	ClearQueue(this->messageQueueRoot);
+	this->messageQueueRoot = NULL;
+	this->messageQueueLast = NULL;
 	
 	if(this->lockQueue)
 	{
@@ -80,6 +86,7 @@ Client::free()
 	}
 	
 	SimpleBase::free();
+	::IOLog("client destored\n");
 }
 
 void 
@@ -88,6 +95,9 @@ Client::Send(Message* message)
 	if(message == NULL || this->exitState)
 		return;
 	
+	if(!(message->getType() & this->registredMessageClases))
+		return;
+	::IOLog("send message to client: %d\n", this->unit);
 	//message->IOLog();
 	
 	ClientMessageNode * node = new ClientMessageNode();
@@ -154,12 +164,12 @@ Client::SendThread(void* arg)
 				
 				if(!ctl_getenqueuespace(client->kernelKontrolReference, client->unit, &space))
 				{
-					if(space >= node->message->length())
+					if(space >= node->message->getLength())
 					{
 						if(client->exitState)
 							goto exitAndClearQueue;
 						
-						ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message->buffer, node->message->length(), 0);
+						ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message->getBuffer(), node->message->getLength(), 0);
 						::IOLog("message sended \n");
 						break;
 					}
@@ -182,12 +192,14 @@ Client::SendThread(void* arg)
 	}
 	
 exitAndClearQueue:
+	::IOLog("client in exit nad clear quque \n");
 	ClearQueue(node);
 exit:
+	::IOLog("client in exit\n");
 	IOLockUnlock(client->lockWorkThread);
 	client->release();
 	
-	IOSleep(2000);
+	//IOSleep(2000);
 	::IOLog("work thread exit \n");
 
 	IOExitThread();
