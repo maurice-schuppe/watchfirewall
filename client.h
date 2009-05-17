@@ -45,10 +45,12 @@ public:
 	Client* next;
 	
 	bool initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit);
-
+	
+	void registerMessageClasses(UInt16 classes);
+	void unregisterMessageClasses(UInt16 classes);
+	
 	virtual void free();
 	void closeSignal();
-
 
 	void Send(Message* message);
 	static void SendThread(void* arg);

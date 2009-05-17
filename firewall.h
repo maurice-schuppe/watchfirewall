@@ -58,15 +58,20 @@ public:
 	static Firewall *instance;
 	static bool Open();
 	static bool Close();
+
 	
-	bool isChanged(time_t);
+#pragma mark rules functions
+	
+	bool isRulesChanged(time_t);
 	Rule* findRule(const char* process_name, const char* process_path, 
 										 UInt16 sock_famely, UInt16 socket_type, UInt16 sock_protocol, 
 										 UInt8 direction, struct sockaddr *sockaddres );
 	
 	
 	Rule* addRule(Rule *rule);
-	Rule* deleteRule(Rule *rule);
+	Rule* deleteRule(UInt32 ruleId);
+	Rule* activateRule(UInt32 ruleId);
+	Rule* deactivateRule(UInt32 ruleId);
 	
 #pragma mark soket filter functions
 
@@ -111,7 +116,6 @@ public:
 
 	void send(Message *message);
 	void sendTo(UInt32 unit, Message *message);
-	
 };
 
 //extern Firewall *firewall;

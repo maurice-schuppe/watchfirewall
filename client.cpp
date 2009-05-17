@@ -205,5 +205,17 @@ exit:
 	IOExitThread();
 }
 
+void 
+Client::registerMessageClasses(UInt16 classes)
+{
+	OSBitOrAtomic(classes, &this->registredMessageClases);	
+}
+
+void 
+Client::unregisterMessageClasses(UInt16 classes)
+{
+	OSBitOrAtomic(~classes, &this->registredMessageClases);	
+}	
+
 
 

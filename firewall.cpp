@@ -179,7 +179,7 @@ Firewall::dataIn(void *cookie, socket_t so, const struct sockaddr *from, mbuf_t 
 	//check fo socket changes
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
-	if(Firewall::instance->isChanged(0))
+	if(Firewall::instance->isRulesChanged(0))
 	{
 		//update rule and set in cookie
 		Rule* rule = Firewall::instance->findRule( 
@@ -354,7 +354,7 @@ Firewall::Close()
 }
 
 bool 
-Firewall::isChanged(time_t)
+Firewall::isRulesChanged(time_t)
 {
 	//if(this->) check for last time changed rules
 	return 1;//not changed
@@ -384,7 +384,7 @@ Firewall::addRule(Rule *rule)
 }
 
 Rule* 
-Firewall::deleteRule(Rule *rule)
+Firewall::deleteRule(UInt32 ruleId)
 {
 	return NULL;
 }
@@ -558,6 +558,66 @@ Firewall::kcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 errno_t 
 Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m, int flags)
 {	
+	return KERN_SUCCESS;
+
+	Client *client = (Client*)unitinfo;
+	
+	if(Firewall::instance == NULL || client == NULL)
+		return KERN_TERMINATED;
+	
+	Message message;
+	//clear data in message
+	
+	UInt32 currentPosition = 0;
+	
+	size_t dataSize= mbuf_len(m);
+	char *data = (char*)mbuf_data(m);
+	
+	while(currentPosition < dataSize)
+	{
+		message.buffer = data + currentPosition;
+		switch (message.getType())
+		{
+			case MessageTypeDeleteRule:
+				break;
+				
+			case MessageTypeAddRule:
+				break;
+				
+			case MessageTypeActivateFirewall:
+				break;
+				
+			case MessageTypeDeactivateFirewall:
+				break;
+				
+			case MessageTypeRegisterForAsk:
+				client->registerMessageClasses(MessageClassAsk);
+				break;
+				
+			case MessageTypeUnregisterAsk:
+				client->unregisterMessageClasses(MessageClassAsk);
+				break;
+				
+			case MessageTypeRegisterForInfoRule:
+				client->registerMessageClasses(MessageClassInfoRule);
+				break;
+
+			case MessageTypeUnregisterInfoRule:
+				client->unregisterMessageClasses(MessageClassInfoRule);
+				break;
+				
+			case MessageTypeRegisterForInfoSocket:
+				client->registerMessageClasses(MessageClassInfoSocket);
+				break;
+				
+			case MessageTypeUnregisterInfoSocket:
+				client->unregisterMessageClasses(MessageClassInfoSocket);
+				break;
+		}
+		
+		currentPosition += message.getLength();
+	}
+	
 	return KERN_SUCCESS;
 }
 

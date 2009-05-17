@@ -46,16 +46,20 @@ enum ServerMessagesType
 
 enum ClientMessagesType
 {
-	MessageTypeDeleteRule				= MessageClassClient | 0x01,
-	MessageTypeAddRule					= MessageClassClient | 0x02,
-	MessageTypeActivateFirewall			= MessageClassClient | 0x03,
-	MessageTypeDeactivateFirewall		= MessageClassClient | 0x04,
-	MessageTypeRegisterForAsk			= MessageClassClient | 0x05,
-	MessageTypeUnregisterAsk			= MessageClassClient | 0x06,
-	MessageTypeRegisterForInfoRule		= MessageClassClient | 0x07,
-	MessageTypeUnregisterInfoRule		= MessageClassClient | 0x08
-	MessageTypeRegisterForInfoSocket	= MessageClassClient | 0x09,
-	MessageTypeUnregisterInfoSocket		= MessageClassClient | 0x0A
+	MessageTypeAddRule					= MessageClassClient | 0x01,
+	MessageTypeDeleteRule				= MessageClassClient | 0x02,
+	MessageTypeActivateRule				= MessageClassClient | 0x03,
+	MessageTypeDeactivateRule			= MessageClassClient | 0x04,
+
+	MessageTypeActivateFirewall			= MessageClassClient | 0x05,
+	MessageTypeDeactivateFirewall		= MessageClassClient | 0x06,
+
+	MessageTypeRegisterForAsk			= MessageClassClient | 0x07,
+	MessageTypeUnregisterAsk			= MessageClassClient | 0x08,
+	MessageTypeRegisterForInfoRule		= MessageClassClient | 0x09,
+	MessageTypeUnregisterInfoRule		= MessageClassClient | 0x0A,
+	MessageTypeRegisterForInfoSocket	= MessageClassClient | 0x0B,
+	MessageTypeUnregisterInfoSocket		= MessageClassClient | 0x0C
 };
 
 #endif

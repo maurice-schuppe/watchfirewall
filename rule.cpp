@@ -15,28 +15,28 @@
 
 bool Rule::init(
 				UInt32 id, 
-				char* process_name, 
-				char* file_path, 
-				UInt16 sock_domain, 
-				UInt16 sock_type, 
-				UInt16 sock_protocol, 
+				char* processName, 
+				char* filePath, 
+				UInt16 sockDomain, 
+				UInt16 sockType, 
+				UInt16 sockProtocol, 
 				struct sockaddr* sockadress, 
 				UInt8 direction, 
 				UInt8 allow)
 {	
 	this->id = id;
-	if(process_name && !(this->processName = OSString::withCString(process_name)))
+	if(processName && !(this->processName = OSString::withCString(processName)))
 		return false;
 	
-	if(file_path && !(this->filePath = OSString::withCString(file_path)))
+	if(filePath && !(this->filePath = OSString::withCString(filePath)))
 	{
 		if(this->filePath) this->filePath->release();
 		return false;
 	}
 	
-	this->sock_domain = sock_domain;
-	this->sock_type = sock_type;
-	this->sock_protocol = sock_protocol;
+	this->sockDomain = sockDomain;
+	this->sockType = sockType;
+	this->sockProtocol = sockProtocol;
 	
 	
 	this->direction = direction;

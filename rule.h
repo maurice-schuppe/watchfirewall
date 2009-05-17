@@ -46,10 +46,10 @@ class Rule: public SimpleBase
 	OSString *processName;
 	OSString *filePath;
 	
-	UInt16 sock_domain;//0 for all
-	UInt16 sock_type;//0 for all
-	UInt16 sock_protocol;// 0 fro all	
-	UInt16 sockadress_offset;// 0 for all
+	UInt16 sockDomain;//0 for all
+	UInt16 sockType;//0 for all
+	UInt16 sockProtocol;// 0 fro all	
+	UInt16 sockadressOffset;// 0 for all
 	
 	UInt8 direction;//0 both. 1 incoming, 2 outgoung
 	UInt8 allow;//0 denny, 1 allow
