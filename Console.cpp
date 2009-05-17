@@ -54,14 +54,14 @@ int main()
 			Message *message = (Message*)(buffer + k);
 			
 			switch (message->type) {
-				case MESSAGE_TEXT:
+				case MessageTypeText:
 				{
 					char *buf = message->buffer();
 					printf("%s \n", buf);
 					//fflush(stdout);
 				}
 					break;
-				case MESSAGE_INFO_CLOSED:
+				case MessageTypeFirewallClosed:
 					goto close;
 				default:
 					break;

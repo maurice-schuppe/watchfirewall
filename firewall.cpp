@@ -96,10 +96,12 @@ errno_t
 Firewall::attach(void **cookie, socket_t so)
 {
 	IOLog("attach \n");
-	//return KERN_FAILURE;
 	Message *messsage = Message::createText("socket %d attach", so);
 	Firewall::instance->send(messsage);
 	messsage->release();
+
+	return KERN_FAILURE;
+
 	
 	if(!Firewall::instance)
 		return KERN_FAILURE;
@@ -108,7 +110,7 @@ Firewall::attach(void **cookie, socket_t so)
 	
 	if(socketCookie == NULL)
 	{
-		IOLog("can't allocate memory for scoket cookie");
+		IOLog("can't allocate memory for scoket cookie \n");
 		return ENOMEM;
 	}
 
@@ -126,7 +128,7 @@ Firewall::detach(void *cookie, socket_t so)
 	if(!Firewall::instance)
 		return;
 
-	Message *messsage = Message::createText("socket %d detach", so);
+	Message *messsage = Message::createText("socket %d detach \n", so);
 	Firewall::instance->send(messsage);
 	messsage->release();
 
@@ -330,7 +332,7 @@ Firewall::Open()
 bool
 Firewall::Close()
 {
-	IOLog("fireall instance begin destroed \n");
+	IOLog("firewall instance begin destroed \n");
 
 	if(instance == NULL)
 		return true;
@@ -346,7 +348,7 @@ Firewall::Close()
 	
 	delete instance;
 	
-	IOLog("fireall instance destroed \n");
+	IOLog("firewall instance destroed \n");
 	
 	return true;
 }
@@ -429,7 +431,7 @@ bool Firewall::unRegisterKernelControl()
 	if(kernelControlReference == NULL)
 		return true;
 
-	Message *message = Message::createClose();
+	Message *message = Message::createFirewallClose();
 	if(!message)
 		return false;
 	
@@ -439,7 +441,7 @@ bool Firewall::unRegisterKernelControl()
 		if(!counts)
 			return false;
 		//Send firewall down
-		//send(message);
+		send(message);
 		IOSleep(200);
 		counts--;
 	}
