@@ -50,6 +50,12 @@ Message::createText(const char* format,...)
 }
 
 Message*
+Message::createTextFromCookie(const char* message, SocketCookie* cookie)
+{
+	return createText("message: %s  socket: %d pid: %d uid: %d\n", message, cookie->socket, cookie->application->pid, cookie->application->uid );
+}
+
+Message*
 Message::createFirewallClose()
 {
 	::IOLog("begin create firewall close \n");

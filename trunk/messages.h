@@ -5,6 +5,7 @@
 #include <IOKit/IOLib.h>
 #include "messageType.h"
 #include "simpleBase.h"
+#include "cookie.h"
 
 
 
@@ -41,6 +42,7 @@ public:
 
 	static Message *createText(const char* format,...);
 	static Message *createFirewallClose();//TODO: static
+	static Message *createTextFromCookie(const char* message, SocketCookie* cookie);
 };
 
 
