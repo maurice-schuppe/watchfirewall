@@ -33,7 +33,7 @@ public:
 	kern_ctl_ref kernelKontrolReference;
 	UInt32 unit;
 	
-	UInt32 registredMessageClases;
+	volatile UInt32 registredMessageClases;
 	
 	volatile SInt32 exitState;
 	IOSimpleLock *lockQueue;

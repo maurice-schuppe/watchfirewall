@@ -37,6 +37,21 @@ struct RuleSimple
 	UInt8 allow;//0 denny, 1 allow
 };
 
+struct AskRule
+{
+	size_t size;
+	RuleSimple rule;
+	pid_t pid;
+	uid_t uid;
+};
+
+enum RuleState
+{
+	RuleStateActive = 0,
+	RuleStateDisabled = 1,
+	RuleStateDeleted = 2
+};
+
 class Rule: public SimpleBase
 {
 	//OSDeclareDefaultStructors(Rule)
@@ -54,13 +69,15 @@ class Rule: public SimpleBase
 	UInt8 direction;//0 both. 1 incoming, 2 outgoung
 	UInt8 allow;//0 denny, 1 allow
 	
-	UInt16 references;
 	UInt8 state;
 	
 	IOLock *lock;
 
 public:
+	Rule* prev;
+	Rule* next;
 	
+public:
 	bool init(UInt32 id, char* process_name, char* file_path, 
 						  UInt16 sock_domain, UInt16 sock_type, 
 						  UInt16 sock_protocol, struct sockaddr* sockadress, 
@@ -68,23 +85,70 @@ public:
 	virtual void free();
 	
 	bool isApplicable();
+	
+	void removeFromChain()
+	{
+		if(prev)
+			prev->next = next;
+		
+		if(next)
+			next->prev = prev;
+		
+		prev = next = NULL;
+	}
+	
+	friend class Rules;
 };
 
-struct RuleNode
+class Rules 
 {
-	Rule *rule;
-	RuleNode *next;
+public:
+	Rule *root;
+		
+	time_t lastChangedTime; 
+	IOLock *lock;
+	//sorted by process_name , ...
+	bool init()
+	{ 
+		lastChangedTime = 0;
+		lock = IOLockAlloc();
+		if(!lock)
+			return false;
+		
+		return true; 
+	}
+	
+	void free()
+	{
+		if(lock)
+		{
+			IOLockLock(lock);
+
+			while(root)
+			{
+				Rule *r = root;
+				root = root->next;
+				r->removeFromChain();
+				r->release();
+			}
+			IOLockUnlock(lock);
+			
+			IOLockFree(lock);
+			lock = NULL;
+		}
+	}
+	
+	bool isRulesChanged(time_t);
+	Rule* findRule(const OSString* process_name, const OSString* process_path, 
+				   UInt16 sock_famely, UInt16 socket_type, UInt16 sock_protocol, 
+				   UInt8 direction, struct sockaddr *sockaddres );
+	
+	
+	Rule* addRule(Rule *rule);
+	Rule* deleteRule(UInt32 ruleId);
+	Rule* activateRule(UInt32 ruleId);
+	Rule* deactivateRule(UInt32 ruleId);
+	
 };
-
-struct AskRule
-{
-	size_t size;
-	RuleSimple rule;
-	pid_t pid;
-	uid_t uid;
-};
-
-
-int compare_rule(Rule *left, Rule *rigth);
 
 #endif

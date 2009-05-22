@@ -95,16 +95,14 @@ Firewall::unregistered(sflt_handle handle)
 errno_t	
 Firewall::attach(void **cookie, socket_t so)
 {
+	if(!Firewall::instance)
+		return KERN_FAILURE;
+
 	IOLog("attach \n");
 	Message *messsage = Message::createText("socket %d attach", so);
 	Firewall::instance->send(messsage);
 	messsage->release();
-
-	return KERN_FAILURE;
-
 	
-	if(!Firewall::instance)
-		return KERN_FAILURE;
 	
 	SocketCookie *socketCookie = new SocketCookie();
 	
@@ -114,29 +112,32 @@ Firewall::attach(void **cookie, socket_t so)
 		return ENOMEM;
 	}
 
+	socketCookie->application = Application::getApplication();
+	
+	if(!socketCookie->application)
+	{
+		delete socketCookie;
+		return ENOMEM;
+	}
+	
+	socketCookie->socket = so;
+	socketCookie->state = SocketCookieStateALLOWED;
+	
 	*cookie = socketCookie;
-	//add to known sockets
+	socketCookie->addToChain();
 	
 	return KERN_SUCCESS;
 }
 
 void	
 Firewall::detach(void *cookie, socket_t so)
-{//
-	return;
-	
-	if(!Firewall::instance)
-		return;
-
+{
 	Message *messsage = Message::createText("socket %d detach \n", so);
 	Firewall::instance->send(messsage);
 	messsage->release();
 
 	if(cookie)
-	{
-		//remove from known sockets
-		delete (SocketCookie*)cookie;
-	}
+		((SocketCookie*)cookie)->RemoveFromChain();
 }
 
 void	
@@ -179,34 +180,34 @@ Firewall::dataIn(void *cookie, socket_t so, const struct sockaddr *from, mbuf_t 
 	//check fo socket changes
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
-	if(Firewall::instance->isRulesChanged(0))
+	if(Firewall::instance->rules.isRulesChanged(0))
 	{
 		//update rule and set in cookie
-		Rule* rule = Firewall::instance->findRule( 
+		Rule* rule = Firewall::instance->rules.findRule( 
 												  NULL, NULL, 
 												  0, 0, 0, 
 												  0, 
 												  NULL);
 		if(rule == NULL)
 		{
-			scookie->state == CookieStateNOT;
+			scookie->state == SocketCookieStateNOT;
 		}
 		
 	}
 	
 	switch (scookie->state) 
 	{
-		case CookieStateNOT:
+		case SocketCookieStateNOT:
 			//send ask
-			scookie->state = CookieStateASK;
+			scookie->state = SocketCookieStateASK;
 			//scookie->aks_rule_time = time();//TODO: insert header
 			
-		case CookieStateASK:
+		case SocketCookieStateASK:
 			//cashe requiest
 			return EJUSTRETURN;
-		case CookieStateALLOWED:
+		case SocketCookieStateALLOWED:
 			return KERN_SUCCESS;
-		case CookieStateNOT_ALLOWED:
+		case SocketCookieStateNOT_ALLOWED:
 			return KERN_POLICY_LIMIT;//fix return value
 		default:
 			break;
@@ -301,13 +302,22 @@ Firewall::accept(void *cookie, socket_t so_listen, socket_t so, const struct soc
 
 
 bool 
-Firewall::Open()
+Firewall::init()
 {
 	if(!instance)
 	{
 		instance = new Firewall();
 		
 		if(!instance)
+			return false;
+
+		instance->closing = false;
+		
+		SocketCookie::init();
+		
+		instance->rules.init();
+		
+		if(!Application::initStatic())
 			return false;
 		
 		if(instance->registerSocketFilters())
@@ -321,6 +331,7 @@ Firewall::Open()
 			instance->unregisterSocketFilters();
 		}
 		
+		Application::freeStatic();
 		delete instance;
 		return false;
 	}
@@ -330,12 +341,14 @@ Firewall::Open()
 }
 
 bool
-Firewall::Close()
+Firewall::free()
 {
 	IOLog("firewall instance begin destroed \n");
 
 	if(instance == NULL)
 		return true;
+
+	instance->closing = true;
 	
 	if(!instance->unregisterSocketFilters())
 		return false;
@@ -345,6 +358,12 @@ Firewall::Close()
 	//check for connections
 	if(!instance->unRegisterKernelControl())
 		return false;
+
+	if(!SocketCookie::free())
+		return false;
+	
+	Application::freeStatic();
+	instance->rules.free();
 	
 	delete instance;
 	
@@ -353,41 +372,6 @@ Firewall::Close()
 	return true;
 }
 
-bool 
-Firewall::isRulesChanged(time_t)
-{
-	//if(this->) check for last time changed rules
-	return 1;//not changed
-}
-
-Rule* 
-Firewall::findRule(const char* process_name, const char* process_path, 
-									 UInt16 sock_famely, UInt16 socket_type, UInt16 sock_protocol, 
-									 UInt8 direction, struct sockaddr *sockaddres )
-{
-	//TODO: refactor
-	RuleNode *current_rule = rules;
-	
-	while(current_rule)
-	{
-		//if(current_rule->rule->)
-	}
-	
-	return NULL;
-}
-
-
-Rule* 
-Firewall::addRule(Rule *rule)
-{
-	return NULL;
-}
-
-Rule* 
-Firewall::deleteRule(UInt32 ruleId)
-{
-	return NULL;
-}
 
 #pragma mark kernel control
 
@@ -493,7 +477,7 @@ Firewall::sendTo(UInt32 unit, Message *message)
 errno_t 
 Firewall::kcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **unitinfo)
 {
-	if(!Firewall::instance)
+	if(!Firewall::instance  || Firewall::instance->closing )
 		return KERN_FAILURE;
 	
 	IOLog("Client joined \n");
@@ -562,7 +546,7 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 
 	Client *client = (Client*)unitinfo;
 	
-	if(Firewall::instance == NULL || client == NULL)
+	if(Firewall::instance == NULL || Firewall::instance->closing || client == NULL)
 		return KERN_TERMINATED;
 	
 	Message message;
@@ -579,9 +563,18 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 		switch (message.getType())
 		{
 			case MessageTypeDeleteRule:
+				Firewall::instance->rules.deleteRule(1);//TODO: ge from message buffer
 				break;
 				
 			case MessageTypeAddRule:
+				break;
+				
+			case MessageTypeActivateRule:
+				Firewall::instance->rules.activateRule(1);//TODO: ge from message buffer
+				break;
+				
+			case MessageTypeDeactivateRule:
+				Firewall::instance->rules.deactivateRule(1);//TODO: ge from message buffer
 				break;
 				
 			case MessageTypeActivateFirewall:
