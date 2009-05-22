@@ -24,8 +24,8 @@ protocol Firewall::protocols[] =
 {0xBACAF002, PF_INET, SOCK_RAW, IPPROTO_ICMP, 0},
 {0xBACAF003, PF_INET6, SOCK_STREAM, IPPROTO_TCP, 0},
 {0xBACAF004, PF_INET6, SOCK_DGRAM, IPPROTO_UDP, 0},
-{0xBACAF005, PF_INET6, SOCK_RAW, IPPROTO_ICMP, 0}/*,
-{0xBACAF006, PF_UNIX, SOCK_STREAM, 0, 0}*/
+{0xBACAF005, PF_INET6, SOCK_RAW, IPPROTO_ICMP, 0},
+{0xBACAF006, PF_UNIX, SOCK_STREAM, 0, 0}
 
 };
 
@@ -37,8 +37,8 @@ unregistered,	/* sf_unregistered_func */
 attach,			/* sf_attach_func - cannot be nil else param err results */			
 detach,			/* sf_detach_func - cannot be nil else param err results */
 notify,			/* sf_notify_func */
-getpeername,		/* sf_getpeername_func */
-getsockname,		/* sf_getsockname_func */
+getpeername,	/* sf_getpeername_func */
+getsockname,	/* sf_getsockname_func */
 dataIn,			/* sf_data_in_func */
 dataOut,		/* sf_data_out_func */
 connectIn,		/* sf_connect_in_func */
@@ -97,12 +97,6 @@ Firewall::attach(void **cookie, socket_t so)
 {
 	if(!Firewall::instance)
 		return KERN_FAILURE;
-
-	IOLog("attach \n");
-	Message *messsage = Message::createText("socket %d attach", so);
-	Firewall::instance->send(messsage);
-	messsage->release();
-	
 	
 	SocketCookie *socketCookie = new SocketCookie();
 	
@@ -126,13 +120,18 @@ Firewall::attach(void **cookie, socket_t so)
 	*cookie = socketCookie;
 	socketCookie->addToChain();
 	
+	Message *messsage = Message::createTextFromCookie("attach", socketCookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
+	
 	return KERN_SUCCESS;
 }
 
 void	
 Firewall::detach(void *cookie, socket_t so)
 {
-	Message *messsage = Message::createText("socket %d detach \n", so);
+	Message *messsage = Message::createTextFromCookie("detach", (SocketCookie*)cookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
 
@@ -145,6 +144,11 @@ Firewall::notify(void *cookie, socket_t so, sflt_event_t event, void *param)
 {
 	if(!Firewall::instance)
 		return;
+	
+	Message *messsage = Message::createTextFromCookie("notify", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 }
 
 int		
@@ -153,6 +157,10 @@ Firewall::getpeername(void *cookie, socket_t so, struct sockaddr **sa)
 	if(!Firewall::instance)
 		return KERN_SUCCESS;
 	
+	Message *messsage = Message::createTextFromCookie("getpername", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 	return KERN_SUCCESS;
 }
 
@@ -160,6 +168,10 @@ Firewall::getpeername(void *cookie, socket_t so, struct sockaddr **sa)
 int		
 Firewall::getsockname(void *cookie, socket_t so, struct sockaddr **sa)
 {
+	Message *messsage = Message::createTextFromCookie("getsockname", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 
 	return KERN_SUCCESS;
 }
@@ -171,9 +183,9 @@ Firewall::dataIn(void *cookie, socket_t so, const struct sockaddr *from, mbuf_t 
 	if(!Firewall::instance)
 		return KERN_SUCCESS;
 
-//	Message *messsage = Message::createText("socket %d data in", so);
-//	Firewall::instance->send(messsage);
-//	messsage->release();
+	Message *messsage = Message::createTextFromCookie("data in", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
 	
 	return KERN_SUCCESS;
 	
@@ -224,9 +236,9 @@ Firewall::dataOut(void *cookie, socket_t so, const struct sockaddr *to, mbuf_t *
 	if(!Firewall::instance)
 		return KERN_SUCCESS;
 	
-//	Message *messsage = Message::createText("socket %d data out", so);
-//	Firewall::instance->send(messsage);
-//	messsage->release();
+	Message *messsage = Message::createTextFromCookie("data out", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
 	
 	return KERN_SUCCESS;
 }
@@ -235,6 +247,10 @@ Firewall::dataOut(void *cookie, socket_t so, const struct sockaddr *to, mbuf_t *
 errno_t	
 Firewall::connectIn(void *cookie, socket_t so, const struct sockaddr *from)
 {
+	Message *messsage = Message::createTextFromCookie("connect in", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 	return KERN_SUCCESS;
 	
 	//check is firewall up
@@ -250,6 +266,10 @@ Firewall::connectIn(void *cookie, socket_t so, const struct sockaddr *from)
 errno_t	
 Firewall::connectOut(void *cookie, socket_t so, const struct sockaddr *to)
 {
+	Message *messsage = Message::createTextFromCookie("connect out", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 	return KERN_SUCCESS;
 }
 
@@ -257,6 +277,11 @@ Firewall::connectOut(void *cookie, socket_t so, const struct sockaddr *to)
 errno_t	
 Firewall::bind(void *cookie, socket_t so, const struct sockaddr *to)
 {
+	Message *messsage = Message::createTextFromCookie("bind", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
+	
 	return KERN_SUCCESS;
 	
 	//check is allowed to bind to that address
@@ -266,18 +291,30 @@ Firewall::bind(void *cookie, socket_t so, const struct sockaddr *to)
 errno_t	
 Firewall::setoption(void *cookie, socket_t so, sockopt_t opt)
 {
+	Message *messsage = Message::createTextFromCookie("setoption", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 	return KERN_SUCCESS;
 }
 
 errno_t	
 Firewall::getoption(void *cookie, socket_t so, sockopt_t opt)
 {
+	Message *messsage = Message::createTextFromCookie("getoption", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 	return KERN_SUCCESS;
 }
 
 errno_t	
 Firewall::listen(void *cookie, socket_t so)
 {
+	Message *messsage = Message::createTextFromCookie("listen", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 	return KERN_SUCCESS;
 	
 	//that is for tcp //check is alowed listen
@@ -287,12 +324,20 @@ Firewall::listen(void *cookie, socket_t so)
 errno_t	
 Firewall::ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp)
 {
+	Message *messsage = Message::createTextFromCookie("ioctl", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 	return KERN_SUCCESS;
 }
 
 errno_t 
 Firewall::accept(void *cookie, socket_t so_listen, socket_t so, const struct sockaddr *local, const struct sockaddr *remote)
 {
+	Message *messsage = Message::createTextFromCookie("accept", (SocketCookie*)cookie);
+	Firewall::instance->send(messsage);
+	messsage->release();
+	
 	return KERN_SUCCESS;
 	
 	//check if allowed from that remote address
