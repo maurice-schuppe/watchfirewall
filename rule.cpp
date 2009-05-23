@@ -55,11 +55,42 @@ Rules::isRulesChanged(time_t)
 }
 
 Rule* 
-Rules::findRule(const OSString* process_name, const OSString* process_path, 
-			   UInt16 sock_famely, UInt16 socket_type, UInt16 sock_protocol, 
+Rules::findRule(const OSString* processName, const OSString* processPath, 
+			   UInt16 sockDomain, UInt16 sockType, UInt16 sockProtocol, 
 			   UInt8 direction, struct sockaddr *sockaddres )
 {
-	return NULL;
+	IOLockLock(lock);
+	Rule* current = this->root;
+	//bool beIdentical=true;
+	while (current)
+	{
+		if(current->processName == NULL || current->processName->getLength() == 0 || current->processName->isEqualTo(processName))
+		{
+			//skip process path
+			if(current->sockDomain == 0 || current->sockDomain == sockDomain)
+			{
+				if(current->sockType == 0 || current->sockType == sockType)
+				{
+					if(current->sockProtocol == 0 || current->sockProtocol == sockProtocol)
+					{
+						if((current->direction & direction) > 0)
+						{
+							//skip sockaddress
+							
+							current->retain();
+							break;
+						}
+						
+					}
+				}
+			}
+		}
+		current = current->next;
+	}
+	
+unlock:
+	IOLockUnlock(lock);
+	return current;
 }
 
 Rule* 
@@ -88,6 +119,10 @@ Rules::deleteRule(UInt32 ruleId)
 		{
 			rule->state |= RuleStateDeleted;
 			rule->removeFromChain();
+			//check is root
+			if(this->root == rule)
+				this->root = NULL;
+			
 			rule->release();
 			goto unlock;
 		}

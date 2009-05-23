@@ -52,7 +52,15 @@ Message::createText(const char* format,...)
 Message*
 Message::createTextFromCookie(const char* message, SocketCookie* cookie)
 {
-	return createText("message: %s  socket: %d pid: %d uid: %d\n", message, cookie->socket, cookie->application->pid, cookie->application->uid );
+	return createText("%11s %15s  so: %9d  pid: %4d  uid: %4d  domain: %4d  type: %4d  protocol: %4d", 
+					  message, 
+					  cookie->application->processName->getCStringNoCopy(),
+					  cookie->socket, 
+					  cookie->application->pid, 
+					  cookie->application->uid,
+					  cookie->sockDomain,
+					  cookie->sockType,
+					  cookie->sockProtocol);
 }
 
 Message*
