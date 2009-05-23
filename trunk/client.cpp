@@ -97,8 +97,6 @@ Client::Send(Message* message)
 	
 	if(!(message->getType() & this->registredMessageClases))
 		return;
-	::IOLog("send message to client: %d\n", this->unit);
-	//message->IOLog();
 	
 	ClientMessageNode * node = new ClientMessageNode();
 	if(!node)
@@ -119,7 +117,6 @@ Client::Send(Message* message)
 		this->messageQueueLast->next = node;
 	
 	IOSimpleLockUnlockEnableInterrupt(this->lockQueue, istate);
-	//IOLockLock(this->lockWorkThread);
 	IOLockWakeup(this->lockWorkThread, 0, false);
 }
 
@@ -128,25 +125,18 @@ Client::SendThread(void* arg)
 {
 	Client* client = (Client*)arg;
 	client->retain();
-	size_t space = 0;
 	ClientMessageNode *node = NULL;
 	IOLockLock(client->lockWorkThread);
-	
-	//::IOLog("in client thread \n");
-	
-	//int state = 0;
+
 	while(1)
 	{
-		::IOLog("work thread go to sleep \n");
-
 		IOLockSleep(client->lockWorkThread, 0, THREAD_UNINT);
-		::IOLog("work thread weakup \n");
 		
 		if(client->exitState)
 			goto exit;
 		
 		IOInterruptState istate = IOSimpleLockLockDisableInterrupt(client->lockQueue);
-		//get first node
+
 		node = client->messageQueueRoot;
 		client->messageQueueRoot = NULL;
 		client->messageQueueLast = NULL;
@@ -155,52 +145,53 @@ Client::SendThread(void* arg)
 		
 		while(node)
 		{
-//				::IOLog("in thread send message");
-//				node->message->IOLog();
-			for(UInt32 count = 4; count; count--)
+			if(client->exitState)
+				goto exitAndClearQueue;
+			
+			int result;
+			while(result = ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message->getBuffer(), node->message->getLength(), 0))
 			{
 				if(client->exitState)
 					goto exitAndClearQueue;
-				
-				if(!ctl_getenqueuespace(client->kernelKontrolReference, client->unit, &space))
-				{
-					if(space >= node->message->getLength())
-					{
-						if(client->exitState)
-							goto exitAndClearQueue;
-						
-						ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message->getBuffer(), node->message->getLength(), 0);
-						::IOLog("message sended \n");
-						break;
-					}
 
-					if(client->exitState)
-						goto exitAndClearQueue;
-					
-					IOSleep(50);
-					
-					if(client->exitState)
-						goto exitAndClearQueue;
+				switch(result)
+				{
+					case EINVAL: // - Invalid parameters.
+						::IOLog("ctl_enqueuedata return: Invalid parameter.\n");
+						goto next;
+						break;
+					case EMSGSIZE: // - The buffer is too large.
+						::IOLog("ctl_enqueuedata return: The buffer is too large.\n");
+						goto next;
+						break;
+					case ENOBUFS: // - The queue is full or there are no free mbufs.
+						::IOLog("ctl_enqueuedata return: The queue is full or there are no free mbufs.\n");
+						IOSleep(100);
+						break;
 				}
+				
+				if(client->exitState)
+					goto exitAndClearQueue;
 			}
 			
-			ClientMessageNode *deleteNode = node;
+		next:
+
+			ClientMessageNode *deletedNode = node;
 			node = node->next;
-			deleteNode->message->release();
-			delete(deleteNode);//???
+			deletedNode->message->release();
+			delete(deletedNode);
 		}
 	}
 	
 exitAndClearQueue:
-	::IOLog("client in exit nad clear quque \n");
+	//::IOLog("client in exit and clear queue \n");
 	ClearQueue(node);
 exit:
-	::IOLog("client in exit\n");
+	//::IOLog("client in exit\n");
 	IOLockUnlock(client->lockWorkThread);
 	client->release();
 	
-	//IOSleep(2000);
-	::IOLog("work thread exit \n");
+	//::IOLog("work thread exit \n");
 
 	IOExitThread();
 }

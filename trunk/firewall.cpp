@@ -24,8 +24,8 @@ protocol Firewall::protocols[] =
 {0xBACAF002, PF_INET, SOCK_RAW, IPPROTO_ICMP, 0},
 {0xBACAF003, PF_INET6, SOCK_STREAM, IPPROTO_TCP, 0},
 {0xBACAF004, PF_INET6, SOCK_DGRAM, IPPROTO_UDP, 0},
-{0xBACAF005, PF_INET6, SOCK_RAW, IPPROTO_ICMP, 0},
-{0xBACAF006, PF_UNIX, SOCK_STREAM, 0, 0}
+{0xBACAF005, PF_INET6, SOCK_RAW, IPPROTO_ICMP, 0}/*,
+{0xBACAF006, PF_UNIX, SOCK_STREAM, 0, 0}*/
 
 };
 
@@ -114,7 +114,7 @@ Firewall::attach(void **cookie, socket_t so)
 		return ENOMEM;
 	}
 	
-	socketCookie->socket = so;
+	socketCookie->setSocket(so);
 	socketCookie->state = SocketCookieStateALLOWED;
 	
 	*cookie = socketCookie;

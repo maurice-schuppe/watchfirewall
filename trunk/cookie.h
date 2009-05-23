@@ -31,6 +31,9 @@ public:
 	Application* application;
 	SocketCookieState state;
 	socket_t socket;
+	UInt16 sockDomain;
+	UInt16 sockType;
+	UInt16 sockProtocol;	
 	
 	time_t aks_time;
 	
@@ -44,6 +47,20 @@ public:
 	
 public:
 	bool isValid();
+	
+	void setSocket(socket_t socket)
+	{
+		int domain;
+		int type;
+		int protocol;
+		sock_gettype(socket, &domain, &type, &protocol);
+		
+		this->sockDomain = domain;
+		this->sockType = type;
+		this->sockProtocol = protocol;
+		this->socket = socket;
+	}
+	
 	void RemoveFromChain()
 	{
 		IOLockLock(lock);

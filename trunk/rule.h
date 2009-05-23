@@ -23,9 +23,7 @@ struct RuleSimple
 	size_t size;//this + process name + file path + sockaddress 
 	UInt32 id;
 	
-	UInt16 process_name_size;
 	UInt16 process_name_offset;//0 for all
-	UInt16 file_path_size;
 	UInt16 file_path_offset;//0 for all
 	
 	UInt16 sock_domain;//0 for all
@@ -78,9 +76,9 @@ public:
 	Rule* next;
 	
 public:
-	bool init(UInt32 id, char* process_name, char* file_path, 
-						  UInt16 sock_domain, UInt16 sock_type, 
-						  UInt16 sock_protocol, struct sockaddr* sockadress, 
+	bool init(UInt32 id, char* process_name, char* filePath, 
+						  UInt16 sockDomain, UInt16 sockType, 
+						  UInt16 sockProtocol, struct sockaddr* sockadress, 
 						  UInt8 direction, UInt8 allow);
 	virtual void free();
 	

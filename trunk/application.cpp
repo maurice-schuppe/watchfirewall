@@ -25,6 +25,7 @@ Application::getApplication()
 	pid_t pid = proc_selfpid();
 	IOLockLock(Application::lock);	
 	Application* result = applications;
+	char procName[255] = {0};
 	
 	while(result)
 	{
@@ -43,7 +44,6 @@ Application::getApplication()
 	if(!result)
 		goto unlock;
 	
-	char procName[255];
 	proc_selfname(procName, 254);
 	result->processName = OSString::withCString(procName);
 	result->processPath = NULL;//TODO: refactor
