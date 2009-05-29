@@ -594,18 +594,16 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 	if(Firewall::instance == NULL || Firewall::instance->closing || client == NULL)
 		return KERN_TERMINATED;
 	
-	Message message;
-	//clear data in message
 	
 	UInt32 currentPosition = 0;
 	
 	size_t dataSize= mbuf_len(m);
-	char *data = (char*)mbuf_data(m);
+	MessageBase *message = (MessageBase*)mbuf_data(m);
 	
 	while(currentPosition < dataSize)
 	{
-		message.buffer = data + currentPosition;
-		switch (message.getType())
+		//message.buffer = data + currentPosition;
+		switch (message->type)
 		{
 			case MessageTypeDeleteRule:
 				Firewall::instance->rules.deleteRule(1);//TODO: ge from message buffer
@@ -653,7 +651,8 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				break;
 		}
 		
-		currentPosition += message.getLength();
+		currentPosition += message->size;
+		message = (MessageBase*)((char*)message + message->size);
 	}
 	
 	return KERN_SUCCESS;

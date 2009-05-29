@@ -7,36 +7,26 @@
 #include "simpleBase.h"
 #include "cookie.h"
 
-
+class MessageWraper
+{
+public:
+	char *buffer;
+	
+	UInt16 getSize(){ return *((UInt16*)buffer);}
+	UInt16 getType (){ return *((UInt16*)buffer + 1);}
+};
 
 class Message : public SimpleBase
 {
 public:
-	char *buffer;
-	char embededBuffer[5];
+	UInt16 size;
+	UInt16 type;
+	char buffer[5];
 	
-	UInt16 getLength(){ return (buffer) ? *(UInt16*)buffer : *(UInt16*)embededBuffer;}
-	UInt16 getType(){ return (buffer) ? *(UInt16*)(buffer + sizeof(UInt16)) : *(UInt16*)(embededBuffer + sizeof(UInt16)) ;}
-	
-	void setLength(UInt16 length)
-	{
-		if(buffer)
-			*(UInt16*)buffer = length;
-		else
-			*(UInt16*)embededBuffer = length;
-		
-	}
-	void setType(UInt16 type)
-	{
-		if(buffer)
-			*(UInt16*)(buffer + sizeof(UInt16)) = type;
-		else
-			*(UInt16*)(embededBuffer + sizeof(UInt16)) = type;
-	}
-	
-	char* getBuffer(){ return (buffer) ? buffer : embededBuffer; }
 	
 	virtual void free();
+	static void *operator new(size_t size, UInt16 neededSize);
+	
 	//helper for debug
 	void IOLog();
 
