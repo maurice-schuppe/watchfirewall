@@ -12,7 +12,7 @@
 void
 Message::IOLog()
 {
-	::IOLog("message: %p; length: %d; type: %d; ref: %d \n", this, this->getLength(), this->getType(), this->references);
+	::IOLog("message: %p; length: %d; type: %d; ref: %d \n", this, this->size, this->type, this->references);
 }
 
 void 
@@ -33,21 +33,31 @@ Message::createText(const char* format,...)
         return 0;
 	
     va_start(argList, format);
-	char *ch = new char[256];
-	Message *message = new Message();
+	Message *message = new(255) Message();
 	
-	if(!ch)
+	if(!message)
 		return NULL;
 	
-    *((UInt16*) ch) = vsnprintf(ch + 2 * sizeof(UInt16), 256 - 2 * sizeof(UInt16) - 1, format, argList) + 1 + 2 * sizeof(UInt16);
-	*(UInt16*)(ch + sizeof(UInt16)) = MessageTypeText;
+    message->size = vsnprintf(message->buffer, 254, format, argList) + 1 + 2 * sizeof(UInt16);
+	message->type = MessageTypeText;
 	message->references = 1;
-	message->buffer = ch;
-	//TODO: check length
+
     va_end (argList);
 	
     return message;
 }
+
+
+void*
+Message::operator new(size_t size, UInt16 neededSize)
+{
+	Message* message =(Message*) ::new char[neededSize + offsetof(Message,buffer)];
+	if(message)
+		message->size = neededSize;
+	
+	return message;
+}
+
 
 Message*
 Message::createTextFromCookie(const char* message, SocketCookie* cookie)
@@ -66,16 +76,12 @@ Message::createTextFromCookie(const char* message, SocketCookie* cookie)
 Message*
 Message::createFirewallClose()
 {
-	::IOLog("begin create firewall close \n");
-	Message *message = new Message();
+	Message *message = new(0) Message();
 	if(message)
 	{
-		::IOLog("message buffer %p \n", message->buffer);
-		message->setType(MessageTypeFirewallClosed);
-		message->setLength(4);
+		message->type = MessageTypeFirewallClosed;
 		message->references = 1;
 	}
-	::IOLog("end create firewall close \n");
 	return message;
 }
 

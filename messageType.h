@@ -62,4 +62,62 @@ enum ClientMessagesType
 	MessageTypeUnregisterInfoSocket		= MessageClassClient | 0x0C
 };
 
+struct MessageBase 
+{
+	UInt16 size;
+	UInt16 type;
+	
+	void init(UInt16 size, UInt16 type){this->size = size, this->type = type;}
+};
+
+struct MessageText : public MessageBase
+{
+	char textBuffer[1];
+};
+
+struct MessageAskRule : public MessageBase
+{
+	UInt16 process_name_offset;//0 for all
+	UInt16 file_path_offset;//0 for all
+	
+	UInt16 sock_domain;//0 for all
+	UInt16 sock_type;//0 for all
+	UInt16 sock_protocol;// 0 fro all	
+	UInt16 sockadress_offset;// 0 for all
+	
+	UInt8 direction;//0 both. 1 incoming, 2 outgoung
+	UInt8 allow;//0 denny, 1 allow
+	
+	pid_t pid;
+	uid_t uid;
+};
+
+struct MessageRuleAdded : public MessageBase
+{
+	UInt32 id;
+};
+
+struct MessageRuleDeleted : public MessageBase
+{
+	UInt32 id;
+};
+
+struct MessageRuleDisabled	: public MessageBase
+{
+	UInt32 id;
+};
+
+struct MessageRuleEnbled : public MessageBase
+{
+	UInt32 id;
+};
+
+
+struct MessageFirewallClosed : public MessageBase 
+{
+	void init(){ MessageBase::init(4, MessageTypeFirewallClosed);};
+};
+
+
+
 #endif
