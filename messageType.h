@@ -141,8 +141,8 @@ struct MessageAddRule : public MessageBase
 	UInt8 state;
 	char buffer[1];
 	
-	char *getProcessName(){ return (processNameOffset) ? (char*)this + processNameOffset : NULL; }
-	char *getFilePath(){ return (filePathOffset) ? (char*)this + filePathOffset : NULL;}
+	char *getProcessName(){ return (char*)this + processNameOffset; }
+	char *getFilePath(){ return (char*)this + filePathOffset;}
 	sockaddr *getSockAddress(){ return (sockaddr*) ((sockAddressOffset) ? (char*)this + sockAddressOffset : NULL);}
 };
 

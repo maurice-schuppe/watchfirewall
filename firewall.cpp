@@ -610,7 +610,7 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				break;
 				
 			case MessageTypeAddRule:
-				Firewall::instance->rules.addRule(NULL);//refactor
+				Firewall::instance->rules.addRule((MessageAddRule*)message);//refactor
 				break;
 				
 			case MessageTypeActivateRule:
