@@ -95,7 +95,7 @@ Client::Send(Message* message)
 	if(message == NULL || this->exitState)
 		return;
 	
-	if(!(message->type & this->registredMessageClases))
+	if(!(message->m.type & this->registredMessageClases))
 		return;
 	
 	ClientMessageNode * node = new ClientMessageNode();
@@ -149,7 +149,7 @@ Client::SendThread(void* arg)
 				goto exitAndClearQueue;
 			
 			int result;
-			while(result = ctl_enqueuedata(client->kernelKontrolReference, client->unit, &(node->message->size), node->message->size, 0))
+			while(result = ctl_enqueuedata(client->kernelKontrolReference, client->unit, &(node->message->m), node->message->m.size, 0))
 			{
 				if(client->exitState)
 					goto exitAndClearQueue;

@@ -10,6 +10,8 @@
 #ifndef WATCH_MESSAGES_TYPE_H
 #define WATCH_MESSAGES_TYPE_H
 
+#include <sys/socket.h>
+
 enum MessagesClass
 {
 	MessageClassInfoRule	= 0x0100,
@@ -67,34 +69,37 @@ struct MessageBase
 	UInt16 size;
 	UInt16 type;
 	
-	void init(UInt16 size, UInt16 type){this->size = size, this->type = type;}
+	inline void init(UInt16 size, UInt16 type){this->size = size, this->type = type;}
 };
 
 struct MessageText : public MessageBase
 {
-	char textBuffer[1];
+	char textBuffer[4];
 };
 
 struct MessageAskRule : public MessageBase
 {
-	UInt16 process_name_offset;//0 for all
-	UInt16 file_path_offset;//0 for all
+	UInt16 processNameOffset;//0 for all
+	UInt16 filePathOffset;//0 for all
 	
-	UInt16 sock_domain;//0 for all
-	UInt16 sock_type;//0 for all
-	UInt16 sock_protocol;// 0 fro all	
-	UInt16 sockadress_offset;// 0 for all
+	UInt16 sockDomain;//0 for all
+	UInt16 sockType;//0 for all
+	UInt16 sockProtocol;// 0 fro all	
+	UInt16 sockAddressOffset;// 0 for all
 	
 	UInt8 direction;//0 both. 1 incoming, 2 outgoung
-	UInt8 allow;//0 denny, 1 allow
 	
 	pid_t pid;
 	uid_t uid;
+	
+	char buffer[4];
 };
 
 struct MessageRuleAdded : public MessageBase
 {
 	UInt32 id;
+	
+	inline void init(UInt32 id){ MessageBase::init(8, MessageTypeRuleAdded); this->id = id;}
 };
 
 struct MessageRuleDeleted : public MessageBase
@@ -115,8 +120,89 @@ struct MessageRuleEnbled : public MessageBase
 
 struct MessageFirewallClosed : public MessageBase 
 {
-	void init(){ MessageBase::init(4, MessageTypeFirewallClosed);};
+	inline void init(){ MessageBase::init(4, MessageTypeFirewallClosed);};
 };
+
+
+#pragma mark Client messages
+struct MessageAddRule : public MessageBase 
+{
+	UInt32 id;
+	UInt16 processNameOffset;//0 for all
+	UInt16 filePathOffset;//0 for all
+	
+	UInt16 sockDomain;//0 for all
+	UInt16 sockType;//0 for all
+	UInt16 sockProtocol;// 0 fro all	
+	UInt16 sockAddressOffset;// 0 for all
+	
+	UInt8 direction;//0 both. 1 incoming, 2 outgoung
+	UInt8 allow;//0 denny, 1 allow
+	UInt8 state;
+	char buffer[1];
+	
+	char *getProcessName(){ return (processNameOffset) ? (char*)this + processNameOffset : NULL; }
+	char *getFilePath(){ return (filePathOffset) ? (char*)this + filePathOffset : NULL;}
+	sockaddr *getSockAddress(){ return (sockaddr*) ((sockAddressOffset) ? (char*)this + sockAddressOffset : NULL);}
+};
+
+struct MessageDeleteRule : public MessageBase 
+{
+	UInt32 id;
+};
+
+struct MessageActivateRule : public MessageBase 
+{
+	UInt32 id;
+};
+
+struct MessageDeactivateRule : public MessageBase 
+{
+	UInt32 id;
+};
+
+
+
+struct MessageActivateFirewall : public MessageBase 
+{
+};
+
+
+struct MessageDeactivateFirewall : public MessageBase 
+{
+};
+
+
+
+struct MessageRegisterForAsk : public MessageBase 
+{
+};
+
+
+struct MessageUnregisterAsk : public MessageBase 
+{
+};
+
+
+struct MessageRegisterForInfoRule : public MessageBase 
+{
+};
+
+
+struct MessageUnregisterInfoRule : public MessageBase 
+{
+};
+
+
+struct MessageRegisterForInfoSocket : public MessageBase 
+{
+};
+
+
+struct MessageUnregisterInfoSocket : public MessageBase 
+{
+};
+
 
 
 
