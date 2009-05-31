@@ -606,18 +606,19 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 		switch (message->type)
 		{
 			case MessageTypeDeleteRule:
-				Firewall::instance->rules.deleteRule(1);//TODO: ge from message buffer
+				Firewall::instance->rules.deleteRule(((MessageDeleteRule*)message)->id);//TODO: ge from message buffer
 				break;
 				
 			case MessageTypeAddRule:
+				Firewall::instance->rules.addRule(NULL);//refactor
 				break;
 				
 			case MessageTypeActivateRule:
-				Firewall::instance->rules.activateRule(1);//TODO: ge from message buffer
+				Firewall::instance->rules.activateRule(((MessageActivateRule*)message)->id);//TODO: ge from message buffer
 				break;
 				
 			case MessageTypeDeactivateRule:
-				Firewall::instance->rules.deactivateRule(1);//TODO: ge from message buffer
+				Firewall::instance->rules.deactivateRule(((MessageDeactivateRule*)message)->id);//TODO: ge from message buffer
 				break;
 				
 			case MessageTypeActivateFirewall:

@@ -1,28 +1,5 @@
-/*
- *  message.cpp
- *  Watch
- *
- *  Created by JanBird on 5/9/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
 
 #include "messages.h"
-
-void
-Message::IOLog()
-{
-	::IOLog("message: %p; length: %d; type: %d; ref: %d \n", this, this->size, this->type, this->references);
-}
-
-void 
-Message::free()
-{
-	if(buffer)
-		delete buffer;
-	
-	SimpleBase::free();
-}
 
 Message*
 Message::createText(const char* format,...)
@@ -38,8 +15,8 @@ Message::createText(const char* format,...)
 	if(!message)
 		return NULL;
 	
-    message->size = vsnprintf(message->buffer, 254, format, argList) + 1 + 2 * sizeof(UInt16);
-	message->type = MessageTypeText;
+    message->m.size = vsnprintf((char*)(&message->m)  + sizeof(MessageBase), 254, format, argList) + sizeof(MessageBase) + 1;
+	message->m.type = MessageTypeText;
 	message->references = 1;
 
     va_end (argList);
@@ -51,9 +28,9 @@ Message::createText(const char* format,...)
 void*
 Message::operator new(size_t size, UInt16 neededSize)
 {
-	Message* message =(Message*) ::new char[neededSize + offsetof(Message,buffer)];
+	Message* message =(Message*) ::new char[neededSize + sizeof(Message)];
 	if(message)
-		message->size = neededSize;
+		message->m.size = neededSize + sizeof(MessageBase);
 	
 	return message;
 }
@@ -62,7 +39,7 @@ Message::operator new(size_t size, UInt16 neededSize)
 Message*
 Message::createTextFromCookie(const char* message, SocketCookie* cookie)
 {
-	return createText("%11s %15s  so: %9d  pid: %4d  uid: %4d  domain: %4d  type: %4d  protocol: %4d", 
+	return createText("%11s %20s  so: %9d  pid: %3d  uid: %3d  domain: %3d  type: %3d  protocol: %3d", 
 					  message, 
 					  cookie->application->processName->getCStringNoCopy(),
 					  cookie->socket, 
@@ -79,7 +56,7 @@ Message::createFirewallClose()
 	Message *message = new(0) Message();
 	if(message)
 	{
-		message->type = MessageTypeFirewallClosed;
+		message->m.type = MessageTypeFirewallClosed; 
 		message->references = 1;
 	}
 	return message;
