@@ -46,7 +46,7 @@ Application::getApplication()
 	
 	proc_selfname(procName, 254);
 	result->processName = OSString::withCString(procName);
-	result->processPath = NULL;//TODO: refactor
+	result->filePath = OSString::withCString("");//TODO: refactor
 	
 	result->uid = kauth_getuid();
 	result->pid = pid;

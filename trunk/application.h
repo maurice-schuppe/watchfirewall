@@ -46,7 +46,7 @@ public:
 	pid_t p_pid;
 	uid_t uid;	
 	OSString *processName;
-	OSString *processPath;
+	OSString *filePath;
 	
 	Application *prev;
 	Application *next;
@@ -65,8 +65,8 @@ public:
 		if(this == applications)
 			applications = NULL;
 		
-		if(processPath)
-			processPath->release();
+		if(filePath)
+			filePath->release();
 		
 		if(processName)
 			processName->release();
