@@ -32,8 +32,6 @@ enum ServerMessagesType
 	MessageTypeRuleDisabled			= MessageClassInfoRule | 0x03,
 	MessageTypeRuleEnbled			= MessageClassInfoRule | 0x04,
 	
-	MessageTypeSocketRejected		= MessageClassInfoSocket | 0x05,
-	MessageTypeSocketAllowed		= MessageClassInfoSocket | 0x06,
 	MessageTypeSocketDataIN			= MessageClassInfoSocket | 0x07,
 	MessageTypeSocketDataOUT		= MessageClassInfoSocket | 0x08,
 	MessageTypeSocketOpen			= MessageClassInfoSocket | 0x09,
@@ -121,6 +119,33 @@ struct MessageRuleEnbled : public MessageBase
 struct MessageFirewallClosed : public MessageBase 
 {
 	inline void init(){ MessageBase::init(4, MessageTypeFirewallClosed);};
+};
+
+/////
+struct MessageSocketDataIN : public MessageBase
+{
+	UInt8 stateOperation;
+	UInt32 stateByRuleId;
+	pid_t pid;
+	uid_t uid;
+	//socket_t socket;
+	UInt32 packets;
+	UInt32 bytes;
+	sockaddr fromAddressOffset;
+	sockaddr toAddressOffset;
+	char processName[4];
+};
+struct MessageSocketDataOUT : public MessageBase
+{
+	
+};
+struct MessageSocketOpen : public MessageBase
+{
+	
+};
+struct MessageSocketClosed : public MessageBase
+{
+	
 };
 
 

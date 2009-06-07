@@ -36,10 +36,17 @@ Message::operator new(size_t size, UInt16 neededSize)
 }
 
 
+SInt32 nextTextMessage;
+
 Message*
 Message::createTextFromCookie(const char* message, SocketCookie* cookie)
 {
-	return createText("%11s %20s  so: %9d  pid: %3d  uid: %3d  domain: %3d  type: %3d  protocol: %3d", 
+	UInt64 time;
+	clock_get_uptime(&time);
+	UInt32 mc = OSIncrementAtomic(&nextTextMessage);
+	return createText("%d %lld %11s %20s  so: %9d  pid: %3d  uid: %3d  domain: %3d  type: %3d  protocol: %3d", 
+					  mc,
+					  time,
 					  message, 
 					  cookie->application->processName->getCStringNoCopy(),
 					  cookie->socket, 

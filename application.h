@@ -53,7 +53,7 @@ public:
 
 	virtual void free()
 	{
-		::IOLog("application deleted pid: %d\n", this->pid);
+		//::IOLog("application deleted pid: %d\n", this->pid);
 		if(prev)
 			prev->next = next;
 		

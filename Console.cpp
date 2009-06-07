@@ -7,10 +7,10 @@
 #include <sys/sysctl.h>
 #include <sys/vnode.h>
 #include <libkern/OSTypes.h>
-
+#include "ServerConnection.h"
 #include "messageType.h"
 #include "Console.h"
-#include "ServerConnection.h"
+
 
 ServerConnection serverConnection;
 char buffer[8*1024];

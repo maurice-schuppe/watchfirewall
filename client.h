@@ -46,8 +46,8 @@ public:
 	
 	bool initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit);
 	
-	void registerMessageClasses(UInt16 classes);
-	void unregisterMessageClasses(UInt16 classes);
+	bool registerMessageClasses(UInt16 classes);
+	bool unregisterMessageClasses(UInt16 classes);
 	
 	virtual void free();
 	void closeSignal();

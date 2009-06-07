@@ -32,7 +32,7 @@ Application::getApplication()
 		if(result->pid == pid)
 		{
 			result->retain();
-			::IOLog("application return existing result. pid: %d\n", result->pid);
+			//::IOLog("application return existing result. pid: %d\n", result->pid);
 			goto unlock;
 		}
 		
@@ -58,7 +58,7 @@ Application::getApplication()
 		result->next->prev = result;
 	
 	result->retain();
-	::IOLog("application return new result. pid: %d\n", result->pid);
+	//::IOLog("application return new result. pid: %d\n", result->pid);
 
 unlock:
 	

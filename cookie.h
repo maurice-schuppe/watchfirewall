@@ -12,6 +12,7 @@
 
 #include "rule.h"
 #include "application.h"
+#include <sys/kpi_socketfilter.h>
 
 enum SocketCookieState
 {
@@ -19,6 +20,17 @@ enum SocketCookieState
 	SocketCookieStateASK = 2,	
 	SocketCookieStateALLOWED = 4,	
 	SocketCookieStateNOT_ALLOWED = 8
+};
+
+struct DeferredData
+{
+	mbuf_t data;
+	mbuf_t control;
+	sflt_data_flag_t flags;
+	sockaddr *socketAddress;
+	bool direction; //true out, false in
+	
+	DeferredData *next;
 };
 
 class SocketCookie
@@ -35,12 +47,16 @@ public:
 	UInt16 sockType;
 	UInt16 sockProtocol;	
 	
-	time_t aks_time;
+	UInt64 aksRuelTime;
+	UInt64 obtainedRuleTime;
+	
+	DeferredData *rootDefferedData;
+	DeferredData *lastDefferedData;
 	
 	Rule *rule;
 	
-	struct sockaddr *from_address;
-	struct sockaddr *to_address;
+	struct sockaddr *fromAddress;
+	struct sockaddr *toAddress;
 	
 	SocketCookie *prev;
 	SocketCookie *next;
@@ -60,6 +76,9 @@ public:
 		this->sockProtocol = protocol;
 		this->socket = socket;
 	}
+	
+	bool SetFromAddress(const sockaddr *socketAddress);
+	bool SetToAddress(const sockaddr *socketAddress);
 	
 	void RemoveFromChain()
 	{
