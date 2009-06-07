@@ -30,3 +30,40 @@ SocketCookie::isValid()
 	}
 	return false;
 }
+
+bool 
+SocketCookie::SetFromAddress(const sockaddr *socketAddress)
+{
+	if(this->fromAddress)
+	{
+		delete this->fromAddress;
+		this->fromAddress = NULL;
+	}
+	
+	this->fromAddress = (sockaddr*)new UInt8[socketAddress->sa_len];
+	if(this->fromAddress == NULL)
+		return false;
+	
+	memcpy(this->fromAddress, socketAddress, socketAddress->sa_len);
+	
+	return true;
+}
+
+bool 
+SocketCookie::SetToAddress(const sockaddr *socketAddress)
+{
+	if(this->toAddress)
+	{
+		delete this->toAddress;
+		this->toAddress = NULL;
+	}
+	
+	this->toAddress = (sockaddr*)new UInt8[socketAddress->sa_len];
+	if(this->toAddress == NULL)
+		return false;
+	
+	memcpy(this->toAddress, socketAddress, socketAddress->sa_len);
+	
+	return true;
+	
+}

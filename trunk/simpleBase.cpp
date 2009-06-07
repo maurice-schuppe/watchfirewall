@@ -42,7 +42,7 @@ SimpleBase::release()
 void 
 SimpleBase::free()
 {
-	::IOLog("delete object %p \n", this);
+	//::IOLog("delete object %p \n", this);
 	delete this;
 }
 

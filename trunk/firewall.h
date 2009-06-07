@@ -45,9 +45,12 @@ class Firewall
 {
 public:
 	bool	firewallUp;
-	bool	monitorUp;
 	bool	closing;
 	UInt32	countAttachedSockets;
+	
+	volatile SInt32 countRegistredInfoSocket;
+	volatile SInt32 countRegistredInfoRule;
+	volatile SInt32 countRegistredAsk;
 	
 	Rules	rules;
 	//Applications applications;

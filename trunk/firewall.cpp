@@ -192,9 +192,16 @@ Firewall::dataIn(void *cookie, socket_t so, const struct sockaddr *from, mbuf_t 
 	//check fo socket changes
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
-	if(Firewall::instance->rules.isRulesChanged(0))
+	if(Firewall::instance->rules.isRulesChanged(scookie->obtainedRuleTime))
 	{
 		//update rule and set in cookie
+		if(scookie->rule != NULL)
+		{
+			scookie->rule->release();
+			scookie->rule = NULL;
+			scookie->obtainedRuleTime = 0;
+		}
+		
 		Rule* rule = Firewall::instance->rules.findRule( 
 												  NULL, NULL, 
 												  0, 0, 0, 
@@ -247,19 +254,32 @@ Firewall::dataOut(void *cookie, socket_t so, const struct sockaddr *to, mbuf_t *
 errno_t	
 Firewall::connectIn(void *cookie, socket_t so, const struct sockaddr *from)
 {
-	Message *messsage = Message::createTextFromCookie("connect in", (SocketCookie*)cookie);
+	SocketCookie *scookie = (SocketCookie*)cookie;
+	
+	Message *messsage = Message::createTextFromCookie("connect in", scookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
 	
 	return KERN_SUCCESS;
 	
-	//check is firewall up
+	//only for TCP/IP
+	//copy from address
+	scookie->SetFromAddress(from);
+
+	if(Firewall::instance->firewallUp)
+	{
+		//check is have rule
+		//if have apply
+		//else allow and ask
+		
+	}
 	
-	//check is have rule
-	//if have apply
-	//else allow and ask
 	
-	//check is monitor up
+	
+	if(Firewall::instance->countRegistredInfoSocket)
+	{
+		//send message connected
+	}
 }
 
 
@@ -636,27 +656,33 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				break;
 				
 			case MessageTypeRegisterForAsk:
-				client->registerMessageClasses(MessageClassAsk);
+				if(client->registerMessageClasses(MessageClassAsk))
+					OSIncrementAtomic(&Firewall::instance->countRegistredAsk);
 				break;
 				
 			case MessageTypeUnregisterAsk:
-				client->unregisterMessageClasses(MessageClassAsk);
+				if(client->unregisterMessageClasses(MessageClassAsk))
+					OSDecrementAtomic(&Firewall::instance->countRegistredAsk);
 				break;
 				
 			case MessageTypeRegisterForInfoRule:
-				client->registerMessageClasses(MessageClassInfoRule);
+				if(client->registerMessageClasses(MessageClassInfoRule))
+					OSIncrementAtomic(&Firewall::instance->countRegistredInfoRule);
 				break;
 
 			case MessageTypeUnregisterInfoRule:
-				client->unregisterMessageClasses(MessageClassInfoRule);
+				if(client->unregisterMessageClasses(MessageClassInfoRule))
+					OSDecrementAtomic(&Firewall::instance->countRegistredInfoRule);
 				break;
 				
 			case MessageTypeRegisterForInfoSocket:
-				client->registerMessageClasses(MessageClassInfoSocket);
+				if(client->registerMessageClasses(MessageClassInfoSocket))
+					OSIncrementAtomic(&Firewall::instance->countRegistredInfoSocket);
 				break;
 				
 			case MessageTypeUnregisterInfoSocket:
-				client->unregisterMessageClasses(MessageClassInfoSocket);
+				if(client->unregisterMessageClasses(MessageClassInfoSocket))
+					OSDecrementAtomic(&Firewall::instance->countRegistredInfoSocket);
 				break;
 		}
 		

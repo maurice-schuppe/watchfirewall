@@ -109,13 +109,12 @@ Client::Send(Message* message)
 	IOInterruptState istate = IOSimpleLockLockDisableInterrupt(this->lockQueue);
 	
 	if(this->messageQueueLast == NULL)
-	{
-		this->messageQueueLast = node;
 		this->messageQueueRoot = node;
-	}
 	else
 		this->messageQueueLast->next = node;
 	
+	this->messageQueueLast = node;
+
 	IOSimpleLockUnlockEnableInterrupt(this->lockQueue, istate);
 	IOLockWakeup(this->lockWorkThread, 0, false);
 }
@@ -126,6 +125,12 @@ Client::SendThread(void* arg)
 	Client* client = (Client*)arg;
 	client->retain();
 	ClientMessageNode *node = NULL;
+	UInt64 lastSendTime = 0;
+	UInt64 currentTime;
+	UInt64 diff;
+	size_t size;
+	int k;
+
 	IOLockLock(client->lockWorkThread);
 
 	while(1)
@@ -134,6 +139,13 @@ Client::SendThread(void* arg)
 		
 		if(client->exitState)
 			goto exit;
+		
+		//sllep if nedded
+		clock_get_uptime(&currentTime);
+		absolutetime_to_nanoseconds( currentTime - lastSendTime, &diff);
+		
+		if(diff < 500000000)//nano seconds
+			IOSleep(500);
 		
 		IOInterruptState istate = IOSimpleLockLockDisableInterrupt(client->lockQueue);
 
@@ -145,67 +157,84 @@ Client::SendThread(void* arg)
 		
 		while(node)
 		{
-			if(client->exitState)
-				goto exitAndClearQueue;
-			
-			int result;
-			while(result = ctl_enqueuedata(client->kernelKontrolReference, client->unit, &(node->message->m), node->message->m.size, 0))
+			size = 0;
+			k = 0;
+			do
 			{
 				if(client->exitState)
 					goto exitAndClearQueue;
 
-				switch(result)
+				ctl_getenqueuespace(client->kernelKontrolReference, client->unit, &size);
+				if(size < node->message->m.size)
 				{
-					case EINVAL: // - Invalid parameters.
-						::IOLog("ctl_enqueuedata return: Invalid parameter.\n");
-						goto next;
-						break;
-					case EMSGSIZE: // - The buffer is too large.
-						::IOLog("ctl_enqueuedata return: The buffer is too large.\n");
-						goto next;
-						break;
-					case ENOBUFS: // - The queue is full or there are no free mbufs.
-						::IOLog("ctl_enqueuedata return: The queue is full or there are no free mbufs.\n");
-						IOSleep(100);
-						break;
+					if(k++ < 3)
+					{
+						IOSleep(200);
+						continue;
+					}
+					else
+						::IOLog("client is bisy. can't recivie data.\n");
 				}
-				
-				if(client->exitState)
-					goto exitAndClearQueue;
-			}
+				else
+				{
+					if(client->exitState)
+						goto exitAndClearQueue;
+					
+					switch(ctl_enqueuedata(client->kernelKontrolReference, client->unit, &(node->message->m), node->message->m.size, 0))
+					{
+						case EINVAL: // - Invalid parameters.
+							::IOLog("ctl_enqueuedata return: Invalid parameter.\n");
+							break;
+						case EMSGSIZE: // - The buffer is too large.
+							::IOLog("ctl_enqueuedata return: The buffer is too large.\n");
+							break;
+						case ENOBUFS: // - The queue is full or there are no free mbufs.
+							::IOLog("ctl_enqueuedata return: The queue is full or there are no free mbufs.\n");
+							break;
+					}
+				}				
+			}while(false);
+
 			
-		next:
+			if(client->exitState)
+				goto exitAndClearQueue;
 
 			ClientMessageNode *deletedNode = node;
 			node = node->next;
 			deletedNode->message->release();
 			delete(deletedNode);
 		}
+		
+		clock_get_uptime(&lastSendTime);
 	}
 	
 exitAndClearQueue:
-	//::IOLog("client in exit and clear queue \n");
 	ClearQueue(node);
 exit:
-	//::IOLog("client in exit\n");
 	IOLockUnlock(client->lockWorkThread);
 	client->release();
-	
-	//::IOLog("work thread exit \n");
 
 	IOExitThread();
 }
 
-void 
+bool 
 Client::registerMessageClasses(UInt16 classes)
 {
-	OSBitOrAtomic(classes, &this->registredMessageClases);	
+	if(this->registredMessageClases & classes == classes)
+		return false;
+	
+	OSBitOrAtomic(classes, &this->registredMessageClases);
+	return true;
 }
 
-void 
+bool 
 Client::unregisterMessageClasses(UInt16 classes)
 {
-	OSBitOrAtomic(~classes, &this->registredMessageClases);	
+	if(this->registredMessageClases & classes == 0)
+		return false;
+
+	OSBitOrAtomic(~classes, &this->registredMessageClases);
+	return true;
 }	
 
 
