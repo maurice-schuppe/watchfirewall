@@ -169,7 +169,7 @@ Rules::addRule(MessageAddRule *messageRule)
 			if(result == 0)
 			{
 				rule->release();
-				rule = c;
+				rule = NULL;
 				break;//rule exist
 			}
 			if(result > 0)
@@ -185,6 +185,7 @@ Rules::addRule(MessageAddRule *messageRule)
 					this->root = rule;//prev is root, replace
 				
 				//get rule id
+				rule->retain();
 				
 				clock_get_uptime(&lastChangedTime);
 				break;
@@ -200,8 +201,9 @@ unlock:
 Rule* 
 Rules::deleteRule(UInt32 ruleId)
 {
+	Rule* rule;
 	IOLockLock(lock);
-	Rule* rule = this->root;
+	rule = this->root;
 	while (rule)
 	{
 		if(rule->id == ruleId)
@@ -213,14 +215,14 @@ Rules::deleteRule(UInt32 ruleId)
 				this->root = NULL;
 			
 			clock_get_uptime(&lastChangedTime);
-			rule->release();
-			goto unlock;
+			break;
 		}
+		
+		rule = rule->next;
 	}
 	
-unlock:
 	IOLockUnlock(lock);
-	return NULL;//TODO: refactor
+	return rule;
 }
 
 Rule* 
@@ -236,14 +238,20 @@ Rules::activateRule(UInt32 ruleId)
 			{
 				rule->state |= RuleStateActive;
 				clock_get_uptime(&lastChangedTime);
+				rule->retain();
 			}
-			goto unlock;
+			else
+			{
+				rule = NULL;
+			}
+			break;
 		}
+		
+		rule = rule->next;
 	}
 	
-unlock:
 	IOLockUnlock(lock);
-	return NULL;//TODO: refactor
+	return rule;
 }
 
 Rule* 
@@ -259,13 +267,19 @@ Rules::deactivateRule(UInt32 ruleId)
 			{
 				rule->state |= ~RuleStateActive;
 				clock_get_uptime(&lastChangedTime);
+				rule->retain();
 			}
-			goto unlock;
+			else
+			{
+				rule = NULL;
+			}
+			break;
 		}
+		
+		rule = rule->next;
 	}
-	
-unlock:
+
 	IOLockUnlock(lock);
-	return NULL;//TODO: refactor
+	return rule;
 }
 
