@@ -591,6 +591,16 @@ Firewall::kcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 				Firewall::instance->clients = curr->next;
 			
 			curr->closeSignal();
+			//update counts of listen etc...
+			if(curr->registredMessageClases & MessageClassAsk)
+				OSDecrementAtomic(&Firewall::instance->countRegistredAsk);
+
+			if(curr->registredMessageClases & MessageClassInfoRule)
+				OSDecrementAtomic(&Firewall::instance->countRegistredInfoRule);
+			
+			if(curr->registredMessageClases & MessageClassInfoSocket)
+				OSDecrementAtomic(&Firewall::instance->countRegistredInfoSocket);
+
 			curr->release();
 			break;
 		}
@@ -607,13 +617,10 @@ Firewall::kcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 errno_t 
 Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m, int flags)
 {	
-	return KERN_SUCCESS;
-
 	Client *client = (Client*)unitinfo;
 	
 	if(Firewall::instance == NULL || Firewall::instance->closing || client == NULL)
 		return KERN_TERMINATED;
-	
 	
 	UInt32 currentPosition = 0;
 	
@@ -622,11 +629,18 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 	
 	while(currentPosition < dataSize)
 	{
-		//message.buffer = data + currentPosition;
 		switch (message->type)
 		{
 			case MessageTypeDeleteRule:
-				Firewall::instance->rules.deleteRule(((MessageDeleteRule*)message)->id);
+				{
+					Rule *rule = Firewall::instance->rules.deleteRule(((MessageDeleteRule*)message)->id);
+					if(rule)
+					{
+						//send message
+						//delete rule
+						rule->release();
+					}
+				}
 				break;
 				
 			case MessageTypeAddRule:
@@ -642,17 +656,41 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				break;
 				
 			case MessageTypeActivateRule:
-				Firewall::instance->rules.activateRule(((MessageActivateRule*)message)->id);
+				{
+					Rule *rule = Firewall::instance->rules.activateRule(((MessageActivateRule*)message)->id);
+					if(rule)
+					{
+						//send message
+						rule->release();
+					}
+				}
 				break;
 				
 			case MessageTypeDeactivateRule:
-				Firewall::instance->rules.deactivateRule(((MessageDeactivateRule*)message)->id);
+				{
+					Rule *rule = Firewall::instance->rules.deactivateRule(((MessageDeactivateRule*)message)->id);
+					if(rule)
+					{
+						//send message
+						rule->release();
+					}
+				}
 				break;
 				
 			case MessageTypeActivateFirewall:
+				if(Firewall::instance->firewallUp == false)
+				{
+					Firewall::instance->firewallUp = true;
+					//send message
+				}
 				break;
 				
 			case MessageTypeDeactivateFirewall:
+				if(Firewall::instance->firewallUp == true)
+				{
+					Firewall::instance->firewallUp = false;
+					//send message
+				}
 				break;
 				
 			case MessageTypeRegisterForAsk:
