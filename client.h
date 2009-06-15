@@ -22,13 +22,11 @@ struct ClientMessageNode
 	ClientMessageNode *next;
 };
 
-class Client : public SimpleBase//: public OSObject
+class Client : public SimpleBase
 {
-	//OSDeclareDefaultStructors(Client)
-
-	
 protected:
 	static void ClearQueue(ClientMessageNode *root);
+
 public:
 	kern_ctl_ref kernelKontrolReference;
 	UInt32 unit;
