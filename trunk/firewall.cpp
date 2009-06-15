@@ -480,7 +480,7 @@ bool Firewall::unRegisterKernelControl()
 	if(kernelControlReference == NULL)
 		return true;
 
-	Message *message = Message::createFirewallClose();
+	Message *message = Message::createFirewallClosing();
 	if(!message)
 		return false;
 	
@@ -625,7 +625,7 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 	UInt32 currentPosition = 0;
 	
 	size_t dataSize= mbuf_len(m);
-	MessageBase *message = (MessageBase*)mbuf_data(m);
+	MessageClientAction *message = (MessageClientAction*)mbuf_data(m);
 	
 	while(currentPosition < dataSize)
 	{
@@ -633,47 +633,70 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 		{
 			case MessageTypeDeleteRule:
 				{
-					Rule *rule = Firewall::instance->rules.deleteRule(((MessageDeleteRule*)message)->id);
-					if(rule)
+					Rule *rule; 
+					switch(Firewall::instance->rules.deleteRule(((MessageDeleteRule*)message)->id, &rule))
 					{
-						//send message
-						//delete rule
-						rule->release();
+						case 0://OK
+							break;
+						case 1://do not exist
+							break;
 					}
+					
+					if(rule)
+						rule->release();
 				}
 				break;
 				
 			case MessageTypeAddRule:
 				{
-					Rule *rule = Firewall::instance->rules.addRule((MessageAddRule*)message);
-					if(rule)
+					Rule *rule;
+					switch(Firewall::instance->rules.addRule((MessageAddRule*)message, &rule))
 					{
-						//send rule added
-						
-						rule->release();
+						case -1://memory error
+						   break;
+						case 0://ok
+						   break;
+						case 1://exist
+						   break;
 					}
+						   
+					if(rule)
+						   rule->release();
 				}
 				break;
 				
 			case MessageTypeActivateRule:
 				{
-					Rule *rule = Firewall::instance->rules.activateRule(((MessageActivateRule*)message)->id);
-					if(rule)
+					Rule *rule;
+					switch(Firewall::instance->rules.activateRule(((MessageActivateRule*)message)->id, &rule))
 					{
-						//send message
-						rule->release();
+						case -1://not exist
+						   break;
+						case 0://ok
+						   break;
+						case 1://already activated
+						   break;
 					}
+					if(rule)
+						   rule->release();
 				}
 				break;
 				
 			case MessageTypeDeactivateRule:
 				{
-					Rule *rule = Firewall::instance->rules.deactivateRule(((MessageDeactivateRule*)message)->id);
-					if(rule)
+					Rule *rule;
+					switch(Firewall::instance->rules.deactivateRule(((MessageDeactivateRule*)message)->id, &rule))
 					{
-						//send message
-						rule->release();
+						case -1://not exist
+							break;
+						case 0://ok
+							break;
+						case 1://alredy deacivated
+							break;
 					}
+					
+					if(rule)
+						rule->release();
 				}
 				break;
 				
@@ -694,38 +717,104 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				break;
 				
 			case MessageTypeRegisterForAsk:
-				if(client->registerMessageClasses(MessageClassAsk))
-					OSIncrementAtomic(&Firewall::instance->countRegistredAsk);
+				{
+					Message* responce = Message::createRegistredForAsk();
+					if(responce == NULL)
+						break;
+					
+					if(client->registerMessageClasses(MessageClassAsk))
+						OSIncrementAtomic(&Firewall::instance->countRegistredAsk);
+					else
+						((MessageRegistredForAsk*) &responce->m)->state = 1;
+					
+					client->Send(responce);
+					responce->release();
+				}
 				break;
 				
 			case MessageTypeUnregisterAsk:
-				if(client->unregisterMessageClasses(MessageClassAsk))
-					OSDecrementAtomic(&Firewall::instance->countRegistredAsk);
+				{
+					Message* responce = Message::createUnregistredAsk();
+					if(responce == NULL)
+						break;
+					
+					if(client->unregisterMessageClasses(MessageClassAsk))
+						OSDecrementAtomic(&Firewall::instance->countRegistredAsk);
+					else
+						((MessageUnregistredAsk*) &responce->m)->state = 1;
+					
+					client->Send(responce);
+					responce->release();
+				}
 				break;
 				
 			case MessageTypeRegisterForInfoRule:
-				if(client->registerMessageClasses(MessageClassInfoRule))
-					OSIncrementAtomic(&Firewall::instance->countRegistredInfoRule);
+				{
+					Message* responce = Message::createRegistredForInfoRule();
+					if(responce == NULL)
+						break;
+					
+					if(client->registerMessageClasses(MessageClassInfoRule))
+						OSIncrementAtomic(&Firewall::instance->countRegistredInfoRule);
+					else
+						((MessageRegistredForInfoRule*) &responce->m)->state = 1;
+					
+					client->Send(responce);
+					responce->release();
+				}
 				break;
 
 			case MessageTypeUnregisterInfoRule:
-				if(client->unregisterMessageClasses(MessageClassInfoRule))
-					OSDecrementAtomic(&Firewall::instance->countRegistredInfoRule);
+				{
+					Message* responce = Message::createUnregistredInfoRule();
+					if(responce == NULL)
+						break;
+					
+					if(client->unregisterMessageClasses(MessageClassInfoRule))
+						OSDecrementAtomic(&Firewall::instance->countRegistredInfoRule);
+					else
+						((MessageUnregistredInfoRule*) &responce->m)->state = 1;
+
+					client->Send(responce);
+					responce->release();
+				}
 				break;
 				
 			case MessageTypeRegisterForInfoSocket:
-				if(client->registerMessageClasses(MessageClassInfoSocket))
-					OSIncrementAtomic(&Firewall::instance->countRegistredInfoSocket);
+				{
+					Message* responce = Message::createRegistredForInfoSocket();
+					if(responce == NULL)
+						break;
+					
+					if(client->registerMessageClasses(MessageClassInfoSocket))
+						OSIncrementAtomic(&Firewall::instance->countRegistredInfoSocket);
+					else
+						((MessageRegistredForInfoSocket*) &responce->m)->state = 1;
+
+					client->Send(responce);
+					responce->release();
+				}
 				break;
 				
 			case MessageTypeUnregisterInfoSocket:
-				if(client->unregisterMessageClasses(MessageClassInfoSocket))
-					OSDecrementAtomic(&Firewall::instance->countRegistredInfoSocket);
+				{
+					Message* responce = Message::createUnregistredInfoSocket();
+					if(responce ==NULL)
+						break;
+					
+					if(client->unregisterMessageClasses(MessageClassInfoSocket))
+						OSDecrementAtomic(&Firewall::instance->countRegistredInfoSocket);
+					else
+						((MessageUnregistredInfoSocket*) &responce->m)->state = 1;
+					
+					client->Send(responce);
+					responce->release();
+				}
 				break;
 		}
 		
 		currentPosition += message->size;
-		message = (MessageBase*)((char*)message + message->size);
+		message = (MessageClientAction*)((char*)message + message->size);
 	}
 	
 	return KERN_SUCCESS;

@@ -107,10 +107,10 @@ public:
 				   UInt8 direction, struct sockaddr *sockaddres );
 	
 	
-	Rule* addRule(MessageAddRule *messageRule);
-	Rule* deleteRule(UInt32 ruleId);
-	Rule* activateRule(UInt32 ruleId);
-	Rule* deactivateRule(UInt32 ruleId);
+	int addRule(MessageAddRule *messageRule, Rule** rule);
+	int deleteRule(UInt32 ruleId, Rule** rule);
+	int activateRule(UInt32 ruleId, Rule** rule);
+	int deactivateRule(UInt32 ruleId, Rule** rule);
 	
 };
 

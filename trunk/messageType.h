@@ -24,24 +24,31 @@ enum MessagesClass
 
 enum ServerMessagesType 
 {
-	MessageTypeText					= MessageClassCommon | 0x01, //dymmu
-	MessageTypeAskRule				= MessageClassAsk |  0x01,
+	MessageTypeText						= MessageClassCommon | 0x01, //dymmu
+	MessageTypeAskRule					= MessageClassAsk |  0x01,
 	
-	MessageTypeRuleAdded			= MessageClassInfoRule | 0x01,
-	MessageTypeRuleDeleted			= MessageClassInfoRule | 0x02,
-	MessageTypeRuleDisabled			= MessageClassInfoRule | 0x03,
-	MessageTypeRuleEnbled			= MessageClassInfoRule | 0x04,
+	MessageTypeRuleAdded				= MessageClassInfoRule | 0x01,
+	MessageTypeRuleDeleted				= MessageClassInfoRule | 0x02,
+	MessageTypeRuleDeactivated			= MessageClassInfoRule | 0x03,
+	MessageTypeRuleActivated			= MessageClassInfoRule | 0x04,
 	
-	MessageTypeSocketDataIN			= MessageClassInfoSocket | 0x07,
-	MessageTypeSocketDataOUT		= MessageClassInfoSocket | 0x08,
-	MessageTypeSocketOpen			= MessageClassInfoSocket | 0x09,
-	MessageTypeSocketClosed			= MessageClassInfoSocket | 0x0A,
-	MessageTypeSocketAskRule		= MessageClassInfoSocket | 0x0B,
+	MessageTypeSocketDataIN				= MessageClassInfoSocket | 0x07,
+	MessageTypeSocketDataOUT			= MessageClassInfoSocket | 0x08,
+	MessageTypeSocketOpen				= MessageClassInfoSocket | 0x09,
+	MessageTypeSocketClosed				= MessageClassInfoSocket | 0x0A,
+	MessageTypeSocketAskRule			= MessageClassInfoSocket | 0x0B,
 	
-	MessageTypeFirewallActivated	= MessageClassFirewall | 0x01,
-	MessageTypeFirewallDeactivated	= MessageClassFirewall | 0x02,
+	MessageTypeFirewallActivated		= MessageClassFirewall | 0x01,
+	MessageTypeFirewallDeactivated		= MessageClassFirewall | 0x02,
 	
-	MessageTypeFirewallClosed		= MessageClassFirewall | 0x03
+	MessageTypeRegistredForAsk			= MessageClassFirewall | 0x03,
+	MessageTypeUnregistredAsk			= MessageClassFirewall | 0x04,
+	MessageTypeRegistredForInfoRule		= MessageClassFirewall | 0x05,
+	MessageTypeUnregistredInfoRule		= MessageClassFirewall | 0x06,
+	MessageTypeRegistredForInfoSocket	= MessageClassFirewall | 0x07,
+	MessageTypeUnregistredInfoSocket	= MessageClassFirewall | 0x08,
+
+	MessageTypeFirewallClosing			= MessageClassFirewall | 0x09
 };
 
 enum ClientMessagesType
@@ -70,6 +77,18 @@ struct MessageBase
 	inline void init(UInt16 size, UInt16 type){this->size = size, this->type = type;}
 };
 
+struct MessageClientAction: public MessageBase
+{
+	UInt32 messageId;
+};
+
+struct MessageClientActionResponce : public MessageBase
+{
+	UInt32 unitId;
+	UInt32 messageId;
+	UInt32 state;
+};
+
 struct MessageText : public MessageBase
 {
 	char textBuffer[4];
@@ -93,32 +112,61 @@ struct MessageAskRule : public MessageBase
 	char buffer[4];
 };
 
-struct MessageRuleAdded : public MessageBase
+struct MessageRuleAdded : public MessageClientActionResponce
 {
-	UInt32 id;
+	UInt32 id;//rule
 	
 	inline void init(UInt32 id){ MessageBase::init(8, MessageTypeRuleAdded); this->id = id;}
 };
 
 struct MessageRuleDeleted : public MessageBase
 {
-	UInt32 id;
+	UInt32 id;//rule
 };
 
-struct MessageRuleDisabled	: public MessageBase
+struct MessageRuleDeactivated	: public MessageClientActionResponce
 {
-	UInt32 id;
+	UInt32 id;//rule
 };
 
-struct MessageRuleEnbled : public MessageBase
+struct MessageRuleActivated : public MessageClientActionResponce
 {
-	UInt32 id;
+	UInt32 id;//rule
 };
 
-
-struct MessageFirewallClosed : public MessageBase 
+struct MessageRegistredForAsk : public MessageClientActionResponce
 {
-	inline void init(){ MessageBase::init(4, MessageTypeFirewallClosed);};
+	
+};
+
+struct MessageUnregistredAsk : public MessageClientActionResponce
+{
+	
+};
+
+struct MessageRegistredForInfoRule : public MessageClientActionResponce
+{
+	
+};
+
+struct MessageUnregistredInfoRule : public MessageClientActionResponce
+{
+	
+};
+
+struct MessageRegistredForInfoSocket : public MessageClientActionResponce
+{
+	
+};
+
+struct MessageUnregistredInfoSocket : public MessageClientActionResponce
+{
+	
+};
+
+struct MessageFirewallClosing : public MessageBase 
+{
+	inline void init(){ MessageBase::init(4, MessageTypeFirewallClosing);};
 };
 
 /////
@@ -150,7 +198,7 @@ struct MessageSocketClosed : public MessageBase
 
 
 #pragma mark Client messages
-struct MessageAddRule : public MessageBase 
+struct MessageAddRule : public MessageClientAction 
 {
 	UInt32 id;
 	UInt16 processNameOffset;//0 for all
@@ -171,60 +219,60 @@ struct MessageAddRule : public MessageBase
 	sockaddr *getSockAddress(){ return (sockaddr*) ((sockAddressOffset) ? (char*)this + sockAddressOffset : NULL);}
 };
 
-struct MessageDeleteRule : public MessageBase 
+struct MessageDeleteRule : public MessageClientAction 
 {
 	UInt32 id;
 };
 
-struct MessageActivateRule : public MessageBase 
+struct MessageActivateRule : public MessageClientAction 
 {
 	UInt32 id;
 };
 
-struct MessageDeactivateRule : public MessageBase 
+struct MessageDeactivateRule : public MessageClientAction 
 {
 	UInt32 id;
 };
 
 
 
-struct MessageActivateFirewall : public MessageBase 
+struct MessageActivateFirewall : public MessageClientAction 
 {
 };
 
 
-struct MessageDeactivateFirewall : public MessageBase 
+struct MessageDeactivateFirewall : public MessageClientAction 
 {
 };
 
 
 
-struct MessageRegisterForAsk : public MessageBase 
+struct MessageRegisterForAsk : public MessageClientAction 
 {
 };
 
 
-struct MessageUnregisterAsk : public MessageBase 
+struct MessageUnregisterAsk : public MessageClientAction 
 {
 };
 
 
-struct MessageRegisterForInfoRule : public MessageBase 
+struct MessageRegisterForInfoRule : public MessageClientAction 
 {
 };
 
 
-struct MessageUnregisterInfoRule : public MessageBase 
+struct MessageUnregisterInfoRule : public MessageClientAction 
 {
 };
 
 
-struct MessageRegisterForInfoSocket : public MessageBase 
+struct MessageRegisterForInfoSocket : public MessageClientAction 
 {
 };
 
 
-struct MessageUnregisterInfoSocket : public MessageBase 
+struct MessageUnregisterInfoSocket : public MessageClientAction 
 {
 };
 

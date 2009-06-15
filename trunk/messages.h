@@ -16,7 +16,14 @@ public:
 	static void *operator new(size_t size, UInt16 neededSize);
 
 	static Message *createText(const char* format,...);
-	static Message *createFirewallClose();//TODO: static
+	static Message *createFirewallClosing();
+	static Message *createRegistredForInfoRule();
+	static Message *createUnregistredInfoRule();
+	static Message *createRegistredForInfoSocket();
+	static Message *createUnregistredInfoSocket();
+	static Message *createRegistredForAsk();
+	static Message *createUnregistredAsk();
+	
 	static Message *createTextFromCookie(const char* message, SocketCookie* cookie);
 	
 	static Message *createAskRule(	

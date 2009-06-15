@@ -24,19 +24,17 @@ Message::createText(const char* format,...)
     return message;
 }
 
-
 void*
 Message::operator new(size_t size, UInt16 neededSize)
 {
-	Message* message =(Message*) ::new char[neededSize + sizeof(Message)];
+	Message* message =(Message*) ::new char[neededSize + sizeof(Message) - sizeof(MessageBase)];
 	if(message)
-		message->m.size = neededSize + sizeof(MessageBase);
+		message->m.size = neededSize;
 	
 	return message;
 }
 
-
-SInt32 nextTextMessage;
+SInt32 nextTextMessage;//TODO: only for debug
 
 Message*
 Message::createTextFromCookie(const char* message, SocketCookie* cookie)
@@ -58,12 +56,85 @@ Message::createTextFromCookie(const char* message, SocketCookie* cookie)
 }
 
 Message*
-Message::createFirewallClose()
+Message::createRegistredForInfoRule()
 {
-	Message *message = new(0) Message();
+	Message *message = new(sizeof(MessageRegistredForInfoRule)) Message();
 	if(message)
 	{
-		message->m.type = MessageTypeFirewallClosed; 
+		message->m.type = MessageTypeRegistredForInfoRule; 
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::createUnregistredInfoRule()
+{
+	Message *message = new(sizeof(MessageUnregistredInfoRule)) Message();
+	if(message)
+	{
+		message->m.type = MessageTypeUnregistredInfoRule; 
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::createRegistredForInfoSocket()
+{
+	Message *message = new(sizeof(MessageRegistredForInfoSocket)) Message();
+	if(message)
+	{
+		message->m.type = MessageTypeRegistredForInfoSocket; 
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::createUnregistredInfoSocket()
+{
+	Message *message = new(sizeof(MessageUnregistredInfoSocket)) Message();
+	if(message)
+	{
+		message->m.type = MessageTypeUnregistredInfoSocket; 
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::createRegistredForAsk()
+{
+	Message *message = new(sizeof(MessageRegistredForAsk)) Message();
+	if(message)
+	{
+		message->m.type = MessageTypeRegistredForAsk; 
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::createUnregistredAsk()
+{
+	Message *message = new(sizeof(MessageUnregistredAsk)) Message();
+	if(message)
+	{
+		message->m.type = MessageTypeUnregistredAsk; 
+		message->references = 1;
+	}
+	return message;
+}
+
+
+Message*
+Message::createFirewallClosing()
+{
+	Message *message = new(sizeof(MessageFirewallClosing)) Message();
+	if(message)
+	{
+		message->m.type = MessageTypeFirewallClosing; 
 		message->references = 1;
 	}
 	return message;

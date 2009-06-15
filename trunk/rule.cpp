@@ -138,26 +138,28 @@ unlock:
 	return current;
 }
 
-Rule* 
-Rules::addRule(MessageAddRule *messageRule)
+int 
+Rules::addRule(MessageAddRule *messageRule, Rule** rule)
 {
-	Rule *rule = new Rule();
-	if(rule == NULL)
+	*rule = NULL;
+	int result;
+	Rule *workRule = new Rule();
+	if(workRule == NULL)
 	{
 		IOLog("can't create Rule");
-		return NULL;
+		return -1;
 	}
 	
-	if(rule->init(messageRule) == false)
+	if(workRule->init(messageRule) == false)
 	{
-		delete rule;
-		return NULL;
+		delete workRule;
+		return -1;
 	}
 	
 	IOLockLock(lock);
 	if(this->root == NULL)
 	{
-		this->root = rule;
+		this->root = workRule;
 	}
 	else
 	{
@@ -165,27 +167,31 @@ Rules::addRule(MessageAddRule *messageRule)
 		int result;
 		while (c)
 		{
-			result = rule->compare(c);
+			result = workRule->compare(c);
 			if(result == 0)
 			{
-				rule->release();
-				rule = NULL;
-				break;//rule exist
+				workRule->release();
+				c->retain();
+				*rule = c;
+				result = 1;//rule exist
+				break;
 			}
 			if(result > 0)
 			{
 				//insert before c
-				rule->next = c;
-				c->prev = rule;
+				workRule->next = c;
+				c->prev = workRule;
 				
-				rule->prev = c->prev;
-				if(rule->prev)
-					rule->prev = rule;
+				workRule->prev = c->prev;
+				if(workRule->prev)
+					workRule->prev = workRule;
 				else
-					this->root = rule;//prev is root, replace
+					this->root = workRule;//prev is root, replace
 				
 				//get rule id
-				rule->retain();
+				workRule->retain();
+				*rule = workRule;
+				result = 0;
 				
 				clock_get_uptime(&lastChangedTime);
 				break;
@@ -195,91 +201,102 @@ Rules::addRule(MessageAddRule *messageRule)
 	
 unlock:
 	IOLockUnlock(lock);
-	return rule;//TODO: refactor
+	return result;
 }
 
-Rule* 
-Rules::deleteRule(UInt32 ruleId)
+int 
+Rules::deleteRule(UInt32 ruleId, Rule** rule)
 {
-	Rule* rule;
+	*rule = NULL;
 	IOLockLock(lock);
-	rule = this->root;
-	while (rule)
+	Rule* workRule = this->root;
+	while (workRule)
 	{
-		if(rule->id == ruleId)
+		if(workRule->id == ruleId)
 		{
-			rule->state |= RuleStateDeleted;
-			rule->removeFromChain();
+			workRule->state |= RuleStateDeleted;
+			workRule->removeFromChain();
 			//check is root
-			if(this->root == rule)
+			if(this->root == workRule)
 				this->root = NULL;
 			
 			clock_get_uptime(&lastChangedTime);
+			*rule = workRule;
 			break;
 		}
 		
-		rule = rule->next;
+		workRule = workRule->next;
 	}
 	
 	IOLockUnlock(lock);
-	return rule;
+	return (*rule != NULL) ? 1 : 0;
 }
 
-Rule* 
-Rules::activateRule(UInt32 ruleId)
+int 
+Rules::activateRule(UInt32 ruleId, Rule** rule)
 {
+	*rule = NULL;
+	int result = -1;
 	IOLockLock(lock);
-	Rule* rule = this->root;
-	while (rule)
+	Rule* workRule = this->root;
+	while (workRule)
 	{
-		if(rule->id == ruleId)
+		if(workRule->id == ruleId)
 		{
-			if((rule->state & RuleStateActive) == 0)
+			if((workRule->state & RuleStateActive) == 0)
 			{
-				rule->state |= RuleStateActive;
+				workRule->state |= RuleStateActive;
 				clock_get_uptime(&lastChangedTime);
-				rule->retain();
+				result = 0;
 			}
 			else
 			{
-				rule = NULL;
+				result = 1;
 			}
+
+			workRule->retain();
+			*rule = workRule;
 			break;
 		}
 		
-		rule = rule->next;
+		workRule = workRule->next;
 	}
 	
 	IOLockUnlock(lock);
-	return rule;
+	return result;
 }
 
-Rule* 
-Rules::deactivateRule(UInt32 ruleId)
+int 
+Rules::deactivateRule(UInt32 ruleId, Rule** rule)
 {
+	int result = -1;
+	*rule = NULL;
 	IOLockLock(lock);
-	Rule* rule = this->root;
-	while (rule)
+	Rule* workRule = this->root;
+	while (workRule)
 	{
-		if(rule->id == ruleId)
+		if(workRule->id == ruleId)
 		{
-			if((rule->state & RuleStateActive) > 0)
+			if((workRule->state & RuleStateActive) > 0)
 			{
-				rule->state |= ~RuleStateActive;
+				workRule->state |= ~RuleStateActive;
 				clock_get_uptime(&lastChangedTime);
-				rule->retain();
+				result = 0;
 			}
 			else
 			{
-				rule = NULL;
+				result = 1;//alredy inactive
 			}
+
+			workRule->retain();
+			*rule = workRule;
 			break;
 		}
 		
-		rule = rule->next;
+		workRule = workRule->next;
 	}
 
 	IOLockUnlock(lock);
-	return rule;
+	return result;
 }
 
