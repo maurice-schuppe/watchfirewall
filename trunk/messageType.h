@@ -86,7 +86,15 @@ struct MessageClientActionResponce : public MessageBase
 {
 	UInt32 unitId;
 	UInt32 messageId;
-	UInt32 state;
+	UInt32 actionState;
+	
+public:
+	void init(UInt32 unitId, UInt32 messageId, UInt32 actionState)
+	{
+		this->unitId = unitId;
+		this->messageId = messageId;
+		this->actionState = actionState;
+	}
 };
 
 struct MessageText : public MessageBase
@@ -162,6 +170,14 @@ struct MessageRegistredForInfoSocket : public MessageClientActionResponce
 struct MessageUnregistredInfoSocket : public MessageClientActionResponce
 {
 	
+};
+
+struct MessageFirewallActivated : public MessageClientActionResponce
+{	
+};
+
+struct MessageFirewallDeactivated
+{
 };
 
 struct MessageFirewallClosing : public MessageBase 

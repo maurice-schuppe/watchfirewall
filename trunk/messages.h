@@ -17,12 +17,15 @@ public:
 
 	static Message *createText(const char* format,...);
 	static Message *createFirewallClosing();
-	static Message *createRegistredForInfoRule();
-	static Message *createUnregistredInfoRule();
-	static Message *createRegistredForInfoSocket();
-	static Message *createUnregistredInfoSocket();
-	static Message *createRegistredForAsk();
-	static Message *createUnregistredAsk();
+	static Message *createRegistredForInfoRule(UInt32 unitId, UInt32 messageId, UInt32 actionState);
+	static Message *createUnregistredInfoRule(UInt32 unitId, UInt32 messageId, UInt32 actionState);
+	static Message *createRegistredForInfoSocket(UInt32 unitId, UInt32 messageId, UInt32 actionState);
+	static Message *createUnregistredInfoSocket(UInt32 unitId, UInt32 messageId, UInt32 actionState);
+	static Message *createRegistredForAsk(UInt32 unitId, UInt32 messageId, UInt32 actionState);
+	static Message *createUnregistredAsk(UInt32 unitId, UInt32 messageId, UInt32 actionState);
+	
+	static Message *createFirewallActivated(UInt32 unitId, UInt32 messageId, UInt32 actionState);
+	static Message *createFirewallDeactivated(UInt32 unitId, UInt32 messageId, UInt32 actionState);
 	
 	static Message *createTextFromCookie(const char* message, SocketCookie* cookie);
 	

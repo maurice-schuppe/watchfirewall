@@ -718,14 +718,14 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeRegisterForAsk:
 				{
-					Message* responce = Message::createRegistredForAsk();
+					Message* responce = Message::createRegistredForAsk(client->unit, message->messageId, 0);
 					if(responce == NULL)
 						break;
 					
 					if(client->registerMessageClasses(MessageClassAsk))
 						OSIncrementAtomic(&Firewall::instance->countRegistredAsk);
 					else
-						((MessageRegistredForAsk*) &responce->m)->state = 1;
+						((MessageRegistredForAsk*) &responce->m)->actionState = 1;
 					
 					client->Send(responce);
 					responce->release();
@@ -734,14 +734,14 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeUnregisterAsk:
 				{
-					Message* responce = Message::createUnregistredAsk();
+					Message* responce = Message::createUnregistredAsk(client->unit, message->messageId, 0);
 					if(responce == NULL)
 						break;
 					
 					if(client->unregisterMessageClasses(MessageClassAsk))
 						OSDecrementAtomic(&Firewall::instance->countRegistredAsk);
 					else
-						((MessageUnregistredAsk*) &responce->m)->state = 1;
+						((MessageUnregistredAsk*) &responce->m)->actionState = 1;
 					
 					client->Send(responce);
 					responce->release();
@@ -750,14 +750,14 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeRegisterForInfoRule:
 				{
-					Message* responce = Message::createRegistredForInfoRule();
+					Message* responce = Message::createRegistredForInfoRule(client->unit, message->messageId, 0);
 					if(responce == NULL)
 						break;
 					
 					if(client->registerMessageClasses(MessageClassInfoRule))
 						OSIncrementAtomic(&Firewall::instance->countRegistredInfoRule);
 					else
-						((MessageRegistredForInfoRule*) &responce->m)->state = 1;
+						((MessageRegistredForInfoRule*) &responce->m)->actionState = 1;
 					
 					client->Send(responce);
 					responce->release();
@@ -766,14 +766,14 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 
 			case MessageTypeUnregisterInfoRule:
 				{
-					Message* responce = Message::createUnregistredInfoRule();
+					Message* responce = Message::createUnregistredInfoRule(client->unit, message->messageId, 0);
 					if(responce == NULL)
 						break;
 					
 					if(client->unregisterMessageClasses(MessageClassInfoRule))
 						OSDecrementAtomic(&Firewall::instance->countRegistredInfoRule);
 					else
-						((MessageUnregistredInfoRule*) &responce->m)->state = 1;
+						((MessageUnregistredInfoRule*) &responce->m)->actionState = 1;
 
 					client->Send(responce);
 					responce->release();
@@ -782,14 +782,14 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeRegisterForInfoSocket:
 				{
-					Message* responce = Message::createRegistredForInfoSocket();
+					Message* responce = Message::createRegistredForInfoSocket(client->unit, message->messageId, 0);
 					if(responce == NULL)
 						break;
 					
 					if(client->registerMessageClasses(MessageClassInfoSocket))
 						OSIncrementAtomic(&Firewall::instance->countRegistredInfoSocket);
 					else
-						((MessageRegistredForInfoSocket*) &responce->m)->state = 1;
+						((MessageRegistredForInfoSocket*) &responce->m)->actionState = 1;
 
 					client->Send(responce);
 					responce->release();
@@ -798,14 +798,14 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeUnregisterInfoSocket:
 				{
-					Message* responce = Message::createUnregistredInfoSocket();
+					Message* responce = Message::createUnregistredInfoSocket(client->unit, message->messageId, 0);
 					if(responce ==NULL)
 						break;
 					
 					if(client->unregisterMessageClasses(MessageClassInfoSocket))
 						OSDecrementAtomic(&Firewall::instance->countRegistredInfoSocket);
 					else
-						((MessageUnregistredInfoSocket*) &responce->m)->state = 1;
+						((MessageUnregistredInfoSocket*) &responce->m)->actionState = 1;
 					
 					client->Send(responce);
 					responce->release();
