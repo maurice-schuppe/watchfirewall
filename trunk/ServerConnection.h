@@ -11,25 +11,26 @@
 
 class ServerConnection 
 {
-	public :
-		bool Open();
-		bool Close();
-		
-		int	Send( const void* data, size_t size);
+public :
+	bool Open();
+	bool Close();
+	
+	int	Send( const void* data, size_t size);
 	
 	ServerConnection()
 	{
 		gSocket = -1;
 	}
 	
-	protected:
-	private:
+protected:
+private:
 	
-		sockaddr_ctl sc;
-		//tl_stats tl_stats;
-		socklen_t	size;
-		ctl_info		m_ctl_info;
+	sockaddr_ctl	sc;
+	socklen_t		size;
+	ctl_info		m_ctl_info;
+
 public:
+
 	int			gSocket;// = -1;
 	
 };
