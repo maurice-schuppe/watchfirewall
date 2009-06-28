@@ -96,7 +96,7 @@ errno_t
 Firewall::attach(void **cookie, socket_t so)
 {
 	if(!Firewall::instance)
-		return KERN_FAILURE;
+		return ENOMEM;
 	
 	SocketCookie *socketCookie = new SocketCookie();
 	
@@ -131,6 +131,9 @@ Firewall::attach(void **cookie, socket_t so)
 void	
 Firewall::detach(void *cookie, socket_t so)
 {
+	if(!Firewall::instance)
+		return;
+
 	Message *messsage = Message::createTextFromCookie("detach", (SocketCookie*)cookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
@@ -168,6 +171,9 @@ Firewall::getpeername(void *cookie, socket_t so, struct sockaddr **sa)
 int		
 Firewall::getsockname(void *cookie, socket_t so, struct sockaddr **sa)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+
 	Message *messsage = Message::createTextFromCookie("getsockname", (SocketCookie*)cookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
@@ -254,6 +260,9 @@ Firewall::dataOut(void *cookie, socket_t so, const struct sockaddr *to, mbuf_t *
 errno_t	
 Firewall::connectIn(void *cookie, socket_t so, const struct sockaddr *from)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
 	Message *messsage = Message::createTextFromCookie("connect in", scookie);
@@ -286,6 +295,9 @@ Firewall::connectIn(void *cookie, socket_t so, const struct sockaddr *from)
 errno_t	
 Firewall::connectOut(void *cookie, socket_t so, const struct sockaddr *to)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+	
 	Message *messsage = Message::createTextFromCookie("connect out", (SocketCookie*)cookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
@@ -297,6 +309,9 @@ Firewall::connectOut(void *cookie, socket_t so, const struct sockaddr *to)
 errno_t	
 Firewall::bind(void *cookie, socket_t so, const struct sockaddr *to)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+
 	Message *messsage = Message::createTextFromCookie("bind", (SocketCookie*)cookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
@@ -311,6 +326,9 @@ Firewall::bind(void *cookie, socket_t so, const struct sockaddr *to)
 errno_t	
 Firewall::setoption(void *cookie, socket_t so, sockopt_t opt)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+
 	Message *messsage = Message::createTextFromCookie("setoption", (SocketCookie*)cookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
@@ -321,6 +339,9 @@ Firewall::setoption(void *cookie, socket_t so, sockopt_t opt)
 errno_t	
 Firewall::getoption(void *cookie, socket_t so, sockopt_t opt)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+
 	Message *messsage = Message::createTextFromCookie("getoption", (SocketCookie*)cookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
@@ -331,6 +352,9 @@ Firewall::getoption(void *cookie, socket_t so, sockopt_t opt)
 errno_t	
 Firewall::listen(void *cookie, socket_t so)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+
 	Message *messsage = Message::createTextFromCookie("listen", (SocketCookie*)cookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
@@ -344,6 +368,9 @@ Firewall::listen(void *cookie, socket_t so)
 errno_t	
 Firewall::ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+
 	Message *messsage = Message::createTextFromCookie("ioctl", (SocketCookie*)cookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
@@ -354,6 +381,9 @@ Firewall::ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp)
 errno_t 
 Firewall::accept(void *cookie, socket_t so_listen, socket_t so, const struct sockaddr *local, const struct sockaddr *remote)
 {
+	if(!Firewall::instance)
+		return KERN_SUCCESS;
+
 	Message *messsage = Message::createTextFromCookie("accept", (SocketCookie*)cookie);
 	Firewall::instance->send(messsage);
 	messsage->release();
@@ -414,23 +444,27 @@ Firewall::free()
 		return true;
 
 	instance->closing = true;
+
+	IOLog("firewall instance begin destroed socket filters \n");
 	
 	if(!instance->unregisterSocketFilters())
 		return false;
-	
-	//wait to close open sockets
 	
 	//check for connections
 	if(!instance->unRegisterKernelControl())
 		return false;
 
-	if(!SocketCookie::free())
-		return false;
-	
+	while(SocketCookie::free() == false)
+		IOSleep(1);
+
+	IOLog("firewall instance begin destroed applications \n");
 	Application::freeStatic();
+
 	instance->rules.free();
-	
+
+	IOSleep(200);
 	delete instance;
+	instance = NULL;
 	
 	IOLog("firewall instance destroed \n");
 	

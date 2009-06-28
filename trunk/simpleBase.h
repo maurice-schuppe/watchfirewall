@@ -12,7 +12,7 @@
 
 #include <IOKit/IOLib.h>
 
-class SimpleBase
+class __attribute__((visibility("hidden"))) SimpleBase
 {
 public:
 	SInt32 references;

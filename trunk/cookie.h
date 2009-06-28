@@ -14,7 +14,7 @@
 #include "application.h"
 #include <sys/kpi_socketfilter.h>
 
-enum SocketCookieState
+enum __attribute__((visibility("hidden"))) SocketCookieState
 {
 	SocketCookieStateNOT = 1,	
 	SocketCookieStateASK = 2,	
@@ -22,7 +22,7 @@ enum SocketCookieState
 	SocketCookieStateNOT_ALLOWED = 8
 };
 
-struct DeferredData
+struct __attribute__((visibility("hidden"))) DeferredData
 {
 	mbuf_t data;
 	mbuf_t control;
@@ -33,7 +33,7 @@ struct DeferredData
 	DeferredData *next;
 };
 
-class SocketCookie
+class __attribute__((visibility("hidden"))) SocketCookie
 {
 public:
 	static IOLock *lock;
@@ -82,16 +82,18 @@ public:
 	
 	void RemoveFromChain()
 	{
+		::IOLog("removed socket cookie\n");
 		IOLockLock(lock);
 		if(prev)
 			prev->next = next;
 		
 		if(next)
 			next->prev = prev;
+
+		if(this == socketCookies)
+			socketCookies = next;
 		
 		prev = next = NULL;
-		if(this == socketCookies)
-			socketCookies = NULL;
 
 		IOLockUnlock(lock);
 
@@ -107,6 +109,7 @@ public:
 	
 	void addToChain()
 	{
+		::IOLog("added socket cookie\n");
 		IOLockLock(lock);
 		this->next = socketCookies;
 		socketCookies = this;

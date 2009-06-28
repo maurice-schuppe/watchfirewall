@@ -16,45 +16,63 @@
 
 #include "simpleBase.h"
 
-class Application: public SimpleBase
+class __attribute__((visibility("hidden"))) Application: public SimpleBase
 {
 public:
 	static Application *applications;
 	static IOLock *lock;
-	
+	static IOThread thread;
+	static volatile SInt32 closing;
+
 	static kauth_listener_t processListener;
 
 public:
 	static bool initStatic()
 	{
-		lock = IOLockAlloc();
-		if(!lock)
-			return false;
+		closing = 0;
 		
-		processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, callbackProcessListener, NULL);
-		
-		if(!processListener)
+		if(lock = IOLockAlloc())
 		{
-			freeStatic();
-			return false;
+			if(thread = IOCreateThread(checkIsLiveRoutine, NULL))
+			{
+		
+				if(processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, callbackProcessListener, NULL))
+				{
+					return true;
+				}
+				
+				OSIncrementAtomic(&closing);
+			}
+			
+			IOLockFree(lock);
 		}
 		
-		return true;
+		return false;
 	}
 	
 	static void freeStatic()
 	{
+		OSIncrementAtomic(&closing);
+		
 		if(processListener)
 			kauth_unlisten_scope(processListener);
 		
 		processListener = NULL;
-
-		if(lock)
-			IOLockFree(lock);
 		
-		lock = NULL;
+		if(lock)
+		{
+			IOLockLock(lock);
+			while (applications)
+				applications->removeFromChain()->release();
+			IOLockUnlock(lock);
+
+			IOLockFree(lock);
+			
+			lock = NULL;
+		}
 	}
 	
+	static void checkIsLiveRoutine(void *arg);
 	static Application* getApplication(); 
 	static Application* addApplication(vnode_t vnode, const char* filePath);
 	static int callbackProcessListener
@@ -80,17 +98,7 @@ public:
 
 	virtual void free()
 	{
-		//::IOLog("application deleted pid: %d\n", this->pid);
-		if(prev)
-			prev->next = next;
-		
-		if(next)
-			next->prev = prev;
-		
-		prev = next = NULL;
-		
-		if(this == applications)
-			applications = NULL;
+		::IOLog("application deleted pid: %d\n", this->pid);
 		
 		if(filePath)
 			filePath->release();
@@ -101,13 +109,19 @@ public:
 		SimpleBase::free();
 	}
 	
-	int release()
+	Application* removeFromChain()
 	{
-		IOLockLock(lock);
-		int result = SimpleBase::release();
-		IOLockUnlock(lock);
+		if(prev)
+			prev->next = next;
 		
-		return result;
+		if(this == applications)
+			applications = next;
+		
+		if(next)
+			next->prev = prev;
+		
+		prev = next = NULL;
+		return this;
 	}
 	
 };

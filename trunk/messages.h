@@ -8,7 +8,7 @@
 #include "cookie.h"
 
 
-class Message : public SimpleBase
+class __attribute__((visibility("hidden"))) Message : public SimpleBase
 {
 public:
 	MessageBase m;
