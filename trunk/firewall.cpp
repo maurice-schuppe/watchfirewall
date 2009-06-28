@@ -462,7 +462,7 @@ Firewall::free()
 
 	instance->rules.free();
 
-	IOSleep(200);
+	//IOSleep(200);
 	delete instance;
 	instance = NULL;
 	

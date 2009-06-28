@@ -78,6 +78,7 @@
 		DF7F26980F04D7F90084F62D /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
 		DF7F26990F04D7F90084F62D /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
 		DF82061B0F1A64CB0046C608 /* Kernel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework.static; name = Kernel.framework; path = System/Library/Frameworks/Kernel.framework; sourceTree = SDKROOT; };
+		DF8B37E00FC9334E004062B3 /* WatchApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WatchApp-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +107,7 @@
 				247142CAFF3F8F9811CA285C /* Source */,
 				089C167CFE841241C02AAC07 /* Resources */,
 				19C28FB6FE9D52B211CA2CBB /* Products */,
+				DF8B37E00FC9334E004062B3 /* WatchApp-Info.plist */,
 			);
 			name = Watch;
 			sourceTree = "<group>";

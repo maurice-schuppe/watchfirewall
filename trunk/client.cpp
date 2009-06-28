@@ -61,7 +61,7 @@ Client::closeSignal()
 {
 	::IOLog("cliend send close signal\n");
 	OSIncrementAtomic(&this->exitState);
-	IOLockWakeup(this->lockWorkThread, 0, false);//(this->lockWorkThread);
+	IOLockWakeup(this->lockWorkThread, 0, false);
 }
 
 void

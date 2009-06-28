@@ -21,57 +21,16 @@ class __attribute__((visibility("hidden"))) Application: public SimpleBase
 public:
 	static Application *applications;
 	static IOLock *lock;
+	static IOLock *lockRoutine;
 	static IOThread thread;
-	static volatile SInt32 closing;
+	static SInt32 closing;
+	static SInt32 countProcessesToCheck;
 
 	static kauth_listener_t processListener;
 
 public:
-	static bool initStatic()
-	{
-		closing = 0;
-		
-		if(lock = IOLockAlloc())
-		{
-			if(thread = IOCreateThread(checkIsLiveRoutine, NULL))
-			{
-		
-				if(processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, callbackProcessListener, NULL))
-				{
-					return true;
-				}
-				
-				OSIncrementAtomic(&closing);
-			}
-			
-			IOLockFree(lock);
-		}
-		
-		return false;
-	}
-	
-	static void freeStatic()
-	{
-		OSIncrementAtomic(&closing);
-		
-		if(processListener)
-			kauth_unlisten_scope(processListener);
-		
-		processListener = NULL;
-		
-		if(lock)
-		{
-			IOLockLock(lock);
-			while (applications)
-				applications->removeFromChain()->release();
-			IOLockUnlock(lock);
-
-			IOLockFree(lock);
-			
-			lock = NULL;
-		}
-	}
-	
+	static bool initStatic();
+	static void freeStatic();
 	static void checkIsLiveRoutine(void *arg);
 	static Application* getApplication(); 
 	static Application* addApplication(vnode_t vnode, const char* filePath);
