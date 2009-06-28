@@ -3,16 +3,17 @@
 #include <sys/kauth.h>
 #include "application.h"
 
-Application *Application::applications;
-IOLock *Application::lock;
-kauth_listener_t Application::processListener;
-
+Application			*Application::applications;
+IOLock				*Application::lock;
+kauth_listener_t	Application::processListener;
+IOThread			Application::thread;
+volatile SInt32		Application::closing;
 
 
 Application* 
 Application::getApplication()
 {
-	if(!lock)
+	if(Application::closing)
 		return NULL;
 	
 	//search in existing
@@ -33,9 +34,8 @@ Application::getApplication()
 	}
 	
 	result = addApplication(NULL, NULL);
-	result->retain();
-
-unlock:
+	if(result)
+		result->retain();
 	
 	IOLockUnlock(Application::lock);
 	return result;	
@@ -64,6 +64,10 @@ Application::addApplication(vnode_t vnode, const char* filePath)
 	result->uid = kauth_getuid();
 	result->pid = proc_selfpid();
 	result->p_pid = proc_selfppid();
+	result->retain();
+	
+	::IOLog("application added pid: %d\n", result->pid);
+	
 	result->next = applications;
 	applications = result;
 	
@@ -86,17 +90,58 @@ Application::callbackProcessListener
  uintptr_t       arg3
  )
 {
-	if(KAUTH_FILEOP_EXEC == action)
+	if(KAUTH_FILEOP_EXEC == action && Application::closing == 0)
 	{
-		printf(
-			   "scope=" KAUTH_SCOPE_FILEOP ", action=KAUTH_FILEOP_EXEC, uid=%ld, pid=%ld, vnode=0x%lx, path=%s\n", 
-			   (long) kauth_cred_getuid(credential),
-			   (long) proc_selfpid(),
-			   (long) arg0,
-			   (const char *) arg1
-			   );
+		IOLockLock(Application::lock);
+		Application::addApplication((vnode_t)arg0, (const char *) arg1);
+		IOLockUnlock(Application::lock);
 	}
 	
 	return KAUTH_RESULT_DEFER;
 }
+
+void
+Application::checkIsLiveRoutine(void *arg)
+{
+	Application *app = NULL;
+	while(closing == 0)
+	{
+		IOSleep(100);
+		if(closing)
+			break;
+	
+		//::IOLog("new app routine\n");
+		IOLockLock(Application::lock);
+		if(app == NULL)
+			app = Application::applications;
+		else
+		{
+			Application* a = app;
+			app = app->next;
+			a->release();
+		}
+		
+		if(app)
+		{	
+			proc_t pr = proc_find(app->pid);
+			if(pr)
+			{
+				proc_rele(pr);
+				app->retain();//cashing for next loop
+			}
+			else
+			{
+				::IOLog("app routine delete: %d ref: %d\n", app->pid, app->references);
+				app->removeFromChain();
+				app->release();
+				app = NULL;
+			}
+		}
+		IOLockUnlock(Application::lock);
+	}	
+
+	::IOLog("app routine exit\n");
+	IOExitThread();
+}
+
 

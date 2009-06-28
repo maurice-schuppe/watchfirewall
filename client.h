@@ -16,13 +16,13 @@
 #include "messages.h"
 #include "simpleBase.h"
 
-struct ClientMessageNode 
+struct __attribute__((visibility("hidden"))) ClientMessageNode 
 {
 	Message *message;
 	ClientMessageNode *next;
 };
 
-class Client : public SimpleBase
+class __attribute__((visibility("hidden"))) Client : public SimpleBase
 {
 protected:
 	static void ClearQueue(ClientMessageNode *root);

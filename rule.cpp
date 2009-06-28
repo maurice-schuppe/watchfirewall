@@ -180,11 +180,12 @@ Rules::addRule(MessageAddRule *messageRule, Rule** rule)
 			{
 				//insert before c
 				workRule->next = c;
+				workRule->prev = c->prev;
+
 				c->prev = workRule;
 				
-				workRule->prev = c->prev;
 				if(workRule->prev)
-					workRule->prev = workRule;
+					workRule->prev->next = workRule;
 				else
 					this->root = workRule;//prev is root, replace
 				
@@ -215,10 +216,7 @@ Rules::deleteRule(UInt32 ruleId, Rule** rule)
 		if(workRule->id == ruleId)
 		{
 			workRule->state |= RuleStateDeleted;
-			workRule->removeFromChain();
-			//check is root
-			if(this->root == workRule)
-				this->root = NULL;
+			removeFromChain(workRule);
 			
 			clock_get_uptime(&lastChangedTime);
 			*rule = workRule;

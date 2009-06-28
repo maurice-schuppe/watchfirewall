@@ -12,13 +12,13 @@
 #include "MessageType.h"
 
 
-enum RuleState
+enum __attribute__((visibility("hidden"))) RuleState
 {
 	RuleStateActive = 1,
 	RuleStateDeleted = 2
 };
 
-class Rule: public SimpleBase
+class __attribute__((visibility("hidden"))) Rule: public SimpleBase
 {
 	UInt32 id;
 	
@@ -47,23 +47,12 @@ public:
 	
 	bool isApplicable();
 	
-	void removeFromChain()
-	{
-		if(prev)
-			prev->next = next;
-		
-		if(next)
-			next->prev = prev;
-		
-		prev = next = NULL;
-	}
-	
 	int compare(Rule *toRule);
 	
 	friend class Rules;
 };
 
-class Rules 
+class __attribute__((visibility("hidden"))) Rules 
 {
 public:
 	Rule *root;
@@ -88,12 +77,8 @@ public:
 			IOLockLock(lock);
 
 			while(root)
-			{
-				Rule *r = root;
-				root = root->next;
-				r->removeFromChain();
-				r->release();
-			}
+				removeFromChain(root)->release();
+
 			IOLockUnlock(lock);
 			
 			IOLockFree(lock);
@@ -101,6 +86,22 @@ public:
 		}
 	}
 	
+	Rule* removeFromChain(Rule *rule)
+	{
+		if(rule->prev)
+			rule->prev->next = rule->next;
+		
+		if(rule == root)
+			root = rule->next;
+		
+		if(rule->next)
+			rule->next->prev = rule->prev;
+		
+		rule->prev = rule->next = NULL;
+		
+		return rule;
+		
+	}
 	bool isRulesChanged(UInt64 fromTime) { return lastChangedTime > fromTime;}
 	Rule* findRule(const OSString* process_name, const OSString* process_path, 
 				   UInt16 sock_famely, UInt16 socket_type, UInt16 sock_protocol, 

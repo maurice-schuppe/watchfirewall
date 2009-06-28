@@ -32,7 +32,7 @@
 
 #define MYBUNDLEID "com.janbird.watch.kext"
 
-struct protocol
+struct __attribute__((visibility("hidden"))) protocol
 {
 	sflt_handle handle;
 	int domain;
@@ -41,7 +41,7 @@ struct protocol
 	int state;
 };
 
-class Firewall 
+class __attribute__((visibility("hidden"))) Firewall 
 {
 public:
 	bool	firewallUp;
