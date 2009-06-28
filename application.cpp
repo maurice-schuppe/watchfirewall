@@ -5,9 +5,77 @@
 
 Application			*Application::applications;
 IOLock				*Application::lock;
+IOLock				*Application::lockRoutine;
 kauth_listener_t	Application::processListener;
 IOThread			Application::thread;
-volatile SInt32		Application::closing;
+SInt32				Application::closing;
+SInt32				Application::countProcessesToCheck;
+
+
+bool 
+Application::initStatic()
+{
+	closing = 0;
+	
+	if(lock = IOLockAlloc())
+	{
+		if(lockRoutine = IOLockAlloc())
+		{
+			if(thread = IOCreateThread(checkIsLiveRoutine, NULL))
+			{
+				
+				if(processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, callbackProcessListener, NULL))
+				{
+					return true;
+				}
+				
+				OSIncrementAtomic(&closing);
+			}
+			
+			IOLockFree(lockRoutine);
+		}
+		
+		IOLockFree(lock);
+	}
+	
+	return false;
+}
+
+
+void 
+Application::freeStatic()
+{
+	OSIncrementAtomic(&closing);
+	
+	if(processListener)
+		kauth_unlisten_scope(processListener);
+	
+	processListener = NULL;
+	
+	if(lock)
+	{
+		if(lockRoutine)
+		{
+			//IOLockWakeup(lockRoutine, 0, false);
+			//IOSleep(1);
+			::IOLog("begin waiting for application routine ended\n");
+			IOLockLock(lockRoutine);
+			::IOLog("application routine ended...\n");
+			IOLockUnlock(lockRoutine);
+			IOLockFree(lockRoutine);
+			lockRoutine = NULL;
+		}
+		
+		IOLockLock(lock);
+		while (applications)
+			applications->removeFromChain()->release();
+		IOLockUnlock(lock);
+		
+		IOLockFree(lock);
+		
+		lock = NULL;
+	}
+}
 
 
 Application* 
@@ -94,23 +162,29 @@ Application::callbackProcessListener
 	{
 		IOLockLock(Application::lock);
 		Application::addApplication((vnode_t)arg0, (const char *) arg1);
+		countProcessesToCheck++;
 		IOLockUnlock(Application::lock);
 	}
 	
 	return KAUTH_RESULT_DEFER;
 }
 
+
 void
 Application::checkIsLiveRoutine(void *arg)
 {
 	Application *app = NULL;
+	
+	IOLockLock(lockRoutine);
+	
 	while(closing == 0)
 	{
-		IOSleep(100);
+		if(countProcessesToCheck == 0)
+			IOSleep(500);
+		
 		if(closing)
 			break;
 	
-		//::IOLog("new app routine\n");
 		IOLockLock(Application::lock);
 		if(app == NULL)
 			app = Application::applications;
@@ -120,6 +194,9 @@ Application::checkIsLiveRoutine(void *arg)
 			app = app->next;
 			a->release();
 		}
+		
+		if(countProcessesToCheck > 0)
+			countProcessesToCheck--;
 		
 		if(app)
 		{	
@@ -135,12 +212,14 @@ Application::checkIsLiveRoutine(void *arg)
 				app->removeFromChain();
 				app->release();
 				app = NULL;
+				countProcessesToCheck++;
 			}
 		}
 		IOLockUnlock(Application::lock);
 	}	
 
 	::IOLog("app routine exit\n");
+	IOLockUnlock(lockRoutine);
 	IOExitThread();
 }
 

@@ -82,7 +82,7 @@ public:
 	
 	void RemoveFromChain()
 	{
-		::IOLog("removed socket cookie\n");
+		//::IOLog("removed socket cookie\n");
 		IOLockLock(lock);
 		if(prev)
 			prev->next = next;
@@ -109,7 +109,7 @@ public:
 	
 	void addToChain()
 	{
-		::IOLog("added socket cookie\n");
+		//::IOLog("added socket cookie\n");
 		IOLockLock(lock);
 		this->next = socketCookies;
 		socketCookies = this;

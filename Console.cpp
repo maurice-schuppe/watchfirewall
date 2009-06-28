@@ -61,7 +61,7 @@ int main()
 					//fflush(stdout);
 				}
 					break;
-				case MessageTypeFirewallClosed:
+				case MessageTypeFirewallClosing:
 					goto close;
 				default:
 					break;
