@@ -56,11 +56,7 @@ Application::freeStatic()
 	{
 		if(lockRoutine)
 		{
-			//IOLockWakeup(lockRoutine, 0, false);
-			//IOSleep(1);
-			::IOLog("begin waiting for application routine ended\n");
 			IOLockLock(lockRoutine);
-			::IOLog("application routine ended...\n");
 			IOLockUnlock(lockRoutine);
 			IOLockFree(lockRoutine);
 			lockRoutine = NULL;
@@ -101,7 +97,7 @@ Application::getApplication()
 		result = result->next;
 	}
 	
-	result = addApplication(NULL, NULL);
+	result = addApplication(NULL, "");
 	if(result)
 		result->retain();
 	
@@ -134,7 +130,7 @@ Application::addApplication(vnode_t vnode, const char* filePath)
 	result->p_pid = proc_selfppid();
 	result->retain();
 	
-	::IOLog("application added pid: %d\n", result->pid);
+	//::IOLog("application added pid: %d\n", result->pid);
 	
 	result->next = applications;
 	applications = result;
@@ -208,7 +204,7 @@ Application::checkIsLiveRoutine(void *arg)
 			}
 			else
 			{
-				::IOLog("app routine delete: %d ref: %d\n", app->pid, app->references);
+				//::IOLog("app routine delete: %d ref: %d\n", app->pid, app->references);
 				app->removeFromChain();
 				app->release();
 				app = NULL;
@@ -218,7 +214,7 @@ Application::checkIsLiveRoutine(void *arg)
 		IOLockUnlock(Application::lock);
 	}	
 
-	::IOLog("app routine exit\n");
+	//::IOLog("app routine exit\n");
 	IOLockUnlock(lockRoutine);
 	IOExitThread();
 }
