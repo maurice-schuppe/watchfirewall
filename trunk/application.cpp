@@ -237,6 +237,21 @@ Application::addApplication(kauth_cred_t cred, vnode_t vnode, const char *filePa
 		result->filePath = OSString::withCString(filePath);
 		result->uid = kauth_cred_getuid(cred);
 		result->gid = kauth_cred_getgid(cred);
+		
+		//read additional info from vnode
+		vnode_attr va;
+		VATTR_INIT(&va);
+		VATTR_WANTED(&va, va_data_size);
+		VATTR_WANTED(&va, va_modify_time);
+		if (
+			vnode_getattr(vnode, &va, vfs_context_current())/* VNOP_GETATTR(vnode, &va, vfs_context_current())*/ == 0  && 
+			VATTR_IS_SUPPORTED(&va, va_data_size)  && 
+			VATTR_IS_SUPPORTED(&va, va_modify_time)  && 
+			va.va_data_size != 0
+			) 
+		{
+			::IOLog("aplication size is: %d\n", va.va_data_size);
+		}
 	}
 	else
 	{
