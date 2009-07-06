@@ -13,6 +13,8 @@
 #include <libkern/c++/OSString.h>
 #include <IOKit/IOLocks.h>
 #include <sys/kauth.h>
+#include <sys/vnode.h>
+#include <libkern/crypto/sha1.h>
 
 #include "simpleBase.h"
 
@@ -25,7 +27,7 @@ public:
 	static IOThread thread;
 	static SInt32 closing;
 	static SInt32 countProcessesToCheck;
-
+	
 	static kauth_listener_t processListener;
 
 public:
@@ -33,7 +35,8 @@ public:
 	static void freeStatic();
 	static void checkIsLiveRoutine(void *arg);
 	static Application* getApplication(); 
-	static Application* addApplication(vnode_t vnode, const char* filePath);
+	static Application* addApplication(vfs_context_t vfsContext, vnode_t vnode);
+	static Application* addApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath);
 	static int callbackProcessListener
 					(
 					   kauth_cred_t    credential,
@@ -44,11 +47,22 @@ public:
 					   uintptr_t       arg2,
 					   uintptr_t       arg3
 					 );
+	static int callbackVnodeListener
+					(
+					 kauth_cred_t    credential,
+					 void *          idata,
+					 kauth_action_t  action,
+					 uintptr_t       arg0,
+					 uintptr_t       arg1,
+					 uintptr_t       arg2,
+					 uintptr_t       arg3
+					 );
 	
 public:
 	pid_t pid;
 	pid_t p_pid;
-	uid_t uid;	
+	uid_t uid;
+	gid_t gid;
 	OSString *processName;
 	OSString *filePath;
 	

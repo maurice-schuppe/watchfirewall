@@ -1,5 +1,7 @@
 #include <string.h>
 #include <kern/clock.h>
+#include <sys/vnode_if.h>
+
 
 #include "rule.h"
 
@@ -298,3 +300,70 @@ Rules::deactivateRule(UInt32 ruleId, Rule** rule)
 	return result;
 }
 
+//test
+
+
+int
+vn_rdwr_64FromKernelCode(
+		   enum uio_rw rw,
+		   struct vnode *vp,
+		   uint64_t base,
+		   int64_t len,
+		   off_t offset,
+		   enum uio_seg segflg,
+		   int ioflg,
+		   int *aresid,
+		   proc_t p)
+{
+	uio_t auio;
+	//int spacetype;
+	vfs_context_t context;
+	int error=0;
+	//char uio_buf[ UIO_SIZEOF(1) ];
+	
+	//context.vc_thread = current_thread();
+	//context.vc_ucred = cred;
+	
+//	if (UIO_SEG_IS_USER_SPACE(segflg)) {
+//		spacetype = proc_is64bit(p) ? UIO_USERSPACE64 : UIO_USERSPACE32;
+//	}
+//	else {
+//		spacetype = UIO_SYSSPACE;
+//	}
+	auio = uio_create(1, offset, UIO_SYSSPACE, rw);
+	uio_addiov(auio, base, len);
+	
+//#if CONFIG_MACF
+//	/* XXXMAC
+//	 * 	IO_NOAUTH should be re-examined.
+// 	 *	Likely that mediation should be performed in caller.
+//	 */
+//	if ((ioflg & IO_NOAUTH) == 0) {
+//		/* passed cred is fp->f_cred */
+//		if (rw == UIO_READ)
+//			error = mac_vnode_check_read(&context, cred, vp);
+//		else
+//			error = mac_vnode_check_write(&context, cred, vp);
+//	}
+//#endif
+	
+
+		if (rw == UIO_READ)
+		{
+			error = VNOP_READ(vp, auio, ioflg, context);
+		}
+		else 
+		{
+			error = VNOP_WRITE(vp, auio, ioflg, context);
+		}
+	
+	if (aresid)
+		// LP64todo - fix this
+		*aresid = uio_resid(auio);
+	else
+		if (uio_resid(auio) && error == 0)
+			error = EIO;
+	return (error);
+}
+
+//end test
