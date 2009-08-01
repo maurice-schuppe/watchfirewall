@@ -15,14 +15,6 @@
 ServerConnection serverConnection;
 char buffer[8*1024];
 
-struct Message 
-{
-	UInt16 length;
-	UInt16 type;
-	
-	char *buffer() { return ((char*)this) + 4;}
-};
-
 /*
  SignalHandler - implemented to handle an interrupt from the command line using Ctrl-C.
  */
@@ -40,7 +32,7 @@ int main()
 
 	serverConnection.Open();
 
-	int n, k;
+	int n;
 	while ((n = recv(serverConnection.gSocket, buffer, 8 * 1024 , 0)) != 0)
 	{
 		if(n == -1)
@@ -49,24 +41,130 @@ int main()
 			break;
 		}
 			
-		for(k = 0; k < n;  )
+		for(int k = 0; k < n;  )
 		{
-			Message *message = (Message*)(buffer + k);
+			MessageBase *message = (MessageBase*)(buffer + k);
 			
 			switch (message->type) {
 				case MessageTypeText:
-				{
-					char *buf = message->buffer();
-					printf("%s \n", buf);
-					//fflush(stdout);
-				}
+					{
+						MessageText* messageText = (MessageText*)message;
+						printf("%s \n", messageText->textBuffer);
+					}
 					break;
+
+				case MessageTypeAskRule:
+					{
+						MessageAskRule* messageAskRule = (MessageAskRule*)message;
+					}
+					break;
+					
+				case MessageTypeRuleAdded:
+					{
+						MessageRuleAdded* messageRuleAdded = (MessageRuleAdded*)message;
+					}
+					break;
+					
+				case MessageTypeRuleDeleted:
+					{
+						MessageRuleDeleted* messageRuleDeleted = (MessageRuleDeleted*)message;
+					}
+					break;
+					
+				case MessageTypeRuleDeactivated:
+					{
+						MessageRuleDeactivated* messageRuleDeactivated = (MessageRuleDeactivated*)message;
+					}
+					break;
+					
+				case MessageTypeRuleActivated:
+					{
+						MessageRuleActivated* messageRuleActivated = (MessageRuleActivated*)message;
+					}
+					break;
+					
+					
+				case MessageTypeSocketDataIN:
+					{
+						MessageSocketDataIN* messageSocketDataIN = (MessageSocketDataIN*)message;
+					}
+					break;
+					
+				case MessageTypeSocketDataOUT:
+					{
+						MessageSocketDataOUT* messageSocketDataOUT = (MessageSocketDataOUT*)message;
+					}
+					break;
+					
+				case MessageTypeSocketOpen:
+					{
+						MessageSocketOpen* messageSocketOpen = (MessageSocketOpen*)message;
+					}
+					break;
+					
+				case MessageTypeSocketClosed:
+					{
+						MessageSocketClosed* messageSocketClosed = (MessageSocketClosed*)message;
+					}
+					break;
+					
+				case MessageTypeFirewallActivated:
+					{
+						MessageFirewallActivated* messageFirewallActivated = (MessageFirewallActivated*)message;
+					}
+					break;
+					
+				case MessageTypeFirewallDeactivated:
+					{
+						MessageFirewallDeactivated* messageFirewallDeactivated = (MessageFirewallDeactivated*)message;
+					}
+					break;
+					
+					
+				case MessageTypeRegistredForAsk:
+					{
+						MessageRegistredForAsk* messageRegistredForAsk = (MessageRegistredForAsk*)message;
+					}
+					break;
+					
+				case MessageTypeUnregistredAsk:
+					{
+						MessageUnregistredAsk* messageUnregistredAsk = (MessageUnregistredAsk*)message;
+					}
+					break;
+					
+				case MessageTypeRegistredForInfoRule:
+					{
+						MessageRegistredForInfoRule* messageRegistredForInfoRule = (MessageRegistredForInfoRule*)message;
+					}
+					break;
+					
+				case MessageTypeUnregistredInfoRule:
+					{
+						MessageUnregistredInfoRule* messageUnregistredInfoRule = (MessageUnregistredInfoRule*)message;
+					}
+					break;
+					
+				case MessageTypeRegistredForInfoSocket:
+					{
+						MessageRegistredForInfoSocket* messageRegistredForInfoSocket = (MessageRegistredForInfoSocket*)message;
+						printf("client registred for info rule: %s", messageRegistredForInfoSocket->actionState ? "success" : "error");
+					}
+					break;
+					
+				case MessageTypeUnregistredInfoSocket:
+					{
+						MessageUnregistredInfoSocket* messageUnregistredInfoSocket = (MessageUnregistredInfoSocket*)message;
+					}
+					break;
+					
+					
 				case MessageTypeFirewallClosing:
 					goto close;
 				default:
 					break;
 			}
-			k += message->length;
+			k += message->size;
 		}
 	}
 

@@ -735,18 +735,37 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				break;
 				
 			case MessageTypeActivateFirewall:
-				if(Firewall::instance->firewallUp == false)
 				{
-					Firewall::instance->firewallUp = true;
-					//send message
+					Message* responce = Message::createFirewallActivated(client->unit, message->messageId, 0);
+					if(responce == NULL)
+						break;
+					
+					if(Firewall::instance->firewallUp == false)
+					{
+						Firewall::instance->firewallUp = true;
+						//send message
+						((MessageClientActionResponce*) &responce->m)->actionState = 1;
+						
+					}
+					Firewall::instance->send(responce);
+					responce->release();
 				}
 				break;
 				
 			case MessageTypeDeactivateFirewall:
-				if(Firewall::instance->firewallUp == true)
 				{
-					Firewall::instance->firewallUp = false;
-					//send message
+					Message* responce = Message::createFirewallActivated(client->unit, message->messageId, 0);
+					if(responce == NULL)
+						break;
+
+					if(Firewall::instance->firewallUp == true)
+					{
+						Firewall::instance->firewallUp = false;
+						((MessageClientActionResponce*) &responce->m)->actionState = 1;
+					}
+
+					Firewall::instance->send(responce);
+					responce->release();
 				}
 				break;
 				

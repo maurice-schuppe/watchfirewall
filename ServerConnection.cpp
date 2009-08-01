@@ -28,11 +28,6 @@ bool ServerConnection::Open()
 	
 	if (ioctl(gSocket, CTLIOCGINFO, &m_ctl_info) == -1)
 		return false;
-//	{
-//		perror("ioctl CTLIOCGINFO");
-//		exit(0);
-//	} else
-//		printf("ctl_id: 0x%x for ctl_name: %s\n", m_ctl_info.ctl_id, m_ctl_info.ctl_name);
 	
 	bzero(&sc, sizeof(struct sockaddr_ctl));
 	sc.sc_len = sizeof(struct sockaddr_ctl);
@@ -43,11 +38,6 @@ bool ServerConnection::Open()
 	
 	if (connect(gSocket, (struct sockaddr *)&sc, sizeof(struct sockaddr_ctl)))
 		return false;
-	
-//	{
-//		perror("connect");
-//		exit(0);
-//	}
 	
 	return true;
 }
