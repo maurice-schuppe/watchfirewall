@@ -36,7 +36,6 @@ enum ServerMessagesType
 	MessageTypeSocketDataOUT			= MessageClassInfoSocket | 0x08,
 	MessageTypeSocketOpen				= MessageClassInfoSocket | 0x09,
 	MessageTypeSocketClosed				= MessageClassInfoSocket | 0x0A,
-	MessageTypeSocketAskRule			= MessageClassInfoSocket | 0x0B,
 	
 	MessageTypeFirewallActivated		= MessageClassFirewall | 0x01,
 	MessageTypeFirewallDeactivated		= MessageClassFirewall | 0x02,
