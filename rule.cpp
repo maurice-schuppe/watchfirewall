@@ -6,7 +6,7 @@
 #include "rule.h"
 
 bool 
-Rule::init(MessageAddRule *message)
+Rule::init(RawMessageAddRule *message)
 {	
 	if(message)
 	{
@@ -141,7 +141,7 @@ unlock:
 }
 
 int 
-Rules::addRule(MessageAddRule *messageRule, Rule** rule)
+Rules::addRule(RawMessageAddRule *messageRule, Rule** rule)
 {
 	*rule = NULL;
 	int result;
