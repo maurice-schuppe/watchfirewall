@@ -68,7 +68,7 @@ enum ClientMessagesType
 	MessageTypeUnregisterInfoSocket		= MessageClassClient | 0x0C
 };
 
-struct MessageBase 
+struct RawMessageBase 
 {
 	UInt16 size;
 	UInt16 type;
@@ -76,32 +76,32 @@ struct MessageBase
 	inline void init(UInt16 size, UInt16 type){this->size = size, this->type = type;}
 };
 
-struct MessageClientAction: public MessageBase
+struct RawMessageClientAction : public RawMessageBase
 {
 	UInt32 messageId;
 };
 
-struct MessageClientActionResponce : public MessageBase
+struct RawMessageClientActionResponce : public RawMessageBase
 {
 	UInt32 unitId;
-	UInt32 messageId;
+	UInt32 clientMessageId;
 	UInt32 actionState;
 	
 public:
-	void init(UInt32 unitId, UInt32 messageId, UInt32 actionState)
+	void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 	{
 		this->unitId = unitId;
-		this->messageId = messageId;
+		this->clientMessageId = clientMessageId;
 		this->actionState = actionState;
 	}
 };
 
-struct MessageText : public MessageBase
+struct RawMessageText : public RawMessageBase
 {
 	char textBuffer[4];
 };
 
-struct MessageAskRule : public MessageBase
+struct RawMessageAskRule : public RawMessageBase
 {
 	UInt16 processNameOffset;//0 for all
 	UInt16 filePathOffset;//0 for all
@@ -119,73 +119,73 @@ struct MessageAskRule : public MessageBase
 	char buffer[4];
 };
 
-struct MessageRuleAdded : public MessageClientActionResponce
+struct RawMessageRuleAdded : public RawMessageClientActionResponce
 {
-	UInt32 id;//rule
+	UInt32 clientMessageId;//rule
 	
-	inline void init(UInt32 id){ MessageBase::init(8, MessageTypeRuleAdded); this->id = id;}
+	inline void init(UInt32 id){ RawMessageBase::init(8, MessageTypeRuleAdded); this->clientMessageId = id;}
 };
 
-struct MessageRuleDeleted : public MessageBase
+struct RawMessageRuleDeleted : public RawMessageClientActionResponce
 {
-	UInt32 id;//rule
+	UInt32 ruleId;//rule
 };
 
-struct MessageRuleDeactivated	: public MessageClientActionResponce
+struct RawMessageRuleDeactivated	: public RawMessageClientActionResponce
 {
-	UInt32 id;//rule
+	UInt32 ruleId;//rule
 };
 
-struct MessageRuleActivated : public MessageClientActionResponce
+struct RawMessageRuleActivated : public RawMessageClientActionResponce
 {
-	UInt32 id;//rule
+	UInt32 ruleId;//rule
 };
 
-struct MessageRegistredForAsk : public MessageClientActionResponce
-{
-	
-};
-
-struct MessageUnregistredAsk : public MessageClientActionResponce
+struct RawMessageRegistredForAsk : public RawMessageClientActionResponce
 {
 	
 };
 
-struct MessageRegistredForInfoRule : public MessageClientActionResponce
+struct RawMessageUnregistredAsk : public RawMessageClientActionResponce
 {
 	
 };
 
-struct MessageUnregistredInfoRule : public MessageClientActionResponce
+struct RawMessageRegistredForInfoRule : public RawMessageClientActionResponce
 {
 	
 };
 
-struct MessageRegistredForInfoSocket : public MessageClientActionResponce
+struct RawMessageUnregistredInfoRule : public RawMessageClientActionResponce
 {
 	
 };
 
-struct MessageUnregistredInfoSocket : public MessageClientActionResponce
+struct RawMessageRegistredForInfoSocket : public RawMessageClientActionResponce
 {
 	
 };
 
-struct MessageFirewallActivated : public MessageClientActionResponce
+struct RawMessageUnregistredInfoSocket : public RawMessageClientActionResponce
+{
+	
+};
+
+struct RawMessageFirewallActivated : public RawMessageClientActionResponce
 {	
 };
 
-struct MessageFirewallDeactivated
+struct RawMessageFirewallDeactivated : public RawMessageClientActionResponce
 {
 };
 
-struct MessageFirewallClosing : public MessageBase 
+struct RawMessageFirewallClosing : public RawMessageBase 
 {
-	inline void init(){ MessageBase::init(4, MessageTypeFirewallClosing);};
+	inline void init(){ RawMessageBase::init(4, MessageTypeFirewallClosing);};
 };
 
 /////
-struct MessageSocketDataIN : public MessageBase
+struct RawMessageSocketDataIN : public RawMessageBase
 {
 	UInt8 stateOperation;
 	UInt32 stateByRuleId;
@@ -194,26 +194,26 @@ struct MessageSocketDataIN : public MessageBase
 	//socket_t socket;
 	UInt32 packets;
 	UInt32 bytes;
-	sockaddr fromAddressOffset;
-	sockaddr toAddressOffset;
-	char processName[4];
+	sockaddr fromAddressOffset;//static
+	sockaddr toAddressOffset;//static
+	char processName[4];//static
 };
-struct MessageSocketDataOUT : public MessageBase
+struct RawMessageSocketDataOUT : public RawMessageBase
 {
 	
 };
-struct MessageSocketOpen : public MessageBase
+struct RawMessageSocketOpen : public RawMessageBase
 {
 	
 };
-struct MessageSocketClosed : public MessageBase
+struct RawMessageSocketClosed : public RawMessageBase
 {
 	
 };
 
 
 #pragma mark Client messages
-struct MessageAddRule : public MessageClientAction 
+struct RawMessageAddRule : public RawMessageClientAction 
 {
 	UInt32 id;
 	UInt16 processNameOffset;//0 for all
@@ -234,60 +234,60 @@ struct MessageAddRule : public MessageClientAction
 	sockaddr *getSockAddress(){ return (sockaddr*) ((sockAddressOffset) ? (char*)this + sockAddressOffset : NULL);}
 };
 
-struct MessageDeleteRule : public MessageClientAction 
+struct RawMessageDeleteRule : public RawMessageClientAction 
 {
-	UInt32 id;
+	UInt32 ruleId;
 };
 
-struct MessageActivateRule : public MessageClientAction 
+struct RawMessageActivateRule : public RawMessageClientAction 
 {
-	UInt32 id;
+	UInt32 ruleId;
 };
 
-struct MessageDeactivateRule : public MessageClientAction 
+struct RawMessageDeactivateRule : public RawMessageClientAction 
 {
-	UInt32 id;
-};
-
-
-
-struct MessageActivateFirewall : public MessageClientAction 
-{
-};
-
-
-struct MessageDeactivateFirewall : public MessageClientAction 
-{
+	UInt32 ruleId;
 };
 
 
 
-struct MessageRegisterForAsk : public MessageClientAction 
+struct RawMessageActivateFirewall : public RawMessageClientAction 
 {
 };
 
 
-struct MessageUnregisterAsk : public MessageClientAction 
+struct RawMessageDeactivateFirewall : public RawMessageClientAction 
 {
 };
 
 
-struct MessageRegisterForInfoRule : public MessageClientAction 
+
+struct RawMessageRegisterForAsk : public RawMessageClientAction 
 {
 };
 
 
-struct MessageUnregisterInfoRule : public MessageClientAction 
+struct RawMessageUnregisterAsk : public RawMessageClientAction 
 {
 };
 
 
-struct MessageRegisterForInfoSocket : public MessageClientAction 
+struct RawMessageRegisterForInfoRule : public RawMessageClientAction 
 {
 };
 
 
-struct MessageUnregisterInfoSocket : public MessageClientAction 
+struct RawMessageUnregisterInfoRule : public RawMessageClientAction 
+{
+};
+
+
+struct RawMessageRegisterForInfoSocket : public RawMessageClientAction 
+{
+};
+
+
+struct RawMessageUnregisterInfoSocket : public RawMessageClientAction 
 {
 };
 

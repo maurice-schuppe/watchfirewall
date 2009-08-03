@@ -42,7 +42,7 @@ public:
 	Rule* next;
 	
 public:
-	bool init(MessageAddRule *message);
+	bool init(RawMessageAddRule *message);
 	virtual void free();
 	
 	bool isApplicable();
@@ -108,7 +108,7 @@ public:
 				   UInt8 direction, struct sockaddr *sockaddres );
 	
 	
-	int addRule(MessageAddRule *messageRule, Rule** rule);
+	int addRule(RawMessageAddRule *messageRule, Rule** rule);
 	int deleteRule(UInt32 ruleId, Rule** rule);
 	int activateRule(UInt32 ruleId, Rule** rule);
 	int deactivateRule(UInt32 ruleId, Rule** rule);

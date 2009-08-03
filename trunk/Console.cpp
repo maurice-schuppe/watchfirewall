@@ -43,118 +43,118 @@ int main()
 			
 		for(int k = 0; k < n;  )
 		{
-			MessageBase *message = (MessageBase*)(buffer + k);
+			RawMessageBase *message = (RawMessageBase*)(buffer + k);
 			
 			switch (message->type) {
 				case MessageTypeText:
 					{
-						MessageText* messageText = (MessageText*)message;
+						RawMessageText* messageText = (RawMessageText*)message;
 						printf("%s \n", messageText->textBuffer);
 					}
 					break;
 
 				case MessageTypeAskRule:
 					{
-						MessageAskRule* messageAskRule = (MessageAskRule*)message;
+						RawMessageAskRule* messageAskRule = (RawMessageAskRule*)message;
 					}
 					break;
 					
 				case MessageTypeRuleAdded:
 					{
-						MessageRuleAdded* messageRuleAdded = (MessageRuleAdded*)message;
+						RawMessageRuleAdded* messageRuleAdded = (RawMessageRuleAdded*)message;
 					}
 					break;
 					
 				case MessageTypeRuleDeleted:
 					{
-						MessageRuleDeleted* messageRuleDeleted = (MessageRuleDeleted*)message;
+						RawMessageRuleDeleted* messageRuleDeleted = (RawMessageRuleDeleted*)message;
 					}
 					break;
 					
 				case MessageTypeRuleDeactivated:
 					{
-						MessageRuleDeactivated* messageRuleDeactivated = (MessageRuleDeactivated*)message;
+						RawMessageRuleDeactivated* messageRuleDeactivated = (RawMessageRuleDeactivated*)message;
 					}
 					break;
 					
 				case MessageTypeRuleActivated:
 					{
-						MessageRuleActivated* messageRuleActivated = (MessageRuleActivated*)message;
+						RawMessageRuleActivated* messageRuleActivated = (RawMessageRuleActivated*)message;
 					}
 					break;
 					
 					
 				case MessageTypeSocketDataIN:
 					{
-						MessageSocketDataIN* messageSocketDataIN = (MessageSocketDataIN*)message;
+						RawMessageSocketDataIN* messageSocketDataIN = (RawMessageSocketDataIN*)message;
 					}
 					break;
 					
 				case MessageTypeSocketDataOUT:
 					{
-						MessageSocketDataOUT* messageSocketDataOUT = (MessageSocketDataOUT*)message;
+						RawMessageSocketDataOUT* messageSocketDataOUT = (RawMessageSocketDataOUT*)message;
 					}
 					break;
 					
 				case MessageTypeSocketOpen:
 					{
-						MessageSocketOpen* messageSocketOpen = (MessageSocketOpen*)message;
+						RawMessageSocketOpen* messageSocketOpen = (RawMessageSocketOpen*)message;
 					}
 					break;
 					
 				case MessageTypeSocketClosed:
 					{
-						MessageSocketClosed* messageSocketClosed = (MessageSocketClosed*)message;
+						RawMessageSocketClosed* messageSocketClosed = (RawMessageSocketClosed*)message;
 					}
 					break;
 					
 				case MessageTypeFirewallActivated:
 					{
-						MessageFirewallActivated* messageFirewallActivated = (MessageFirewallActivated*)message;
+						RawMessageFirewallActivated* messageFirewallActivated = (RawMessageFirewallActivated*)message;
 					}
 					break;
 					
 				case MessageTypeFirewallDeactivated:
 					{
-						MessageFirewallDeactivated* messageFirewallDeactivated = (MessageFirewallDeactivated*)message;
+						RawMessageFirewallDeactivated* messageFirewallDeactivated = (RawMessageFirewallDeactivated*)message;
 					}
 					break;
 					
 					
 				case MessageTypeRegistredForAsk:
 					{
-						MessageRegistredForAsk* messageRegistredForAsk = (MessageRegistredForAsk*)message;
+						RawMessageRegistredForAsk* messageRegistredForAsk = (RawMessageRegistredForAsk*)message;
 					}
 					break;
 					
 				case MessageTypeUnregistredAsk:
 					{
-						MessageUnregistredAsk* messageUnregistredAsk = (MessageUnregistredAsk*)message;
+						RawMessageUnregistredAsk* messageUnregistredAsk = (RawMessageUnregistredAsk*)message;
 					}
 					break;
 					
 				case MessageTypeRegistredForInfoRule:
 					{
-						MessageRegistredForInfoRule* messageRegistredForInfoRule = (MessageRegistredForInfoRule*)message;
+						RawMessageRegistredForInfoRule* messageRegistredForInfoRule = (RawMessageRegistredForInfoRule*)message;
 					}
 					break;
 					
 				case MessageTypeUnregistredInfoRule:
 					{
-						MessageUnregistredInfoRule* messageUnregistredInfoRule = (MessageUnregistredInfoRule*)message;
+						RawMessageUnregistredInfoRule* messageUnregistredInfoRule = (RawMessageUnregistredInfoRule*)message;
 					}
 					break;
 					
 				case MessageTypeRegistredForInfoSocket:
 					{
-						MessageRegistredForInfoSocket* messageRegistredForInfoSocket = (MessageRegistredForInfoSocket*)message;
+						RawMessageRegistredForInfoSocket* messageRegistredForInfoSocket = (RawMessageRegistredForInfoSocket*)message;
 						printf("client registred for info rule: %s", messageRegistredForInfoSocket->actionState ? "success" : "error");
 					}
 					break;
 					
 				case MessageTypeUnregistredInfoSocket:
 					{
-						MessageUnregistredInfoSocket* messageUnregistredInfoSocket = (MessageUnregistredInfoSocket*)message;
+						RawMessageUnregistredInfoSocket* messageUnregistredInfoSocket = (RawMessageUnregistredInfoSocket*)message;
 					}
 					break;
 					

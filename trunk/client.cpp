@@ -165,7 +165,7 @@ Client::SendThread(void* arg)
 					goto exitAndClearQueue;
 
 				ctl_getenqueuespace(client->kernelKontrolReference, client->unit, &size);
-				if(size < node->message->m.size)
+				if(size < node->message->getRawMessageSize())
 				{
 					if(k++ < 3)
 					{
@@ -180,7 +180,7 @@ Client::SendThread(void* arg)
 					if(client->exitState)
 						goto exitAndClearQueue;
 					
-					switch(ctl_enqueuedata(client->kernelKontrolReference, client->unit, &(node->message->m), node->message->m.size, 0))
+					switch(ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message->getRawMessage(), node->message->getRawMessageSize(), 0))
 					{
 						case EINVAL: // - Invalid parameters.
 							::IOLog("ctl_enqueuedata return: Invalid parameter.\n");
