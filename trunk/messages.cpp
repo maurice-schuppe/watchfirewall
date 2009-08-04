@@ -12,7 +12,7 @@ MessageText::Create(const char* format,...)
         return 0;
 	
     va_start(argList, format);
-	MessageText *message = (MessageText*)new char[255 + sizeof(RawMessageBase) + sizeof(Message)];
+	MessageText *message = new(255 + sizeof(RawMessageBase)) MessageText;
 	
 	if(!message)
 		return NULL;
@@ -25,16 +25,6 @@ MessageText::Create(const char* format,...)
 	
     return message;
 }
-
-//void*
-//Message::operator new(size_t size, UInt16 neededSize)
-//{
-//	Message* message =(Message*) ::new char[neededSize + sizeof(Message) - sizeof(RawMessageBase)];
-//	if(message)
-//		message->m.size = neededSize;
-//	
-//	return message;
-//}
 
 SInt32 nextTextMessage;//TODO: only for debug
 
@@ -179,6 +169,13 @@ MessageRuleAdded::Create(UInt32 unitId, UInt32 messageId, UInt32 actionstate, UI
 {
 	return NULL;
 }
+
+MessageRuleDeleted* 
+MessageRuleDeleted::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
+{
+	return NULL;
+}
+
 
 MessageRuleDeactivated*
 MessageRuleDeactivated::Create(UInt32 unitId, UInt32 messageId, UInt32 actionstate, UInt32 ruleId)

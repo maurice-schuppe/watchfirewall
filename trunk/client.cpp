@@ -95,7 +95,7 @@ Client::Send(Message* message)
 	if(message == NULL || this->exitState)
 		return;
 	
-	if(!(message->m.type & this->registredMessageClases))
+	if(!(message->getRawMessageType() & this->registredMessageClases))
 		return;
 	
 	ClientMessageNode * node = new ClientMessageNode();

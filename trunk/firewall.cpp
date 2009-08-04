@@ -667,38 +667,59 @@ Firewall::kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 		{
 			case MessageTypeDeleteRule:
 				{
-					MessageRuleDeleted* responce = MessageRuleDeleted::Create(client->unit, message->messageId, 0, ((RawMessageDeleteRule*)message)->ruleId);
-					Rule *rule; 
-					switch(Firewall::instance->rules.deleteRule(((RawMessageDeleteRule*)message)->ruleId, &rule))
+					RawMessageDeleteRule *rawMessageDeleteRule = (RawMessageDeleteRule*) message;
+					
+					MessageRuleDeleted* responce = MessageRuleDeleted::Create(client->unit, message->messageId, 0, rawMessageDeleteRule->ruleId);
+					if(responce == NULL)
+						break;
+					
+					Rule *rule; //????
+					switch(Firewall::instance->rules.deleteRule(rawMessageDeleteRule->ruleId, &rule))
 					{
 						case 0://OK
 							Firewall::instance->send(responce);
 							break;
 						case 1://not exist
+							responce->rawMessage.actionState = 1;
 							client->Send(responce);
 							break;
 					}
 					
 					if(rule)
 						rule->release();
+					
+					responce->release();
 				}
 				break;
 				
 			case MessageTypeAddRule:
 				{
+					RawMessageAddRule* rawMessageAddRule = (RawMessageAddRule*) message;
+					
+					//TODO: refctor message
+					MessageRuleAdded* responce = MessageRuleAdded::Create(client->unit, rawMessageAddRule->id, 0, 0);
+					
 					Rule *rule;
-					switch(Firewall::instance->rules.addRule((RawMessageAddRule*)message, &rule))
+					switch(Firewall::instance->rules.addRule(rawMessageAddRule, &rule))
 					{
 						case -1://memory error
+							responce->rawMessage.actionState = -1;
+							client->Send(responce);
 						   break;
 						case 0://ok
+							//TODO: fill new rule data
+							Firewall::instance->send(responce);
 						   break;
 						case 1://already exist
+							responce->rawMessage.actionState = 1;
+							client->Send(responce);
 						   break;
 					}
 						   
 					if(rule)
 						   rule->release();
+					
+					responce->release();
 				}
 				break;
 				
