@@ -88,8 +88,9 @@ struct RawMessageClientActionResponce : public RawMessageBase
 	UInt32 actionState;
 	
 public:
-	void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+	inline void init(UInt16 size, UInt16 type, UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 	{
+		RawMessageBase::init(size, type);
 		this->unitId = unitId;
 		this->clientMessageId = clientMessageId;
 		this->actionState = actionState;
@@ -121,62 +122,112 @@ struct RawMessageAskRule : public RawMessageBase
 
 struct RawMessageRuleAdded : public RawMessageClientActionResponce
 {
-	UInt32 clientMessageId;//rule
+	UInt32 ruleId;//rule
 	
-	inline void init(UInt32 id){ RawMessageBase::init(8, MessageTypeRuleAdded); this->clientMessageId = id;}
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState , UInt32 ruleId)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageRuleAdded), MessageTypeRuleAdded, unitId, clientMessageId, actionState); 
+		this->ruleId = ruleId;
+	}
 };
 
 struct RawMessageRuleDeleted : public RawMessageClientActionResponce
 {
 	UInt32 ruleId;//rule
+
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState , UInt32 ruleId)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageRuleDeleted), MessageTypeRuleDeleted, unitId, clientMessageId, actionState); 
+		this->ruleId = ruleId;
+	}
 };
 
 struct RawMessageRuleDeactivated	: public RawMessageClientActionResponce
 {
 	UInt32 ruleId;//rule
+	
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState , UInt32 ruleId)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageRuleDeactivated), MessageTypeRuleDeactivated, unitId, clientMessageId, actionState); 
+		this->ruleId = ruleId;
+	}
 };
 
 struct RawMessageRuleActivated : public RawMessageClientActionResponce
 {
 	UInt32 ruleId;//rule
+
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState , UInt32 ruleId)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageRuleActivated), MessageTypeRuleActivated, unitId, clientMessageId, actionState); 
+		this->ruleId = ruleId;
+	}
 };
 
 struct RawMessageRegistredForAsk : public RawMessageClientActionResponce
 {
-	
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageRegistredForAsk), MessageTypeRegistredForAsk, unitId, clientMessageId, actionState); 
+	}
 };
 
 struct RawMessageUnregistredAsk : public RawMessageClientActionResponce
 {
-	
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageUnregistredAsk), MessageTypeUnregistredAsk, unitId, clientMessageId, actionState); 
+	}	
 };
 
 struct RawMessageRegistredForInfoRule : public RawMessageClientActionResponce
 {
-	
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageRegistredForInfoRule), MessageTypeRegistredForInfoRule, unitId, clientMessageId, actionState); 
+	}	
 };
 
 struct RawMessageUnregistredInfoRule : public RawMessageClientActionResponce
 {
-	
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageUnregistredInfoRule), MessageTypeUnregisterInfoRule, unitId, clientMessageId, actionState); 
+	}	
 };
 
+
+//////
 struct RawMessageRegistredForInfoSocket : public RawMessageClientActionResponce
 {
-	
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageRegistredForInfoSocket), MessageTypeRegistredForInfoSocket, unitId, clientMessageId, actionState); 
+	}	
 };
 
 struct RawMessageUnregistredInfoSocket : public RawMessageClientActionResponce
 {
-	
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageUnregistredInfoSocket), MessageTypeUnregisterInfoSocket, unitId, clientMessageId, actionState); 
+	}	
 };
 
 struct RawMessageFirewallActivated : public RawMessageClientActionResponce
-{	
+{
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageFirewallActivated), MessageTypeFirewallActivated, unitId, clientMessageId, actionState); 
+	}	
 };
 
 struct RawMessageFirewallDeactivated : public RawMessageClientActionResponce
 {
+	inline void init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+	{ 
+		RawMessageClientActionResponce::init(sizeof(RawMessageFirewallDeactivated), MessageTypeFirewallDeactivated, unitId, clientMessageId, actionState); 
+	}	
 };
 
 struct RawMessageFirewallClosing : public RawMessageBase 

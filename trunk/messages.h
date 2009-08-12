@@ -57,7 +57,7 @@ public:
 	size_t getRawMessageSize() { return rawMessage.size; };
 	UInt16 getRawMessageType() { return rawMessage.type; };
 	
-	static MessageRuleAdded* Create(UInt32 unitId, UInt32 messageId, UInt32 actionstate, UInt32 ruleId);
+	static MessageRuleAdded* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
 	
 };
 
