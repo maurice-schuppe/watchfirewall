@@ -31,13 +31,13 @@ public:
 	static kauth_listener_t processListener;
 
 public:
-	static bool initStatic();
-	static void freeStatic();
-	static void checkIsLiveRoutine(void *arg);
-	static Application* getApplication(); 
-	static Application* addApplication(vfs_context_t vfsContext, vnode_t vnode);
-	static Application* addApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath);
-	static int callbackProcessListener
+	static bool InitStatic();
+	static void FreeStatic();
+	static void CheckIsLiveRoutine(void *arg);
+	static Application* GetApplication(); 
+	static Application* AddApplication(vfs_context_t vfsContext, vnode_t vnode);
+	static Application* AddApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath);
+	static int CallbackProcessListener
 					(
 					   kauth_cred_t    credential,
 					   void *          idata,
@@ -47,7 +47,7 @@ public:
 					   uintptr_t       arg2,
 					   uintptr_t       arg3
 					 );
-	static int callbackVnodeListener
+	static int CallbackVnodeListener
 					(
 					 kauth_cred_t    credential,
 					 void *          idata,
@@ -69,7 +69,7 @@ public:
 	Application *prev;
 	Application *next;
 
-	virtual void free()
+	virtual void Free()
 	{
 		::IOLog("application deleted pid: %d\n", this->pid);
 		
@@ -79,7 +79,7 @@ public:
 		if(processName)
 			processName->release();
 		
-		SimpleBase::free();
+		SimpleBase::Free();
 	}
 	
 	Application* removeFromChain()

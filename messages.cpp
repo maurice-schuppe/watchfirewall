@@ -64,7 +64,7 @@ MessageRegistredForInfoRule::Create(UInt32 unitId, UInt32 clientMessageId, UInt3
 	MessageRegistredForInfoRule *message = new MessageRegistredForInfoRule;
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState);
+		message->rawMessage.Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
@@ -76,7 +76,7 @@ MessageUnregistredInfoRule::Create(UInt32 unitId, UInt32 clientMessageId, UInt32
 	MessageUnregistredInfoRule *message = new MessageUnregistredInfoRule;
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState);
+		message->rawMessage.Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
@@ -88,7 +88,7 @@ MessageRegistredForInfoSocket::Create(UInt32 unitId, UInt32 clientMessageId, UIn
 	MessageRegistredForInfoSocket *message = new MessageRegistredForInfoSocket;
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState);
+		message->rawMessage.Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
@@ -100,7 +100,7 @@ MessageUnregistredInfoSocket::Create(UInt32 unitId, UInt32 clientMessageId, UInt
 	MessageUnregistredInfoSocket *message = new MessageUnregistredInfoSocket;
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState);
+		message->rawMessage.Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
@@ -112,7 +112,7 @@ MessageRegistredForAsk::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 act
 	MessageRegistredForAsk *message = new MessageRegistredForAsk;
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState);
+		message->rawMessage.Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
@@ -124,7 +124,7 @@ MessageUnregistredAsk::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 acti
 	MessageUnregistredAsk *message = new MessageUnregistredAsk;
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState);
+		message->rawMessage.Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
@@ -136,7 +136,7 @@ MessageFirewallActivated::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 a
 	MessageFirewallActivated *message = new MessageFirewallActivated;
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState); 
+		message->rawMessage.Init(unitId, clientMessageId, actionState); 
 		message->references = 1;
 	}
 	return message;
@@ -148,7 +148,7 @@ MessageFirewallDeactivated::Create(UInt32 unitId, UInt32 clientMessageId, UInt32
 	MessageFirewallDeactivated *message = new MessageFirewallDeactivated;
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState);
+		message->rawMessage.Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
@@ -160,7 +160,7 @@ MessageFirewallClosing::Create()
 	MessageFirewallClosing *message = new MessageFirewallClosing();
 	if(message)
 	{
-		message->rawMessage.type = MessageTypeFirewallClosing; 
+		message->rawMessage.Init(); 
 		message->references = 1;
 	}
 	return message;
@@ -173,7 +173,7 @@ MessageRuleAdded::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionSta
 	MessageRuleAdded* message = new MessageRuleAdded();
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState, ruleId);
+		message->rawMessage.Init(unitId, clientMessageId, actionState, ruleId);
 		message->references = 1;
 	}
 	
@@ -186,7 +186,7 @@ MessageRuleDeleted::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionS
 	MessageRuleDeleted* message = new MessageRuleDeleted();
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState, ruleId);
+		message->rawMessage.Init(unitId, clientMessageId, actionState, ruleId);
 		message->references = 1;
 	}
 	
@@ -200,7 +200,7 @@ MessageRuleDeactivated::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 act
 	MessageRuleDeactivated* message = new MessageRuleDeactivated();
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState, ruleId);
+		message->rawMessage.Init(unitId, clientMessageId, actionState, ruleId);
 		message->references = 1;
 	}
 	
@@ -213,7 +213,7 @@ MessageRuleActivated::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actio
 	MessageRuleActivated* message = new MessageRuleActivated();
 	if(message)
 	{
-		message->rawMessage.init(unitId, clientMessageId, actionState, ruleId);
+		message->rawMessage.Init(unitId, clientMessageId, actionState, ruleId);
 		message->references = 1;
 	}
 	

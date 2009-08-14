@@ -20,9 +20,9 @@ public:
 public:
 	void IOLog();
 	
-	int retain();
-	int release();
-	virtual void free();
+	int Retain();
+	int Release();
+	virtual void Free();
 };
 
 

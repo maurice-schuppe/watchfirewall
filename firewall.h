@@ -58,33 +58,33 @@ public:
 public:
 
 	static Firewall *instance;
-	static bool init();
-	static bool free();
+	static bool Init();
+	static bool Free();
 	
 #pragma mark soket filter functions
 
-	bool registerSocketFilters();
-	bool unregisterSocketFilters();
+	bool RegisterSocketFilters();
+	bool UnregisterSocketFilters();
 	
 	static protocol protocols[];
 	static sflt_filter sfltFilter;
 	
-	static void		unregistered(sflt_handle handle);
-	static errno_t	attach(void	**cookie, socket_t so);
-	static void		detach(void	*cookie, socket_t so);
-	static void		notify(void *cookie, socket_t so, sflt_event_t event, void *param);
-	static int		getpeername(void *cookie, socket_t so, struct sockaddr **sa);
-	static int		getsockname(void *cookie, socket_t so, struct sockaddr **sa);
-	static errno_t	dataIn(void *cookie, socket_t so, const struct sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags);
-	static errno_t	dataOut(void *cookie, socket_t so, const struct sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags);
-	static errno_t	connectIn(void *cookie, socket_t so, const struct sockaddr *from);
-	static errno_t	connectOut(void *cookie, socket_t so, const struct sockaddr *to);
-	static errno_t	bind(void *cookie, socket_t so, const struct sockaddr *to);
-	static errno_t	setoption(void *cookie, socket_t so, sockopt_t opt);
-	static errno_t	getoption(void *cookie, socket_t so, sockopt_t opt);
-	static errno_t	listen(void *cookie, socket_t so);
-	static errno_t	ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp);
-	static errno_t	accept(void *cookie, socket_t so_listen, socket_t so, const struct sockaddr *local, const struct sockaddr *remote);
+	static void		Unregistered(sflt_handle handle);
+	static errno_t	Attach(void	**cookie, socket_t so);
+	static void		Detach(void	*cookie, socket_t so);
+	static void		Notify(void *cookie, socket_t so, sflt_event_t event, void *param);
+	static int		GetPeerName(void *cookie, socket_t so, sockaddr **sa);
+	static int		GetSockName(void *cookie, socket_t so, sockaddr **sa);
+	static errno_t	DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags);
+	static errno_t	DataOut(void *cookie, socket_t so, const sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags);
+	static errno_t	ConnectIn(void *cookie, socket_t so, const sockaddr *from);
+	static errno_t	ConnectOut(void *cookie, socket_t so, const sockaddr *to);
+	static errno_t	Bind(void *cookie, socket_t so, const sockaddr *to);
+	static errno_t	SetOption(void *cookie, socket_t so, sockopt_t opt);
+	static errno_t	GetOption(void *cookie, socket_t so, sockopt_t opt);
+	static errno_t	Listen(void *cookie, socket_t so);
+	static errno_t	Ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp);
+	static errno_t	Accept(void *cookie, socket_t so_listen, socket_t so, const sockaddr *local, const sockaddr *remote);
 	
 #pragma mark clent functions
 	kern_ctl_ref kernelControlReference;
@@ -93,16 +93,16 @@ public:
 	IOLock *lockClientsQueue;
 	Client *clients;
 	
-	bool registerKernelControl();
-	bool unRegisterKernelControl();
+	bool RegisterKernelControl();
+	bool UnregisterKernelControl();
 	
-	static errno_t kcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **unitinfo);
-	static errno_t kcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo);
-	static errno_t kcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m, int flags);
-	static errno_t kcSetSocketOption(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, int opt, void *data, size_t len);
-	static errno_t kcGetSocketOption(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, int opt, void *data, size_t *len);
+	static errno_t KcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **unitinfo);
+	static errno_t KcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo);
+	static errno_t KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m, int flags);
+	static errno_t KcSetSocketOption(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, int opt, void *data, size_t len);
+	static errno_t KcGetSocketOption(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, int opt, void *data, size_t *len);
 
-	void send(Message *message);
-	void sendTo(UInt32 unit, Message *message);
+	void Send(Message *message);
+	void SendTo(UInt32 unit, Message *message);
 };
 

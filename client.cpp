@@ -17,14 +17,14 @@ Client::ClearQueue(ClientMessageNode *root)
 	while(root)
 	{
 		ClientMessageNode *curr = root;
-		curr->message->release();
+		curr->message->Release();
 		root = root->next;
 		delete(curr);
 	}
 }
 
 bool 
-Client::initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
+Client::InitWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 {
 	::IOLog("client state refernces: %d; thread: %d; lQueue: %d; lThread: %d; nest: %d \n", this->references, this->thread, this->lockQueue, this->lockWorkThread, this->next);
 	
@@ -57,7 +57,7 @@ Client::initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 }
 
 void 
-Client::closeSignal()
+Client::CloseSignal()
 {
 	::IOLog("cliend send close signal\n");
 	OSIncrementAtomic(&this->exitState);
@@ -65,7 +65,7 @@ Client::closeSignal()
 }
 
 void
-Client::free()
+Client::Free()
 {
 	//send exit thread
 	::IOLog("client begin destroed\n");
@@ -85,7 +85,7 @@ Client::free()
 		this->lockWorkThread = NULL;
 	}
 	
-	SimpleBase::free();
+	SimpleBase::Free();
 	::IOLog("client destored\n");
 }
 
@@ -95,14 +95,14 @@ Client::Send(Message* message)
 	if(message == NULL || this->exitState)
 		return;
 	
-	if(!(message->getRawMessageType() & this->registredMessageClases))
+	if(!(message->GetRawMessageType() & this->registredMessageClases))
 		return;
 	
 	ClientMessageNode * node = new ClientMessageNode();
 	if(!node)
 		return;
 
-	message->retain();
+	message->Retain();
 	node->message = message;
 	node->next = NULL;
 	
@@ -123,7 +123,7 @@ void
 Client::SendThread(void* arg)
 {
 	Client* client = (Client*)arg;
-	client->retain();
+	client->Retain();
 	ClientMessageNode *node = NULL;
 	UInt64 lastSendTime = 0;
 	UInt64 currentTime;
@@ -165,7 +165,7 @@ Client::SendThread(void* arg)
 					goto exitAndClearQueue;
 
 				ctl_getenqueuespace(client->kernelKontrolReference, client->unit, &size);
-				if(size < node->message->getRawMessageSize())
+				if(size < node->message->GetRawMessageSize())
 				{
 					if(k++ < 3)
 					{
@@ -180,7 +180,7 @@ Client::SendThread(void* arg)
 					if(client->exitState)
 						goto exitAndClearQueue;
 					
-					switch(ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message->getRawMessage(), node->message->getRawMessageSize(), 0))
+					switch(ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message->GetRawMessage(), node->message->GetRawMessageSize(), 0))
 					{
 						case EINVAL: // - Invalid parameters.
 							::IOLog("ctl_enqueuedata return: Invalid parameter.\n");
@@ -201,7 +201,7 @@ Client::SendThread(void* arg)
 
 			ClientMessageNode *deletedNode = node;
 			node = node->next;
-			deletedNode->message->release();
+			deletedNode->message->Release();
 			delete(deletedNode);
 		}
 		
@@ -212,13 +212,13 @@ exitAndClearQueue:
 	ClearQueue(node);
 exit:
 	IOLockUnlock(client->lockWorkThread);
-	client->release();
+	client->Release();
 
 	IOExitThread();
 }
 
 bool 
-Client::registerMessageClasses(UInt16 classes)
+Client::RegisterMessageClasses(UInt16 classes)
 {
 	if(this->registredMessageClases & classes == classes)
 		return false;
@@ -228,7 +228,7 @@ Client::registerMessageClasses(UInt16 classes)
 }
 
 bool 
-Client::unregisterMessageClasses(UInt16 classes)
+Client::UnregisterMessageClasses(UInt16 classes)
 {
 	if(this->registredMessageClases & classes == 0)
 		return false;

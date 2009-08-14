@@ -6,15 +6,15 @@
 #include "rule.h"
 
 bool 
-Rule::init(RawMessageAddRule *message)
+Rule::Init(RawMessageAddRule *message)
 {	
 	if(message)
 	{
-		if(this->processName = OSString::withCString(message->getProcessName()))
+		if(this->processName = OSString::withCString(message->GetProcessName()))
 		{
-			if(this->filePath = OSString::withCString(message->getFilePath()))
+			if(this->filePath = OSString::withCString(message->GetFilePath()))
 			{
-				sockaddr *t = message->getSockAddress();
+				sockaddr *t = message->GetSockAddress();
 				if(t)
 				{
 					this->sockAddress = (sockaddr*)new char[t->sa_len];
@@ -50,7 +50,7 @@ Rule::init(RawMessageAddRule *message)
 }
 
 void 
-Rule::free()
+Rule::Free()
 {
 	if(this->filePath)
 		this->filePath->release();
@@ -61,11 +61,11 @@ Rule::free()
 	if(this->sockAddress)
 		delete sockAddress;
 	
-	SimpleBase::free();
+	SimpleBase::Free();
 }
 
 int 
-Rule::compare(Rule *toRule)
+Rule::Compare(Rule *toRule)
 {
 	int result = 0;
 	result = strcmp(this->processName->getCStringNoCopy(), toRule->processName->getCStringNoCopy());
@@ -100,7 +100,7 @@ Rule::compare(Rule *toRule)
 }
 
 Rule* 
-Rules::findRule(const OSString* processName, const OSString* filePath, 
+Rules::FindRule(const OSString* processName, const OSString* filePath, 
 			   UInt16 sockDomain, UInt16 sockType, UInt16 sockProtocol, 
 			   UInt8 direction, struct sockaddr *sockaddres )
 {
@@ -123,7 +123,7 @@ Rules::findRule(const OSString* processName, const OSString* filePath,
 							{
 								//skip sockaddress
 								
-								current->retain();
+								current->Retain();
 								break;
 							}
 							
@@ -141,7 +141,7 @@ unlock:
 }
 
 int 
-Rules::addRule(RawMessageAddRule *messageRule, Rule** rule)
+Rules::AddRule(RawMessageAddRule *messageRule, Rule** rule)
 {
 	*rule = NULL;
 	int result;
@@ -152,7 +152,7 @@ Rules::addRule(RawMessageAddRule *messageRule, Rule** rule)
 		return -1;
 	}
 	
-	if(workRule->init(messageRule) == false)
+	if(workRule->Init(messageRule) == false)
 	{
 		delete workRule;
 		return -1;
@@ -169,11 +169,11 @@ Rules::addRule(RawMessageAddRule *messageRule, Rule** rule)
 		int result;
 		while (c)
 		{
-			result = workRule->compare(c);
+			result = workRule->Compare(c);
 			if(result == 0)
 			{
-				workRule->release();
-				c->retain();
+				workRule->Release();
+				c->Retain();
 				*rule = c;
 				result = 1;//rule exist
 				break;
@@ -192,7 +192,7 @@ Rules::addRule(RawMessageAddRule *messageRule, Rule** rule)
 					this->root = workRule;//prev is root, replace
 				
 				//get rule id
-				workRule->retain();
+				workRule->Retain();
 				*rule = workRule;
 				result = 0;
 				
@@ -208,7 +208,7 @@ unlock:
 }
 
 int 
-Rules::deleteRule(UInt32 ruleId, Rule** rule)
+Rules::DeleteRule(UInt32 ruleId, Rule** rule)
 {
 	*rule = NULL;
 	IOLockLock(lock);
@@ -218,7 +218,7 @@ Rules::deleteRule(UInt32 ruleId, Rule** rule)
 		if(workRule->id == ruleId)
 		{
 			workRule->state |= RuleStateDeleted;
-			removeFromChain(workRule);
+			RemoveFromChain(workRule);
 			
 			clock_get_uptime(&lastChangedTime);
 			*rule = workRule;
@@ -233,7 +233,7 @@ Rules::deleteRule(UInt32 ruleId, Rule** rule)
 }
 
 int 
-Rules::activateRule(UInt32 ruleId, Rule** rule)
+Rules::ActivateRule(UInt32 ruleId, Rule** rule)
 {
 	*rule = NULL;
 	int result = -1;
@@ -254,7 +254,7 @@ Rules::activateRule(UInt32 ruleId, Rule** rule)
 				result = 1;
 			}
 
-			workRule->retain();
+			workRule->Retain();
 			*rule = workRule;
 			break;
 		}
@@ -267,7 +267,7 @@ Rules::activateRule(UInt32 ruleId, Rule** rule)
 }
 
 int 
-Rules::deactivateRule(UInt32 ruleId, Rule** rule)
+Rules::DeactivateRule(UInt32 ruleId, Rule** rule)
 {
 	int result = -1;
 	*rule = NULL;
@@ -288,7 +288,7 @@ Rules::deactivateRule(UInt32 ruleId, Rule** rule)
 				result = 1;//alredy inactive
 			}
 
-			workRule->retain();
+			workRule->Retain();
 			*rule = workRule;
 			break;
 		}

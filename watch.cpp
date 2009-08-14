@@ -8,7 +8,7 @@ extern "C" {
 kern_return_t 
 watch_start (kmod_info_t * ki, void * d)
 {		
-	if(!Firewall::init())
+	if(!Firewall::Init())
 		return KERN_FAILURE;
 
 	return KERN_SUCCESS;
@@ -19,7 +19,7 @@ kern_return_t
 watch_stop (kmod_info_t * ki, void * d) 
 {
 	//IOLog("in watch_stop \n");
-	if(!Firewall::free())
+	if(!Firewall::Free())
 		return EBUSY;
 	
 	//IOLog("stoped close return true \n");

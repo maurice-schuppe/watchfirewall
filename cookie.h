@@ -62,9 +62,9 @@ public:
 	SocketCookie *next;
 	
 public:
-	bool isValid();
+	bool IsValid();
 	
-	void setSocket(socket_t socket)
+	void SetSocket(socket_t socket)
 	{
 		int domain;
 		int type;
@@ -98,16 +98,16 @@ public:
 		IOLockUnlock(lock);
 
 		if(this->rule)
-			this->rule->release();
+			this->rule->Release();
 		
 		if(this->application)
-			this->application->release();
+			this->application->Release();
 		
 		
 		delete this;
 	}
 	
-	void addToChain()
+	void AddToChain()
 	{
 		//::IOLog("added socket cookie\n");
 		IOLockLock(lock);
@@ -120,7 +120,7 @@ public:
 		IOLockUnlock(lock);
 	}
 	
-	static bool init()
+	static bool Init()
 	{
 		if(lock == NULL)
 		{
@@ -133,9 +133,9 @@ public:
 		return true;
 	}
 	
-	static bool free()
+	static bool Free()
 	{
-		if(!haveAttachedSockets())
+		if(!HaveAttachedSockets())
 		{
 			IOLockFree(lock);
 			lock = NULL;
@@ -145,7 +145,7 @@ public:
 		return false;
 	}
 	
-	static bool haveAttachedSockets()
+	static bool HaveAttachedSockets()
 	{
 		bool result = false;
 		IOLockLock(lock);
