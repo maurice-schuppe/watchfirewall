@@ -42,12 +42,12 @@ public:
 	Rule* next;
 	
 public:
-	bool init(RawMessageAddRule *message);
-	virtual void free();
+	bool Init(RawMessageAddRule *message);
+	virtual void Free();
 	
-	bool isApplicable();
+	bool IsApplicable();
 	
-	int compare(Rule *toRule);
+	int Compare(Rule *toRule);
 	
 	friend class Rules;
 };
@@ -60,7 +60,7 @@ public:
 	UInt64 lastChangedTime; 
 	IOLock *lock;
 	//sorted by process_name , ...
-	bool init()
+	bool Init()
 	{ 
 		lastChangedTime = 0;
 		lock = IOLockAlloc();
@@ -70,14 +70,14 @@ public:
 		return true; 
 	}
 	
-	void free()
+	void Free()
 	{
 		if(lock)
 		{
 			IOLockLock(lock);
 
 			while(root)
-				removeFromChain(root)->release();
+				RemoveFromChain(root)->Release();
 
 			IOLockUnlock(lock);
 			
@@ -86,7 +86,7 @@ public:
 		}
 	}
 	
-	Rule* removeFromChain(Rule *rule)
+	Rule* RemoveFromChain(Rule *rule)
 	{
 		if(rule->prev)
 			rule->prev->next = rule->next;
@@ -102,16 +102,16 @@ public:
 		return rule;
 		
 	}
-	bool isRulesChanged(UInt64 fromTime) { return lastChangedTime > fromTime;}
-	Rule* findRule(const OSString* process_name, const OSString* process_path, 
+	bool IsRulesChanged(UInt64 fromTime) { return lastChangedTime > fromTime;}
+	Rule* FindRule(const OSString* process_name, const OSString* process_path, 
 				   UInt16 sock_famely, UInt16 socket_type, UInt16 sock_protocol, 
 				   UInt8 direction, struct sockaddr *sockaddres );
 	
 	
-	int addRule(RawMessageAddRule *messageRule, Rule** rule);
-	int deleteRule(UInt32 ruleId, Rule** rule);
-	int activateRule(UInt32 ruleId, Rule** rule);
-	int deactivateRule(UInt32 ruleId, Rule** rule);
+	int AddRule(RawMessageAddRule *messageRule, Rule** rule);
+	int DeleteRule(UInt32 ruleId, Rule** rule);
+	int ActivateRule(UInt32 ruleId, Rule** rule);
+	int DeactivateRule(UInt32 ruleId, Rule** rule);
 	
 };
 

@@ -42,13 +42,13 @@ public:
 	
 	Client* next;
 	
-	bool initWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit);
+	bool InitWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit);
 	
-	bool registerMessageClasses(UInt16 classes);
-	bool unregisterMessageClasses(UInt16 classes);
+	bool RegisterMessageClasses(UInt16 classes);
+	bool UnregisterMessageClasses(UInt16 classes);
 	
-	virtual void free();
-	void closeSignal();
+	virtual void Free();
+	void CloseSignal();
 
 	void Send(Message* message);
 	static void SendThread(void* arg);

@@ -57,7 +57,7 @@ testOpenFile()
 }
 
 bool 
-Application::initStatic()
+Application::InitStatic()
 {
 	closing = 0;
 	
@@ -67,10 +67,10 @@ Application::initStatic()
 	{
 		if(lockRoutine = IOLockAlloc())
 		{
-			if(thread = IOCreateThread(checkIsLiveRoutine, NULL))
+			if(thread = IOCreateThread(CheckIsLiveRoutine, NULL))
 			{
 				
-				if(processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, callbackProcessListener, NULL))
+				if(processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, CallbackProcessListener, NULL))
 				{
 					return true;
 				}
@@ -89,7 +89,7 @@ Application::initStatic()
 
 
 void 
-Application::freeStatic()
+Application::FreeStatic()
 {
 	OSIncrementAtomic(&closing);
 	
@@ -110,7 +110,7 @@ Application::freeStatic()
 		
 		IOLockLock(lock);
 		while (applications)
-			applications->removeFromChain()->release();
+			applications->removeFromChain()->Release();
 		IOLockUnlock(lock);
 		
 		IOLockFree(lock);
@@ -121,7 +121,7 @@ Application::freeStatic()
 
 
 Application* 
-Application::getApplication()
+Application::GetApplication()
 {
 	if(Application::closing)
 		return NULL;
@@ -135,7 +135,7 @@ Application::getApplication()
 	{
 		if(result->pid == pid)
 		{
-			result->retain();
+			result->Retain();
 			IOLockUnlock(Application::lock);
 			return result;	
 		}
@@ -143,9 +143,9 @@ Application::getApplication()
 		result = result->next;
 	}
 	
-	result = addApplication(NULL, NULL, NULL);
+	result = AddApplication(NULL, NULL, NULL);
 	if(result)
-		result->retain();
+		result->Retain();
 	
 	IOLockUnlock(Application::lock);
 	return result;	
@@ -153,7 +153,7 @@ Application::getApplication()
 
 
 Application* 
-Application::addApplication(vfs_context_t vfsContext, vnode_t vnode)
+Application::AddApplication(vfs_context_t vfsContext, vnode_t vnode)
 {
 	char procName[MAXCOMLEN] = {0};
 	vnode_attr vnodeAttr;
@@ -201,7 +201,7 @@ Application::addApplication(vfs_context_t vfsContext, vnode_t vnode)
 		result->p_pid = proc_selfppid();
 	}
 	
-	result->retain();
+	result->Retain();
 	
 	::IOLog("application added pid: %d path: %s\n", result->pid, result->filePath->getCStringNoCopy());
 	
@@ -216,7 +216,7 @@ Application::addApplication(vfs_context_t vfsContext, vnode_t vnode)
 
 
 Application* 
-Application::addApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath)
+Application::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath)
 {
 	char procName[MAXCOMLEN] = {0};
 	vnode_attr vnodeAttr;
@@ -260,7 +260,7 @@ Application::addApplication(kauth_cred_t cred, vnode_t vnode, const char *filePa
 		result->gid = kauth_getgid();
 	}
 	
-	result->retain();
+	result->Retain();
 	
 	::IOLog("application added pid: %d path: %s\n", result->pid, result->filePath->getCStringNoCopy());
 	
@@ -275,7 +275,7 @@ Application::addApplication(kauth_cred_t cred, vnode_t vnode, const char *filePa
 
 
 int 
-Application::callbackProcessListener
+Application::CallbackProcessListener
 (
  kauth_cred_t    credential,
  void *          idata,
@@ -289,7 +289,7 @@ Application::callbackProcessListener
 	if(KAUTH_FILEOP_EXEC == action && Application::closing == 0)
 	{
 		IOLockLock(Application::lock);
-		Application::addApplication(credential, (vnode_t)arg0, (const char *) arg1);
+		Application::AddApplication(credential, (vnode_t)arg0, (const char *) arg1);
 		countProcessesToCheck++;
 		IOLockUnlock(Application::lock);
 	}
@@ -298,7 +298,7 @@ Application::callbackProcessListener
 }
 
 int 
-Application::callbackVnodeListener
+Application::CallbackVnodeListener
 (
  kauth_cred_t    credential,
  void *          idata,
@@ -314,7 +314,7 @@ Application::callbackVnodeListener
 		if(vnode_isdir((vnode_t) arg1) == false)
 		{
 			IOLockLock(Application::lock);
-			Application::addApplication((vfs_context_t)arg0, (vnode_t) arg1);
+			Application::AddApplication((vfs_context_t)arg0, (vnode_t) arg1);
 			countProcessesToCheck++;
 			IOLockUnlock(Application::lock);
 		}
@@ -325,7 +325,7 @@ Application::callbackVnodeListener
 
 
 void
-Application::checkIsLiveRoutine(void *arg)
+Application::CheckIsLiveRoutine(void *arg)
 {
 	Application *app = NULL;
 	
@@ -346,7 +346,7 @@ Application::checkIsLiveRoutine(void *arg)
 		{
 			Application* a = app;
 			app = app->next;
-			a->release();
+			a->Release();
 		}
 		
 		if(countProcessesToCheck > 0)
@@ -358,13 +358,13 @@ Application::checkIsLiveRoutine(void *arg)
 			if(pr)
 			{
 				proc_rele(pr);
-				app->retain();//cashing for next loop
+				app->Retain();//cashing for next loop
 			}
 			else
 			{
 				//::IOLog("app routine delete: %d ref: %d\n", app->pid, app->references);
 				app->removeFromChain();
-				app->release();
+				app->Release();
 				app = NULL;
 				countProcessesToCheck++;
 			}

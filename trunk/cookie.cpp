@@ -16,7 +16,7 @@ SocketCookie *SocketCookie::socketCookies;
 
 //used only if exit extension
 bool
-SocketCookie::isValid()
+SocketCookie::IsValid()
 {
 	//check socket
 	

@@ -12,9 +12,9 @@ class __attribute__((visibility("hidden"))) Message : public SimpleBase
 {
 public:
 	
-	virtual void * getRawMessage() = 0;
-	virtual size_t getRawMessageSize() = 0;
-	virtual UInt16 getRawMessageType() = 0;
+	virtual void * GetRawMessage() = 0;
+	virtual size_t GetRawMessageSize() = 0;
+	virtual UInt16 GetRawMessageType() = 0;
 	
 	inline static void *operator new(size_t size, UInt16 neededSize){ return ::new char[neededSize + sizeof(Message)]; }
 	inline static void *operator new(size_t size){ return ::new char[size]; }
@@ -25,9 +25,9 @@ class __attribute__((visibility("hidden"))) MessageText : public Message
 public:
 	RawMessageText rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageText* Create(const char* format,...);
 	static MessageText* CreateFromCookie(const char* message, SocketCookie* cookie);
@@ -39,9 +39,9 @@ class __attribute__((visibility("hidden"))) MessageAskRule : public Message
 public:
 	RawMessageAskRule rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageAskRule* Create(char* processName, char* filePath, UInt16 sockDomain, UInt16 sockType, UInt16 sockProtocol,	sockaddr* sockAddress, UInt8 direction,
 									  pid_t pid, uid_t uid);
@@ -53,9 +53,9 @@ class __attribute__((visibility("hidden"))) MessageRuleAdded : public Message
 public:
 	RawMessageRuleAdded rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageRuleAdded* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
 	
@@ -66,9 +66,9 @@ class __attribute__((visibility("hidden"))) MessageRuleDeleted : public Message
 public:
 	RawMessageRuleDeleted rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageRuleDeleted* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
 	
@@ -79,9 +79,9 @@ class __attribute__((visibility("hidden"))) MessageRuleDeactivated : public Mess
 public:
 	RawMessageRuleDeactivated rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageRuleDeactivated* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
 	
@@ -92,9 +92,9 @@ class __attribute__((visibility("hidden"))) MessageRuleActivated : public Messag
 public:
 	RawMessageRuleActivated rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageRuleActivated* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
 	
@@ -105,9 +105,9 @@ class __attribute__((visibility("hidden"))) MessageSocketDataIN	: public Message
 public:
 	RawMessageText rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageSocketDataIN* Create();
 	
@@ -118,9 +118,9 @@ class __attribute__((visibility("hidden"))) MessageSocketDataOUT : public Messag
 public:
 	RawMessageSocketDataOUT rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageSocketDataOUT* Create();
 	
@@ -131,9 +131,9 @@ class __attribute__((visibility("hidden"))) MessageSocketOpen : public Message
 public:
 	RawMessageSocketOpen rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageSocketOpen* Create();
 	
@@ -144,9 +144,9 @@ class __attribute__((visibility("hidden"))) MessageSocketClosed : public Message
 public:
 	RawMessageSocketClosed rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageSocketClosed* Create();
 	
@@ -157,9 +157,9 @@ class __attribute__((visibility("hidden"))) MessageFirewallActivated : public Me
 public:
 	RawMessageFirewallActivated rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageFirewallActivated* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
 	
@@ -171,9 +171,9 @@ class __attribute__((visibility("hidden"))) MessageFirewallDeactivated : public 
 public:
 	RawMessageFirewallDeactivated rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageFirewallDeactivated* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
 	
@@ -185,9 +185,9 @@ class __attribute__((visibility("hidden"))) MessageRegistredForAsk : public Mess
 public:
 	RawMessageRegistredForAsk rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageRegistredForAsk* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
 	
@@ -199,9 +199,9 @@ class __attribute__((visibility("hidden"))) MessageUnregistredAsk : public Messa
 public:
 	RawMessageUnregistredAsk rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageUnregistredAsk* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
 	
@@ -213,9 +213,9 @@ class __attribute__((visibility("hidden"))) MessageRegistredForInfoRule : public
 public:
 	RawMessageRegistredForInfoRule rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageRegistredForInfoRule* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
 	
@@ -227,9 +227,9 @@ class __attribute__((visibility("hidden"))) MessageUnregistredInfoRule : public 
 public:
 	RawMessageUnregistredInfoRule rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageUnregistredInfoRule* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
 	
@@ -241,9 +241,9 @@ class __attribute__((visibility("hidden"))) MessageRegistredForInfoSocket : publ
 public:
 	RawMessageRegistredForInfoSocket rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageRegistredForInfoSocket* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
 	
@@ -255,9 +255,9 @@ class __attribute__((visibility("hidden"))) MessageUnregistredInfoSocket : publi
 public:
 	RawMessageUnregistredInfoSocket rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageUnregistredInfoSocket* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
 	
@@ -269,9 +269,9 @@ class __attribute__((visibility("hidden"))) MessageFirewallClosing : public Mess
 public:
 	RawMessageFirewallClosing rawMessage;
 	
-	void * getRawMessage() { return &rawMessage; };
-	size_t getRawMessageSize() { return rawMessage.size; };
-	UInt16 getRawMessageType() { return rawMessage.type; };
+	void * GetRawMessage() { return &rawMessage; };
+	size_t GetRawMessageSize() { return rawMessage.size; };
+	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
 	static MessageFirewallClosing* Create();
 	

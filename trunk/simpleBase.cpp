@@ -17,7 +17,7 @@ SimpleBase::IOLog()
 }
 
 int 
-SimpleBase::retain()
+SimpleBase::Retain()
 {
 	//::IOLog("simple object retain\n");
 	//IOLog();
@@ -25,14 +25,14 @@ SimpleBase::retain()
 }
 
 int 
-SimpleBase::release()
+SimpleBase::Release()
 {
 	//::IOLog("simple object release\n");
 	//IOLog();
 	if(OSDecrementAtomic(&references) == 1)
 	{
 		//::IOLog("try delete object in release %p \n", this);
-		free();
+		Free();
 		return 0;
 	}
 	
@@ -40,7 +40,7 @@ SimpleBase::release()
 }
 
 void 
-SimpleBase::free()
+SimpleBase::Free()
 {
 	//::IOLog("delete object %p \n", this);
 	delete this;
