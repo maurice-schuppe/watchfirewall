@@ -13,8 +13,6 @@
 		3D8E1C0C0FC1BF82009863D7 /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D8E1C0A0FC1BF82009863D7 /* application.cpp */; };
 		3D93F09C0FB1D1B30021BCD5 /* client.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D93F09A0FB1D1B30021BCD5 /* client.h */; };
 		3D93F09D0FB1D1B30021BCD5 /* client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D93F09B0FB1D1B30021BCD5 /* client.cpp */; };
-		3D95B2A80FB4B8B90035C7D8 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D95B2A60FB4B8B90035C7D8 /* common.h */; };
-		3D95B2A90FB4B8B90035C7D8 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D95B2A70FB4B8B90035C7D8 /* common.cpp */; };
 		3DA010730FB7081D00DE86CA /* simpleBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA010710FB7081D00DE86CA /* simpleBase.h */; };
 		3DA010740FB7081D00DE86CA /* simpleBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DA010720FB7081D00DE86CA /* simpleBase.cpp */; };
 		3DC6A4CD0FB5FBB20026849A /* messages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6A4CC0FB5FBB20026849A /* messages.cpp */; };
@@ -58,8 +56,6 @@
 		3D8E1C0A0FC1BF82009863D7 /* application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = application.cpp; sourceTree = "<group>"; };
 		3D93F09A0FB1D1B30021BCD5 /* client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = client.h; sourceTree = "<group>"; };
 		3D93F09B0FB1D1B30021BCD5 /* client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = client.cpp; sourceTree = "<group>"; };
-		3D95B2A60FB4B8B90035C7D8 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
-		3D95B2A70FB4B8B90035C7D8 /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = common.cpp; sourceTree = "<group>"; };
 		3DA010710FB7081D00DE86CA /* simpleBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simpleBase.h; sourceTree = "<group>"; };
 		3DA010720FB7081D00DE86CA /* simpleBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simpleBase.cpp; sourceTree = "<group>"; };
 		3DC6A4CC0FB5FBB20026849A /* messages.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = messages.cpp; sourceTree = "<group>"; };
@@ -147,8 +143,6 @@
 				DF1843490F89B9C70058E488 /* cookie.cpp */,
 				3D93F09A0FB1D1B30021BCD5 /* client.h */,
 				3D93F09B0FB1D1B30021BCD5 /* client.cpp */,
-				3D95B2A60FB4B8B90035C7D8 /* common.h */,
-				3D95B2A70FB4B8B90035C7D8 /* common.cpp */,
 				3DA010710FB7081D00DE86CA /* simpleBase.h */,
 				3DA010720FB7081D00DE86CA /* simpleBase.cpp */,
 				3D8E1C090FC1BF82009863D7 /* application.h */,
@@ -169,7 +163,6 @@
 				DF18470A0F89137B009A2B16 /* firewall.h in Headers */,
 				DF18434A0F89B9C70058E488 /* cookie.h in Headers */,
 				3D93F09C0FB1D1B30021BCD5 /* client.h in Headers */,
-				3D95B2A80FB4B8B90035C7D8 /* common.h in Headers */,
 				3DCA11B10FB6B9C00063A402 /* messageType.h in Headers */,
 				3DA010730FB7081D00DE86CA /* simpleBase.h in Headers */,
 				3D8E1C0B0FC1BF82009863D7 /* application.h in Headers */,
@@ -266,7 +259,6 @@
 				DF18470B0F89137B009A2B16 /* firewall.cpp in Sources */,
 				DF18434B0F89B9C70058E488 /* cookie.cpp in Sources */,
 				3D93F09D0FB1D1B30021BCD5 /* client.cpp in Sources */,
-				3D95B2A90FB4B8B90035C7D8 /* common.cpp in Sources */,
 				3DC6A4CD0FB5FBB20026849A /* messages.cpp in Sources */,
 				3DA010740FB7081D00DE86CA /* simpleBase.cpp in Sources */,
 				3D8E1C0C0FC1BF82009863D7 /* application.cpp in Sources */,
