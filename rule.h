@@ -37,7 +37,7 @@ class __attribute__((visibility("hidden"))) Rule: public SimpleBase
 	
 	IOLock *lock;
 
-public:
+private:
 	Rule* prev;
 	Rule* next;
 	

@@ -57,7 +57,7 @@ testOpenFile()
 }
 
 bool 
-Application::InitStatic()
+Application::InitGlobal()
 {
 	closing = 0;
 	
@@ -67,7 +67,7 @@ Application::InitStatic()
 	{
 		if(lockRoutine = IOLockAlloc())
 		{
-			if(thread = IOCreateThread(CheckIsLiveRoutine, NULL))
+			if(thread = IOCreateThread(CheckApplicationsIsLiveRoutine, NULL))
 			{
 				
 				if(processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, CallbackProcessListener, NULL))
@@ -89,7 +89,7 @@ Application::InitStatic()
 
 
 void 
-Application::FreeStatic()
+Application::FreeGlobal()
 {
 	OSIncrementAtomic(&closing);
 	
@@ -325,7 +325,7 @@ Application::CallbackVnodeListener
 
 
 void
-Application::CheckIsLiveRoutine(void *arg)
+Application::CheckApplicationsIsLiveRoutine(void *arg)
 {
 	Application *app = NULL;
 	
