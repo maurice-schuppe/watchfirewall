@@ -31,9 +31,9 @@ public:
 	static kauth_listener_t processListener;
 
 public:
-	static bool InitStatic();
-	static void FreeStatic();
-	static void CheckIsLiveRoutine(void *arg);
+	static bool InitGlobal();
+	static void FreeGlobal();
+	static void CheckApplicationsIsLiveRoutine(void *arg);
 	static Application* GetApplication(); 
 	static Application* AddApplication(vfs_context_t vfsContext, vnode_t vnode);
 	static Application* AddApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath);

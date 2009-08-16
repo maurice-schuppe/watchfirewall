@@ -397,7 +397,7 @@ Firewall::Accept(void *cookie, socket_t so_listen, socket_t so, const struct soc
 
 
 bool 
-Firewall::Init()
+Firewall::InitGlobal()
 {
 	if(!instance)
 	{
@@ -408,11 +408,11 @@ Firewall::Init()
 
 		instance->closing = false;
 		
-		SocketCookie::Init();
+		SocketCookie::InitGlobal();
 		
 		instance->rules.Init();
 		
-		if(!Application::InitStatic())
+		if(!Application::InitGlobal())
 			return false;
 		
 		if(instance->RegisterSocketFilters())
@@ -426,7 +426,7 @@ Firewall::Init()
 			instance->UnregisterSocketFilters();
 		}
 		
-		Application::FreeStatic();
+		Application::FreeGlobal();
 		delete instance;
 		return false;
 	}
@@ -436,7 +436,7 @@ Firewall::Init()
 }
 
 bool
-Firewall::Free()
+Firewall::FreeGlobal()
 {
 	IOLog("firewall instance begin destroed \n");
 
@@ -454,11 +454,11 @@ Firewall::Free()
 	if(!instance->UnregisterKernelControl())
 		return false;
 
-	while(SocketCookie::Free() == false)
+	while(SocketCookie::FreeGlobal() == false)
 		IOSleep(1);
 
 	IOLog("firewall instance begin destroed applications \n");
-	Application::FreeStatic();
+	Application::FreeGlobal();
 
 	instance->rules.Free();
 

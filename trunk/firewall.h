@@ -58,8 +58,8 @@ public:
 public:
 
 	static Firewall *instance;
-	static bool Init();
-	static bool Free();
+	static bool InitGlobal();
+	static bool FreeGlobal();
 	
 #pragma mark soket filter functions
 

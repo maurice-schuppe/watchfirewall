@@ -120,7 +120,7 @@ public:
 		IOLockUnlock(lock);
 	}
 	
-	static bool Init()
+	static bool InitGlobal()
 	{
 		if(lock == NULL)
 		{
@@ -133,7 +133,7 @@ public:
 		return true;
 	}
 	
-	static bool Free()
+	static bool FreeGlobal()
 	{
 		if(!HaveAttachedSockets())
 		{
