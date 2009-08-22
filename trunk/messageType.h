@@ -1,12 +1,3 @@
-/*
- *  messageType.h
- *  Watch
- *
- *  Created by JanBird on 5/10/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef WATCH_MESSAGES_TYPE_H
 #define WATCH_MESSAGES_TYPE_H
 
@@ -142,7 +133,7 @@ struct RawMessageRuleDeleted : public RawMessageClientActionResponce
 	}
 };
 
-struct RawMessageRuleDeactivated	: public RawMessageClientActionResponce
+struct RawMessageRuleDeactivated : public RawMessageClientActionResponce
 {
 	UInt32 ruleId;//rule
 	
@@ -232,7 +223,7 @@ struct RawMessageFirewallDeactivated : public RawMessageClientActionResponce
 
 struct RawMessageFirewallClosing : public RawMessageBase 
 {
-	inline void Init(){ RawMessageBase::Init(4, MessageTypeFirewallClosing);};
+	inline void Init(){ RawMessageBase::Init(sizeof(RawMessageFirewallClosing), MessageTypeFirewallClosing);};
 };
 
 /////
@@ -249,14 +240,17 @@ struct RawMessageSocketDataIN : public RawMessageBase
 	sockaddr toAddressOffset;//static
 	char processName[4];//static
 };
+
 struct RawMessageSocketDataOUT : public RawMessageBase
 {
 	
 };
+
 struct RawMessageSocketOpen : public RawMessageBase
 {
 	
 };
+
 struct RawMessageSocketClosed : public RawMessageBase
 {
 	
@@ -300,49 +294,13 @@ struct RawMessageDeactivateRule : public RawMessageClientAction
 	UInt32 ruleId;
 };
 
-
-
-struct RawMessageActivateFirewall : public RawMessageClientAction 
-{
-};
-
-
-struct RawMessageDeactivateFirewall : public RawMessageClientAction 
-{
-};
-
-
-
-struct RawMessageRegisterForAsk : public RawMessageClientAction 
-{
-};
-
-
-struct RawMessageUnregisterAsk : public RawMessageClientAction 
-{
-};
-
-
-struct RawMessageRegisterForInfoRule : public RawMessageClientAction 
-{
-};
-
-
-struct RawMessageUnregisterInfoRule : public RawMessageClientAction 
-{
-};
-
-
-struct RawMessageRegisterForInfoSocket : public RawMessageClientAction 
-{
-};
-
-
-struct RawMessageUnregisterInfoSocket : public RawMessageClientAction 
-{
-};
-
-
-
+struct RawMessageActivateFirewall : public RawMessageClientAction {};
+struct RawMessageDeactivateFirewall : public RawMessageClientAction {};
+struct RawMessageRegisterForAsk : public RawMessageClientAction {};
+struct RawMessageUnregisterAsk : public RawMessageClientAction {};
+struct RawMessageRegisterForInfoRule : public RawMessageClientAction {};
+struct RawMessageUnregisterInfoRule : public RawMessageClientAction {};
+struct RawMessageRegisterForInfoSocket : public RawMessageClientAction {};
+struct RawMessageUnregisterInfoSocket : public RawMessageClientAction {};
 
 #endif

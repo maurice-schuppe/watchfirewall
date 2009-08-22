@@ -1,12 +1,3 @@
-/*
- *  client.h
- *  Watch
- *
- *  Created by JanBird on 5/6/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include <libkern/OSTypes.h>
 #include <libkern/c++/OSObject.h>
 #include <sys/kern_control.h>

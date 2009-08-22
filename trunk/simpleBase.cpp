@@ -1,12 +1,3 @@
-/*
- *  SimpleBase.cpp
- *  Watch
- *
- *  Created by JanBird on 5/10/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "simpleBase.h"
 
 

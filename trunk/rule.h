@@ -1,4 +1,3 @@
-
 #ifndef WATCH_RULE_H
 #define WATCH_RULE_H
 

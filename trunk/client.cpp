@@ -1,15 +1,4 @@
-/*
- *  client.cpp
- *  Watch
- *
- *  Created by JanBird on 5/6/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "client.h"
-
-//OSDefineMetaClassAndStructors(Client, OSObject)
 
 void 
 Client::ClearQueue(ClientMessageNode *root)
