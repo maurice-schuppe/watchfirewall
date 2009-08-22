@@ -100,29 +100,16 @@ public:
 	
 };
 
-class __attribute__((visibility("hidden"))) MessageSocketDataIN	: public Message
+class __attribute__((visibility("hidden"))) MessageSocketData	: public Message
 {
 public:
-	RawMessageText rawMessage;
+	RawMessageSocketData rawMessage;
 	
 	void * GetRawMessage() { return &rawMessage; };
 	size_t GetRawMessageSize() { return rawMessage.size; };
 	UInt16 GetRawMessageType() { return rawMessage.type; };
 	
-	static MessageSocketDataIN* Create();
-	
-};
-
-class __attribute__((visibility("hidden"))) MessageSocketDataOUT : public Message
-{
-public:
-	RawMessageSocketDataOUT rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageSocketDataOUT* Create();
+	static MessageSocketData* Create(UInt8 direction, UInt8 stateOperation, UInt32 stateByRuleId, pid_t pid, uid_t uid, socket_t so, UInt32 packets, UInt32 bytes, sockaddr *fromAddress, sockaddr *toAddress, OSString *processName);
 	
 };
 

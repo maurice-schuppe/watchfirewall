@@ -23,10 +23,9 @@ enum ServerMessagesType
 	MessageTypeRuleDeactivated			= MessageClassInfoRule | 0x03,
 	MessageTypeRuleActivated			= MessageClassInfoRule | 0x04,
 	
-	MessageTypeSocketDataIN				= MessageClassInfoSocket | 0x07,
-	MessageTypeSocketDataOUT			= MessageClassInfoSocket | 0x08,
-	MessageTypeSocketOpen				= MessageClassInfoSocket | 0x09,
-	MessageTypeSocketClosed				= MessageClassInfoSocket | 0x0A,
+	MessageTypeSocketData				= MessageClassInfoSocket | 0x07,
+	MessageTypeSocketOpen				= MessageClassInfoSocket | 0x08,
+	MessageTypeSocketClosed				= MessageClassInfoSocket | 0x09,
 	
 	MessageTypeFirewallActivated		= MessageClassFirewall | 0x01,
 	MessageTypeFirewallDeactivated		= MessageClassFirewall | 0x02,
@@ -227,22 +226,69 @@ struct RawMessageFirewallClosing : public RawMessageBase
 };
 
 /////
-struct RawMessageSocketDataIN : public RawMessageBase
+struct RawMessageSocketData : public RawMessageBase
 {
 	UInt8 stateOperation;
+	UInt8 fromAddressSize;
+	UInt8 toAddressSize;
+	UInt8 processNameSize;
 	UInt32 stateByRuleId;
 	pid_t pid;
 	uid_t uid;
-	//socket_t socket;
+	socket_t so;
 	UInt32 packets;
 	UInt32 bytes;
-	sockaddr fromAddressOffset;//static
-	sockaddr toAddressOffset;//static
-	char processName[4];//static
-};
+	UInt8 direction;
+	char data[3];
+	
+	inline void Init(UInt16 size, UInt8 direction, UInt8 stateOperation, UInt32 stateByRuleId, pid_t pid, uid_t uid,socket_t so, UInt32 packets, UInt32 bytes, const sockaddr *fromAddress, const sockaddr *toAddress, const char *processName, int processNameSize)
+	{
+		int currentOffset = 0;
+		
+		RawMessageBase::Init(size, MessageTypeSocketData);
 
-struct RawMessageSocketDataOUT : public RawMessageBase
-{
+		this->stateOperation = stateOperation;
+		this->stateByRuleId = stateByRuleId;
+		this->pid = pid;
+		this->uid = uid;
+		this->so = so;
+		this->packets = packets;
+		this->bytes = bytes;
+		this->direction = direction;
+		
+		if(fromAddress != NULL)
+		{
+			this->fromAddressSize = fromAddress->sa_len;
+			memcpy(this->data + currentOffset, fromAddress, this->fromAddressSize);
+			currentOffset += this->fromAddressSize;
+		}
+		else
+		{
+			this->fromAddressSize = 0;
+		}
+
+		if(toAddress != NULL)
+		{
+			this->toAddressSize = toAddress->sa_len;
+			memcpy(this->data + currentOffset, toAddress, this->toAddressSize);
+			currentOffset += this->toAddressSize;
+		}
+		else
+		{
+			this->fromAddressSize = 0;
+		}
+		
+		if(processNameSize != 0)
+		{
+			this->processNameSize = processNameSize;
+			memcpy(this->data + currentOffset, processName, this->processNameSize);
+			currentOffset += this->processNameSize;
+		}
+		else
+		{
+			this->processNameSize = 0;
+		}		
+	}
 	
 };
 
