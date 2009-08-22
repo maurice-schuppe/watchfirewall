@@ -7,6 +7,7 @@
  *
  */
 
+#include <sys/kpi_socket.h>
 #include "firewall.h"
 
 
@@ -189,6 +190,10 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 	if(!Firewall::instance)
 		return KERN_SUCCESS;
 
+	//char buffer[30];
+	//sockaddr *sa = (sockaddr*) &buffer;
+	//sock_getsockname(so, sa, 1);
+	
 	Message *messsage = MessageText::CreateFromCookie("data in", (SocketCookie*)cookie);
 	Firewall::instance->Send(messsage);
 	messsage->Release();

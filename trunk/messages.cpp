@@ -219,16 +219,35 @@ MessageRuleActivated::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actio
 	return message;
 }
 
-MessageSocketDataIN*
-MessageSocketDataIN::Create()
+MessageSocketData*
+MessageSocketData::Create(UInt8 direction, UInt8 stateOperation, UInt32 stateByRuleId, pid_t pid, uid_t uid, socket_t so, UInt32 packets, UInt32 bytes, sockaddr *fromAddress, sockaddr *toAddress, OSString *processName)
 {
-	return NULL;
-}
-
-MessageSocketDataOUT*
-MessageSocketDataOUT::Create()
-{
-	return NULL;
+	//calculate size
+	int neddedSize = sizeof(RawMessageSocketData);//- 3
+	int processNameSize = 0;
+	const char *processNameC = NULL;
+	
+	if(fromAddress != NULL)
+		neddedSize += fromAddress->sa_len;
+	
+	if(toAddress != NULL)
+		neddedSize += toAddress->sa_len;
+	
+	if(processName != NULL)
+	{
+		processNameSize = processName->getLength();
+		processNameC = processName->getCStringNoCopy();
+		neddedSize += processNameSize;
+	}
+	
+	MessageSocketData* message = new(neddedSize) MessageSocketData; 
+	if(message)
+	{
+		message->rawMessage.Init(neddedSize, direction, stateOperation, stateByRuleId, pid, uid, so, packets, bytes, fromAddress, toAddress, processNameC, processNameSize);
+		message->references = 1;
+	}
+	
+	return message;
 }
 
 MessageSocketOpen*
