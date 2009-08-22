@@ -1,12 +1,3 @@
-/*
- *  cookie.h
- *  Watch
- *
- *  Created by Jan Bird on 4/6/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef WATCH_COOKIE_H
 #define WATCH_COOKIE_H
 
