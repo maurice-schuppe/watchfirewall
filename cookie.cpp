@@ -1,9 +1,7 @@
 #include "cookie.h"
 #include <sys/proc.h>
 
-//IOLock *SocketCookie::lock;
-//SocketCookie *SocketCookie::socketCookies;
-
+mbuf_tag_id_t SocketCookies::mbufTagId;
 
 //used only if exit extension
 bool
