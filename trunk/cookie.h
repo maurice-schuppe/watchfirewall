@@ -67,6 +67,26 @@ public:
 		this->socket = socket;
 	}
 	
+	void Free()
+	{
+		//TODO: free deferred data
+		
+		if(rule)
+			rule->Release();
+		
+		if(application)
+			application->Release();
+		
+		if(fromAddress)
+			delete fromAddress;
+		
+		if(toAddress)
+			delete toAddress;
+		
+		delete this;
+		
+	}
+	
 	bool SetFromAddress(const sockaddr *socketAddress);
 	bool SetToAddress(const sockaddr *socketAddress);
 	
@@ -85,7 +105,7 @@ public:
 	static mbuf_tag_id_t mbufTagId;
 	
 public:
-	void RemoveFromChain(SocketCookie *cookie)
+	SocketCookie * RemoveFromChain(SocketCookie *cookie)
 	{
 		//::IOLog("removed socket cookie\n");
 		IOLockLock(lock);
@@ -102,15 +122,7 @@ public:
 		
 		IOLockUnlock(lock);
 		
-		//TODO: delete ??
-		if(cookie->rule)
-			cookie->rule->Release();
-		
-		if(cookie->application)
-			cookie->application->Release();
-		
-		
-		delete cookie;
+		return cookie;
 	}
 	
 	void AddToChain(SocketCookie *cookie)

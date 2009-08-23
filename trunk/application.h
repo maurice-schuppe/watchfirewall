@@ -1,5 +1,5 @@
-#ifndef APPLICATION_WATCH_H
-#define APPLICATION_WATCH_H
+#ifndef WATCH_APPLICATION_H
+#define WATCH_APPLICATION_H
 
 #include <libkern/c++/OSString.h>
 #include <IOKit/IOLocks.h>
@@ -11,44 +11,6 @@
 
 class __attribute__((visibility("hidden"))) Application: public SimpleBase
 {
-public:
-	//static Application *applications;
-	//static IOLock *lock;
-	//static IOLock *lockRoutine;
-	//static IOThread thread;
-	//static SInt32 closing;
-	//static SInt32 countProcessesToCheck;
-	
-	//static kauth_listener_t processListener;
-
-public:
-	//static bool InitGlobal();
-	//static void FreeGlobal();
-	//static void CheckApplicationsIsLiveRoutine(void *arg);
-	//static Application* GetApplication(); 
-	//static Application* AddApplication(vfs_context_t vfsContext, vnode_t vnode);
-	//static Application* AddApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath);
-//	static int CallbackProcessListener
-//					(
-//					   kauth_cred_t    credential,
-//					   void *          idata,
-//					   kauth_action_t  action,
-//					   uintptr_t       arg0,
-//					   uintptr_t       arg1,
-//					   uintptr_t       arg2,
-//					   uintptr_t       arg3
-//					 );
-//	static int CallbackVnodeListener
-//					(
-//					 kauth_cred_t    credential,
-//					 void *          idata,
-//					 kauth_action_t  action,
-//					 uintptr_t       arg0,
-//					 uintptr_t       arg1,
-//					 uintptr_t       arg2,
-//					 uintptr_t       arg3
-//					 );
-	
 public:
 	pid_t pid;
 	pid_t p_pid;
@@ -72,22 +34,6 @@ public:
 		
 		SimpleBase::Free();
 	}
-	
-//	Application* removeFromChain()
-//	{
-//		if(prev)
-//			prev->next = next;
-//		
-//		if(this == applications)
-//			applications = next;
-//		
-//		if(next)
-//			next->prev = prev;
-//		
-//		prev = next = NULL;
-//		return this;
-//	}
-	
 };
 
 
@@ -151,4 +97,4 @@ public:
 	
 };
 
-#endif 
+#endif WATCH_APPLICATION_H

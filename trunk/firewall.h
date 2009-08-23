@@ -1,3 +1,6 @@
+#ifndef WATCH_FIREWALL_H
+#define WATCH_FIREWALL_H
+
 #include <mach/vm_types.h>
 #include <mach/kmod.h>
 #include <sys/socket.h>
@@ -100,3 +103,4 @@ public:
 
 extern Firewall firewall;
 
+#endif WATCH_FIREWALL_H

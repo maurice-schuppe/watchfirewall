@@ -1,11 +1,11 @@
 #include "simpleBase.h"
 
 
-void 
-SimpleBase::IOLog()
-{
-	::IOLog("object: %p; ref: %d\n", this, this->references);
-}
+//void 
+//SimpleBase::IOLog()
+//{
+//	::IOLog("object: %p; ref: %d\n", this, this->references);
+//}
 
 int 
 SimpleBase::Retain()

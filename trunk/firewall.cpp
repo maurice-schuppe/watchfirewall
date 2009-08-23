@@ -9,10 +9,8 @@
 
 #include <sys/kpi_socket.h>
 #include "firewall.h"
+
 Firewall firewall;
-//Firewall *Firewall::instance = NULL;
-
-
 
 protocol Firewall::protocols[] =
 {
@@ -92,6 +90,8 @@ Firewall::Unregistered(sflt_handle handle)
 errno_t	
 Firewall::Attach(void **cookie, socket_t so)
 {
+	if(firewall.closing)
+		return ENOMEM;
 	
 	SocketCookie *socketCookie = new SocketCookie();
 	
@@ -132,8 +132,7 @@ Firewall::Detach(void *cookie, socket_t so)
 
 	if(cookie)
 	{
-		firewall.socketCookies.RemoveFromChain((SocketCookie*)cookie);
-		//TODO: delete
+		firewall.socketCookies.RemoveFromChain((SocketCookie*)cookie)->Free();
 	}
 }
 
@@ -369,30 +368,31 @@ Firewall::Init()
 {
 	closing = false;
 	
-	socketCookies.Init();
-	
-	rules.Init();
-	
-	if(applications.Init())
-		return false;
-	
-	if(RegisterSocketFilters())
-	{
-		if(RegisterKernelControl())
+	if(socketCookies.Init())
+	{	
+		if(rules.Init())
 		{
-			IOLog("instance created \n");
-			return true;
+			if(applications.Init())
+			{	
+				if(RegisterSocketFilters())
+				{
+					if(RegisterKernelControl())
+					{
+						IOLog("instance created \n");
+						return true;
+					}
+					
+					UnregisterSocketFilters();
+				}
+				applications.Free();
+			}
+			rules.Free();
+			
 		}
-		
-		UnregisterSocketFilters();
+		socketCookies.Free();
 	}
 	
-	applications.Free();
 	return false;
-
-
-IOLog("firewall instance exist \n");
-return true;
 }
 
 bool

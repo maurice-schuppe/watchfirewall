@@ -1,3 +1,6 @@
+#ifndef WATCH_CLIENT_H
+#define WATCH_CLIENT_H
+
 #include <libkern/OSTypes.h>
 #include <libkern/c++/OSObject.h>
 #include <sys/kern_control.h>
@@ -45,4 +48,6 @@ public:
 	static void SendThread(void* arg);
 
 };
+
+#endif WATCH_CLIENT_H
 

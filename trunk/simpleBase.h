@@ -9,7 +9,7 @@ public:
 	SInt32 references;
 	
 public:
-	void IOLog();
+	//void IOLog();
 	
 	int Retain();
 	int Release();
