@@ -1,9 +1,12 @@
 #ifndef WATCH_COOKIE_H
 #define WATCH_COOKIE_H
 
+#include <sys/kpi_socketfilter.h>
+#include <sys/mbuf.h>
+
 #include "rule.h"
 #include "application.h"
-#include <sys/kpi_socketfilter.h>
+
 
 enum __attribute__((visibility("hidden"))) SocketCookieState
 {
@@ -26,10 +29,6 @@ struct __attribute__((visibility("hidden"))) DeferredData
 
 class __attribute__((visibility("hidden"))) SocketCookie
 {
-public:
-	static IOLock *lock;
-	static SocketCookie *socketCookies;
-	
 public:
 	Application* application;
 	SocketCookieState state;
@@ -71,64 +70,79 @@ public:
 	bool SetFromAddress(const sockaddr *socketAddress);
 	bool SetToAddress(const sockaddr *socketAddress);
 	
-	bool AddDeferredData(bool direction,	mbuf_t data, mbuf_t control, sflt_data_flag_t flags, sockaddr *socketAddress);
+	bool AddDeferredData(bool direction, mbuf_t data, mbuf_t control, sflt_data_flag_t flags, sockaddr *socketAddress);
 	bool ClearDeferredData();
 	bool SendDeferredData();
 	
-	void RemoveFromChain()
+	
+};
+
+class __attribute__((visibility("hidden"))) SocketCookies
+{
+public:
+	IOLock *lock;
+	SocketCookie *socketCookies;
+	static mbuf_tag_id_t mbufTagId;
+	
+public:
+	void RemoveFromChain(SocketCookie *cookie)
 	{
 		//::IOLog("removed socket cookie\n");
 		IOLockLock(lock);
-		if(prev)
-			prev->next = next;
+		if(cookie->prev)
+			cookie->prev->next = cookie->next;
 		
-		if(next)
-			next->prev = prev;
-
-		if(this == socketCookies)
-			socketCookies = next;
+		if(cookie->next)
+			cookie->next->prev = cookie->prev;
 		
-		prev = next = NULL;
-
+		if(cookie == socketCookies)
+			socketCookies = cookie->next;
+		
+		cookie->prev = cookie->next = NULL;
+		
 		IOLockUnlock(lock);
-
-		if(this->rule)
-			this->rule->Release();
 		
-		if(this->application)
-			this->application->Release();
+		//TODO: delete ??
+		if(cookie->rule)
+			cookie->rule->Release();
+		
+		if(cookie->application)
+			cookie->application->Release();
 		
 		
-		delete this;
+		delete cookie;
 	}
 	
-	void AddToChain()
+	void AddToChain(SocketCookie *cookie)
 	{
-		//::IOLog("added socket cookie\n");
 		IOLockLock(lock);
-		this->next = socketCookies;
-		socketCookies = this;
+		cookie->next = socketCookies;
+		socketCookies = cookie;
 		
-		if(this->next)
-			this->next->prev = this; 
+		if(cookie->next)
+			cookie->next->prev = cookie; 
 		
 		IOLockUnlock(lock);
 	}
 	
-	static bool InitGlobal()
+	bool Init()
 	{
 		if(lock == NULL)
 		{
 			IOLog("create socket cookie lock\n");
 			lock = IOLockAlloc();
-			if(!lock)
-				return false;
+			if(lock)
+			{
+				if(mbuf_tag_id_find(MYBUNDLEID , &mbufTagId) == KERN_SUCCESS)
+					return true;
+			}
+			IOLockFree(lock);			
 		}
 		
-		return true;
+		return false;
 	}
 	
-	static bool FreeGlobal()
+	bool Free()
 	{
 		if(!HaveAttachedSockets())
 		{
@@ -140,7 +154,7 @@ public:
 		return false;
 	}
 	
-	static bool HaveAttachedSockets()
+	bool HaveAttachedSockets()
 	{
 		bool result = false;
 		IOLockLock(lock);
@@ -149,8 +163,78 @@ public:
 		
 		return result;
 	}
+	static bool PrependMbufHeader(mbuf_t *data, size_t pkt_len)
+	{
+		mbuf_t new_hdr;
+		
+		if (KERN_SUCCESS == mbuf_gethdr(MBUF_WAITOK, MBUF_TYPE_DATA, &new_hdr))
+		{
+			mbuf_setnext(new_hdr, *data);
+			mbuf_setnextpkt(new_hdr, mbuf_nextpkt(*data));
+			mbuf_pkthdr_setlen(new_hdr, pkt_len);
+			mbuf_setlen(new_hdr, 0);
+			mbuf_pkthdr_setrcvif(*data, NULL);
+			
+			*data = new_hdr;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	static bool	CheckTag(mbuf_t *m, int value)
+	{
+		errno_t	status;
+		int		*tagReference;
+		size_t	len;
+		
+		status = mbuf_tag_find(*m, mbufTagId, 1, &len, (void**)&tagReference);
+		if ((status == 0) && (*tagReference == value) && (len == sizeof(value)))
+			return true;
+		
+		return false;
+	}
+	
+	static bool	SetTag(mbuf_t *data, int value)
+	{	
+		int		*tagReference = NULL;
+		
+		switch(mbuf_tag_allocate(*data, mbufTagId, 1, sizeof(value), MBUF_WAITOK, (void**)&tagReference))
+		{
+			case KERN_SUCCESS:
+			{
+				*tagReference = value;
+				return true;
+			}
+				
+			case EINVAL:
+			{			
+				mbuf_flags_t flags = mbuf_flags(*data);
+				if ((flags & MBUF_PKTHDR) == 0)
+				{
+					size_t			totalbytes = 0;
+					
+					for (mbuf_t	m = *data; m; m = mbuf_next(m))
+						totalbytes += mbuf_len(m);
+					
+					if (PrependMbufHeader(data, totalbytes))
+					{
+						if(mbuf_tag_allocate(*data, mbufTagId, 1, sizeof(value), MBUF_WAITOK, (void**)&tagReference) == KERN_SUCCESS)						
+						{
+							*tagReference = value;
+							return true;
+						}
+					}
+				}
+			}
+				
+			default:
+				return false;
+		}	
+	}
+	
 };
-
 
 
 #endif
