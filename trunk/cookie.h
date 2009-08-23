@@ -71,6 +71,10 @@ public:
 	bool SetFromAddress(const sockaddr *socketAddress);
 	bool SetToAddress(const sockaddr *socketAddress);
 	
+	bool AddDeferredData(bool direction,	mbuf_t data, mbuf_t control, sflt_data_flag_t flags, sockaddr *socketAddress);
+	bool ClearDeferredData();
+	bool SendDeferredData();
+	
 	void RemoveFromChain()
 	{
 		//::IOLog("removed socket cookie\n");
