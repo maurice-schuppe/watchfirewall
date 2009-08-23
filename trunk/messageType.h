@@ -287,6 +287,7 @@ struct RawMessageSocketData : public RawMessageBase
 		else
 		{
 			this->processNameSize = 0;
+			*(this->data + currentOffset) = 0;
 		}		
 	}
 	

@@ -15,6 +15,7 @@
 		3D93F09D0FB1D1B30021BCD5 /* client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D93F09B0FB1D1B30021BCD5 /* client.cpp */; };
 		3DA010730FB7081D00DE86CA /* simpleBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA010710FB7081D00DE86CA /* simpleBase.h */; };
 		3DA010740FB7081D00DE86CA /* simpleBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DA010720FB7081D00DE86CA /* simpleBase.cpp */; };
+		3DA2FA3310414FFF001D9D2C /* bundleid.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA2FA3210414FFF001D9D2C /* bundleid.h */; };
 		3DC6A4CD0FB5FBB20026849A /* messages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6A4CC0FB5FBB20026849A /* messages.cpp */; };
 		3DCA11B10FB6B9C00063A402 /* messageType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DCA11B00FB6B9C00063A402 /* messageType.h */; };
 		DF04F61E0F7F611B001E5512 /* rule.h in Headers */ = {isa = PBXBuildFile; fileRef = DF04F61C0F7F611B001E5512 /* rule.h */; };
@@ -58,6 +59,7 @@
 		3D93F09B0FB1D1B30021BCD5 /* client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = client.cpp; sourceTree = "<group>"; };
 		3DA010710FB7081D00DE86CA /* simpleBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simpleBase.h; sourceTree = "<group>"; };
 		3DA010720FB7081D00DE86CA /* simpleBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simpleBase.cpp; sourceTree = "<group>"; };
+		3DA2FA3210414FFF001D9D2C /* bundleid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundleid.h; sourceTree = "<group>"; };
 		3DC6A4CC0FB5FBB20026849A /* messages.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = messages.cpp; sourceTree = "<group>"; };
 		3DCA11B00FB6B9C00063A402 /* messageType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = messageType.h; sourceTree = "<group>"; };
 		DF04F61C0F7F611B001E5512 /* rule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rule.h; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				3DA010720FB7081D00DE86CA /* simpleBase.cpp */,
 				3D8E1C090FC1BF82009863D7 /* application.h */,
 				3D8E1C0A0FC1BF82009863D7 /* application.cpp */,
+				3DA2FA3210414FFF001D9D2C /* bundleid.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -166,6 +169,7 @@
 				3DCA11B10FB6B9C00063A402 /* messageType.h in Headers */,
 				3DA010730FB7081D00DE86CA /* simpleBase.h in Headers */,
 				3D8E1C0B0FC1BF82009863D7 /* application.h in Headers */,
+				3DA2FA3310414FFF001D9D2C /* bundleid.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

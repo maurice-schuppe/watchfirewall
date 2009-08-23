@@ -21,7 +21,7 @@
 #include "messages.h"
 #include "client.h"
 
-#define MYBUNDLEID "com.janbird.watch.kext"
+
 
 struct __attribute__((visibility("hidden"))) protocol
 {
@@ -44,13 +44,14 @@ public:
 	volatile SInt32 countRegistredAsk;
 	
 	Rules	rules;
-	//Applications applications;
+	Applications applications;
+	SocketCookies socketCookies;
 	
 public:
 
-	static Firewall *instance;
-	static bool InitGlobal();
-	static bool FreeGlobal();
+	//static Firewall *instance;
+	bool Init();
+	bool Free();
 	
 #pragma mark soket filter functions
 
@@ -96,4 +97,6 @@ public:
 	void Send(Message *message);
 	void SendTo(UInt32 unit, Message *message);
 };
+
+extern Firewall firewall;
 

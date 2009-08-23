@@ -1,8 +1,8 @@
 #include "cookie.h"
 #include <sys/proc.h>
 
-IOLock *SocketCookie::lock;
-SocketCookie *SocketCookie::socketCookies;
+//IOLock *SocketCookie::lock;
+//SocketCookie *SocketCookie::socketCookies;
 
 
 //used only if exit extension

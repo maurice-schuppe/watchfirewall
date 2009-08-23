@@ -7,6 +7,7 @@
 #include <libkern/c++/OSString.h>
 #include <IOKit/IOLib.h>
 
+#include "bundleid.h"
 #include "simpleBase.h"
 #include "MessageType.h"
 
