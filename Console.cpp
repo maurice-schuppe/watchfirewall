@@ -83,16 +83,9 @@ int main()
 					}
 					break;
 					
-					
-				case MessageTypeSocketDataIN:
+				case MessageTypeSocketData:
 					{
-						RawMessageSocketDataIN* messageSocketDataIN = (RawMessageSocketDataIN*)message;
-					}
-					break;
-					
-				case MessageTypeSocketDataOUT:
-					{
-						RawMessageSocketDataOUT* messageSocketDataOUT = (RawMessageSocketDataOUT*)message;
+						RawMessageSocketData* messageSocketData = (RawMessageSocketData*)message;
 					}
 					break;
 					
