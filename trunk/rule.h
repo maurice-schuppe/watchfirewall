@@ -12,7 +12,7 @@
 #include "MessageType.h"
 
 
-enum __attribute__((visibility("hidden"))) RuleState
+enum /*__attribute__((visibility("hidden")))*/ RuleState
 {
 	RuleStateActive = 1,
 	RuleStateDeleted = 2

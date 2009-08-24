@@ -16,8 +16,8 @@ public:
 	virtual size_t GetRawMessageSize() = 0;
 	virtual UInt16 GetRawMessageType() = 0;
 	
-	inline static void *operator new(size_t size, UInt16 neededSize){ return ::new char[neededSize + sizeof(Message)]; }
-	inline static void *operator new(size_t size){ return ::new char[size]; }
+	inline void *operator new(size_t size, UInt16 neededSize){ return ::new char[neededSize + sizeof(Message)]; }
+	inline void *operator new(size_t size){ return ::new char[size]; }
 };
 
 class __attribute__((visibility("hidden"))) MessageText : public Message

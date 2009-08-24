@@ -90,10 +90,13 @@ Firewall::Unregistered(sflt_handle handle)
 errno_t	
 Firewall::Attach(void **cookie, socket_t so)
 {
+	//TODO: test
+	//return ENOMEM;
+
 	if(firewall.closing)
 		return ENOMEM;
 	
-	SocketCookie *socketCookie = new SocketCookie();
+	SocketCookie *socketCookie = new SocketCookie;
 	
 	if(socketCookie == NULL)
 	{
@@ -112,7 +115,7 @@ Firewall::Attach(void **cookie, socket_t so)
 	socketCookie->SetSocket(so);
 	socketCookie->state = SocketCookieStateALLOWED;
 	
-//	*cookie = socketCookie;
+	*cookie = socketCookie;
 	firewall.socketCookies.AddToChain(socketCookie);
 	
 	Message *messsage = MessageText::CreateFromCookie("attach", socketCookie);
@@ -448,6 +451,8 @@ KcGetSocketOption						/* called when the user process makes the getsockopt call
 bool 
 Firewall::RegisterKernelControl()
 {
+	IOLog("clients %d\n", clients);
+	
 	if(this->lockClientsQueue = IOLockAlloc())
 	{
 	

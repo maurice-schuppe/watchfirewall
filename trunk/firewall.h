@@ -53,6 +53,7 @@ public:
 public:
 
 	//static Firewall *instance;
+	void* operator new(size_t size, void* p){/*bzero(p, size);*/ return p;}
 	bool Init();
 	bool Free();
 	

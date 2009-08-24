@@ -318,15 +318,20 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FLOATING_POINT_LIBRARY_CALLS = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
+				GCC_USE_INDIRECT_FUNCTION_CALLS = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				MODULE_NAME = com.janbird.watch;
-				MODULE_START = Watch_start;
-				MODULE_STOP = Watch_stop;
+				MODULE_START = watch_start;
+				MODULE_STOP = watch_stop;
 				MODULE_VERSION = 1.0.0;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = Watch;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				WRAPPER_EXTENSION = kext;
 			};
 			name = Release;

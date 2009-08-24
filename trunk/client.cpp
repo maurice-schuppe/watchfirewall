@@ -15,7 +15,7 @@ Client::ClearQueue(ClientMessageNode *root)
 bool 
 Client::InitWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 {
-	::IOLog("client state refernces: %d; thread: %d; lQueue: %d; lThread: %d; nest: %d \n", this->references, this->thread, this->lockQueue, this->lockWorkThread, this->next);
+	IOLog("client state refernces: %d; thread: %d; lQueue: %d; lThread: %d; nest: %d \n", this->references, this->thread, this->lockQueue, this->lockWorkThread, this->next);
 	
 	this->registredMessageClases = MessageClassFirewall | MessageClassCommon;
 	
@@ -28,27 +28,27 @@ Client::InitWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 			
 			if(this->thread = IOCreateThread(Client::SendThread, this))
 			{
-				::IOLog("client created \n");
+				IOLog("client created \n");
 				this->references = 1;
 				return true;
 			}
 			
 			IOLockFree(this->lockWorkThread);
-			::IOLog("client can't create thread \n");//TODO: refactor
+			IOLog("client can't create thread \n");//TODO: refactor
 		}
 		
 		IOSimpleLockFree(this->lockQueue);
-		::IOLog("client can't create lock thread \n");//TODO: refactor
+		IOLog("client can't create lock thread \n");//TODO: refactor
 	}
 	
-	::IOLog("client can't create lock client \n");//TODO: refactor
+	IOLog("client can't create lock client \n");//TODO: refactor
 	return false;
 }
 
 void 
 Client::CloseSignal()
 {
-	::IOLog("cliend send close signal\n");
+	IOLog("cliend send close signal\n");
 	OSIncrementAtomic(&this->exitState);
 	IOLockWakeup(this->lockWorkThread, 0, false);
 }
@@ -57,7 +57,7 @@ void
 Client::Free()
 {
 	//send exit thread
-	::IOLog("client begin destroed\n");
+	IOLog("client begin destroed\n");
 	ClearQueue(this->messageQueueRoot);
 	this->messageQueueRoot = NULL;
 	this->messageQueueLast = NULL;

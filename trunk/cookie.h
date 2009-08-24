@@ -8,7 +8,7 @@
 #include "application.h"
 
 
-enum __attribute__((visibility("hidden"))) SocketCookieState
+enum /*__attribute__((visibility("hidden")))*/ SocketCookieState
 {
 	SocketCookieStateNOT = 1,	
 	SocketCookieStateASK = 2,	
