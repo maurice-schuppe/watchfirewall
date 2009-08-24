@@ -3,7 +3,7 @@
 #include <sys/vnode_if.h>
 
 #include "application.h"
-#include "firewall.h"
+//#include "firewall.h"
 
 void
 hexdump(const unsigned char *sha1, char* buffer)
@@ -64,7 +64,7 @@ Applications::Init()
 			if(thread = IOCreateThread(CheckApplicationsIsLiveRoutine, this))
 			{
 				
-				if(processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, CallbackProcessListener, NULL))
+				if(processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, CallbackProcessListener, this))
 				{
 					return true;
 				}
@@ -209,13 +209,19 @@ Applications::GetApplication()
 //}
 
 
+void 
+Applications::AddApplicationLocked(kauth_cred_t cred, vnode_t vnode, const char *filePath)
+{
+	IOLockLock(lock);
+	AddApplication(cred, vnode, filePath);
+	IOLockUnlock(lock);
+}
+
 Application* 
 Applications::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath)
 {
 	if(closing)
 		return NULL;
-	
-	IOLockLock(lock);
 	
 	char procName[MAXCOMLEN] = {0};
 	vnode_attr vnodeAttr;
@@ -223,10 +229,8 @@ Applications::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *fileP
 	
 	Application *result = new Application();
 	if(!result)
-	{
-		IOLockUnlock(lock);
 		return NULL;
-	}
+
 	result->pid = proc_selfpid();
 	result->p_pid = proc_selfppid();
 	
@@ -251,7 +255,7 @@ Applications::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *fileP
 			va.va_data_size != 0
 			) 
 		{
-			::IOLog("aplication size is: %d\n", va.va_data_size);
+			IOLog("aplication size is: %d\n", va.va_data_size);
 		}
 	}
 	else
@@ -263,7 +267,7 @@ Applications::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *fileP
 	
 	result->Retain();
 	
-	::IOLog("application added pid: %d path: %s\n", result->pid, result->filePath->getCStringNoCopy());
+	IOLog("application added pid: %d path: %s\n", result->pid, result->filePath->getCStringNoCopy());
 	
 	result->next = applications;
 	applications = result;
@@ -272,7 +276,6 @@ Applications::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *fileP
 		result->next->prev = result;
 	
 	countProcessesToCheck++;
-	IOLockUnlock(lock);
 	
 	return result;
 }
@@ -290,9 +293,10 @@ Applications::CallbackProcessListener
  uintptr_t       arg3
  )
 {
-	if(KAUTH_FILEOP_EXEC == action)
+	if(KAUTH_FILEOP_EXEC == action && idata != NULL)
 	{
-		firewall.applications.AddApplication(credential, (vnode_t)arg0, (const char *) arg1);
+		//IOLog("application: %d", idata);
+		 ((Applications*) idata)->AddApplicationLocked(credential, (vnode_t)arg0, (const char *) arg1);
 	}
 	
 	return KAUTH_RESULT_DEFER;
@@ -364,7 +368,7 @@ Applications::CheckApplicationsIsLiveRoutine(void *arg)
 			}
 			else
 			{
-				//::IOLog("app routine delete: %d ref: %d\n", app->pid, app->references);
+				//IOLog("app routine delete: %d ref: %d\n", app->pid, app->references);
 				applications->RemoveFromChain(app);
 				app->Release();
 				app = NULL;
@@ -374,7 +378,7 @@ Applications::CheckApplicationsIsLiveRoutine(void *arg)
 		IOLockUnlock(applications->lock);
 	}	
 
-	//::IOLog("app routine exit\n");
+	//IOLog("app routine exit\n");
 	IOLockUnlock(applications->lockRoutine);
 	applications->thread = NULL;
 	IOExitThread();

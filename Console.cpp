@@ -8,6 +8,9 @@
 #include <sys/vnode.h>
 #include <libkern/OSTypes.h>
 #include "ServerConnection.h"
+
+typedef void* socket_t;
+
 #include "messageType.h"
 #include "Console.h"
 

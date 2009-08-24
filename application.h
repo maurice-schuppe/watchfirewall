@@ -55,6 +55,7 @@ public:
 	Application* GetApplication(); 
 	//Application* AddApplication(vfs_context_t vfsContext, vnode_t vnode);
 	Application* AddApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath);
+	void		 AddApplicationLocked(kauth_cred_t cred, vnode_t vnode, const char *filePath);
 
 	static void CheckApplicationsIsLiveRoutine(void *arg);
 	static int CallbackProcessListener
