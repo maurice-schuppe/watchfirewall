@@ -176,9 +176,13 @@ errno_t
 Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
 
-	//char buffer[30];
-	//sockaddr *sa = (sockaddr*) &buffer;
-	//sock_getsockname(so, sa, 1);
+	char buffer[30];
+	//int size = 30;
+	sockaddr *sa = (sockaddr*) &buffer;
+	if(KERN_SUCCESS == sock_getsockname(so, sa, 30))
+	{
+		//print name
+	}
 	
 	Message *messsage = MessageText::CreateFromCookie("data in", (SocketCookie*)cookie);
 	firewall.Send(messsage);
