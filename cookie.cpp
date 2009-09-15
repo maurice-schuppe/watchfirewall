@@ -61,19 +61,24 @@ SocketCookie::SetToAddress(const sockaddr *socketAddress)
 bool 
 SocketCookie::AddDeferredData(bool direction, mbuf_t data, mbuf_t control, sflt_data_flag_t flags, sockaddr *socketAddress)
 {
-	DeferredData *deferredData = new DeferredData;
+	DeferredData *deferredData = new(socketAddress->sa_len) DeferredData;
 	if(deferredData)
 	{
 		deferredData->data = data;
 		deferredData->control = control;
 		deferredData->flags = flags;
 		//TODO: by size
-		deferredData->socketAddress = socketAddress;
+		memcpy(&deferredData->socketAddress, socketAddress, socketAddress->sa_len);
 		
 		if(lastDefferedData)
 		{
 			lastDefferedData->next = deferredData;
 			lastDefferedData = deferredData;
+		}
+		else
+		{
+			rootDefferedData = deferredData;
+			lastDefferedData = rootDefferedData;
 		}
 		
 		return true;
@@ -85,12 +90,46 @@ SocketCookie::AddDeferredData(bool direction, mbuf_t data, mbuf_t control, sflt_
 bool 
 SocketCookie::ClearDeferredData()
 {
-	return false;
+	while (rootDefferedData) 
+	{
+		mbuf_freem(rootDefferedData->data);
+		mbuf_freem(rootDefferedData->control);
+		
+		rootDefferedData = rootDefferedData->next;
+	}
+	
+	lastDefferedData = NULL;
+	return true;
 }
 
 bool 
-SocketCookie::SendDeferredData()
+SocketCookie::SendDeferredData(bool isUnboundConnection)
 {
-	return false;
+	while (rootDefferedData) 
+	{
+		sockaddr *sockAddress = NULL;
+		if(isUnboundConnection)
+			sockAddress = (sockaddr*)&rootDefferedData->socketAddress;
+		
+		
+		if(rootDefferedData->direction)
+		{
+			//TODO: socket address if tcp/ip
+			if(sock_inject_data_in(socket, sockAddress, rootDefferedData->data, rootDefferedData->control, rootDefferedData->flags))
+			{
+				mbuf_freem(rootDefferedData->data);
+				mbuf_freem(rootDefferedData->control);
+			}
+		}
+		else
+		{
+			sock_inject_data_out(socket, sockAddress, rootDefferedData->data, rootDefferedData->control, rootDefferedData->flags);
+		}
+		
+		rootDefferedData = rootDefferedData->next;
+	}
+	
+	lastDefferedData = NULL;
+	return true;
 }
 

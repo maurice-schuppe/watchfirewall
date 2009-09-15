@@ -16,15 +16,20 @@ enum /*__attribute__((visibility("hidden")))*/ SocketCookieState
 	SocketCookieStateNOT_ALLOWED = 8
 };
 
-struct __attribute__((visibility("hidden"))) DeferredData
+class __attribute__((visibility("hidden"))) DeferredData
 {
+public:
 	mbuf_t data;
 	mbuf_t control;
 	sflt_data_flag_t flags;
-	sockaddr *socketAddress;
 	bool direction; //true out, false in
 	
 	DeferredData *next;
+
+	char socketAddress;
+	
+	inline void *operator new(size_t size, UInt16 additionalSize){ return ::new char[additionalSize + size]; }
+
 };
 
 class __attribute__((visibility("hidden"))) SocketCookie
@@ -70,6 +75,7 @@ public:
 	void Free()
 	{
 		//TODO: free deferred data
+		ClearDeferredData();
 		
 		if(rule)
 			rule->Release();
@@ -92,7 +98,7 @@ public:
 	
 	bool AddDeferredData(bool direction, mbuf_t data, mbuf_t control, sflt_data_flag_t flags, sockaddr *socketAddress);
 	bool ClearDeferredData();
-	bool SendDeferredData();
+	bool SendDeferredData(bool isUnboundConnection);
 	
 	
 };
