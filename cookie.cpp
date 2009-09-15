@@ -59,7 +59,7 @@ SocketCookie::SetToAddress(const sockaddr *socketAddress)
 
 
 bool 
-SocketCookie::AddDeferredData(bool direction,	mbuf_t data, mbuf_t control, sflt_data_flag_t flags, sockaddr *socketAddress)
+SocketCookie::AddDeferredData(bool direction, mbuf_t data, mbuf_t control, sflt_data_flag_t flags, sockaddr *socketAddress)
 {
 	DeferredData *deferredData = new DeferredData;
 	if(deferredData)
@@ -75,6 +75,8 @@ SocketCookie::AddDeferredData(bool direction,	mbuf_t data, mbuf_t control, sflt_
 			lastDefferedData->next = deferredData;
 			lastDefferedData = deferredData;
 		}
+		
+		return true;
 		
 	}
 	return false;
