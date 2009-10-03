@@ -181,6 +181,7 @@ public:
 		
 		return result;
 	}
+	
 	static bool PrependMbufHeader(mbuf_t *data, size_t pkt_len)
 	{
 		mbuf_t new_hdr;
