@@ -17,14 +17,14 @@ Rule::Init(RawMessageAddRule *message)
 				sockaddr *t = message->GetSockAddress();
 				if(t)
 				{
-					this->sockAddress = (sockaddr*)new char[t->sa_len];
-					if(this->sockAddress)
+					this->fromSockAddress = (sockaddr*)new char[t->sa_len];
+					if(this->fromSockAddress)
 					{
-						memcpy(this->sockAddress, t, t->sa_len);
+						memcpy(this->fromSockAddress, t, t->sa_len);
 					}
 				}
 
-				if((t && this->sockAddress) || !t)
+				if((t && this->fromSockAddress) || !t)
 				{
 					this->id = message->id;
 					
@@ -58,8 +58,8 @@ Rule::Free()
 	if(this->processName)
 		this->processName->release();
 	
-	if(this->sockAddress)
-		delete sockAddress;
+	if(this->fromSockAddress)
+		delete fromSockAddress;
 	
 	SimpleBase::Free();
 }

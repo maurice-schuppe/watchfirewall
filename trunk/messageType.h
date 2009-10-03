@@ -100,7 +100,8 @@ struct RawMessageAskRule : public RawMessageBase
 	UInt16 sockDomain;//0 for all
 	UInt16 sockType;//0 for all
 	UInt16 sockProtocol;// 0 fro all	
-	UInt16 sockAddressOffset;// 0 for all
+	UInt16 fromSockAddressOffset;// 0 for all
+	UInt16 toSockAddressOffset;
 	
 	UInt8 direction;//0 both. 1 incoming, 2 outgoung
 	
@@ -289,6 +290,21 @@ struct RawMessageSocketData : public RawMessageBase
 			this->processNameSize = 0;
 			*(this->data + currentOffset) = 0;
 		}		
+	}
+	
+	inline sockaddr* GetFromSocketAddress()
+	{
+		return NULL;
+	}
+	
+	inline sockaddr* GetToSocketAddress()
+	{
+		return NULL;
+	}
+	
+	inline char* GetProcessName()
+	{
+		return NULL;
 	}
 	
 };

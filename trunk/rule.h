@@ -12,7 +12,7 @@
 #include "MessageType.h"
 
 
-enum /*__attribute__((visibility("hidden")))*/ RuleState
+enum RuleState 
 {
 	RuleStateActive = 1,
 	RuleStateDeleted = 2
@@ -28,7 +28,11 @@ class __attribute__((visibility("hidden"))) Rule: public SimpleBase
 	UInt16 sockDomain;//0 for all
 	UInt16 sockType;//0 for all
 	UInt16 sockProtocol;// 0 fro all	
-	sockaddr* sockAddress;// 0 for all
+	sockaddr* fromSockAddress;// 0 for all
+	sockaddr* toSockAddress;//
+	
+	sockaddr* fromSockAddressMask;
+	sockaddr* toSockAddressMask;
 	
 	UInt8 direction;//0 both. 1 incoming, 2 outgoung
 	UInt8 allow;//0 denny, 1 allow

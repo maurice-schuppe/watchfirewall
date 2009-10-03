@@ -177,6 +177,11 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 {
 
 	char buffer[30];
+	SocketCookie *scookie = (SocketCookie*)cookie;
+	
+	if(scookie == NULL)
+		return KERN_SUCCESS;
+	
 	//int size = 30;
 	sockaddr *sa = (sockaddr*) &buffer;
 	if(KERN_SUCCESS == sock_getsockname(so, sa, 30))
@@ -191,7 +196,7 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 	return KERN_SUCCESS;
 	
 	//check fo socket changes
-	SocketCookie *scookie = (SocketCookie*)cookie;
+
 	
 	if(firewall.rules.IsRulesChanged(scookie->obtainedRuleTime))
 	{
