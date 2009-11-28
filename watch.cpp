@@ -8,7 +8,7 @@ extern "C" {
 kern_return_t 
 watch_start (kmod_info_t * ki, void * d)
 {	
-	new(&firewall) Firewall;
+	//new(&firewall) Firewall;
 	return firewall.Init() ? KERN_SUCCESS : KERN_FAILURE;
 }
 
