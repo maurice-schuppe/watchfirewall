@@ -35,7 +35,7 @@ struct __attribute__((visibility("hidden"))) protocol
 	int state;
 };
 
-class __attribute__((visibility("hidden"))) Firewall 
+struct __attribute__((visibility("hidden"))) Firewall 
 {
 public:
 	bool	firewallUp;
@@ -53,7 +53,7 @@ public:
 public:
 
 	//static Firewall *instance;
-	void* operator new(size_t size, void* p){/*bzero(p, size);*/ return p;}
+	//void* operator new(size_t size, void* p){/*bzero(p, size);*/ return p;}
 	bool Init();
 	bool Free();
 	

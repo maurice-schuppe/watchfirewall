@@ -9,11 +9,20 @@ public:
 	SInt32 references;
 	
 public:
-	//void IOLog();
 	
-	int Retain();
-	int Release();
-	virtual void Free();
+	int Retain() { return OSIncrementAtomic(&references); }
+	int Release() 
+	{
+		if(OSDecrementAtomic(&references) == 1)
+		{
+			Free();
+			return 0;
+		}
+		
+		return references;
+	}
+	
+	virtual void Free() { delete this; }	
 };
 
 

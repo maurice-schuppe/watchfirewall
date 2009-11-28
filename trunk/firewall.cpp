@@ -187,6 +187,7 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 	if(KERN_SUCCESS == sock_getsockname(so, sa, 30))
 	{
 		//print name
+		//IOLog("sock address: %s", sa);
 	}
 	
 	Message *messsage = MessageText::CreateFromCookie("data in", (SocketCookie*)cookie);
@@ -524,8 +525,8 @@ Firewall::Send(Message *message)
 	
 	IOLockLock(this->lockClientsQueue);
 	
-	for(Client *curr = this->clients; curr; curr = curr->next)
-		curr->Send(message);
+	for(Client *client = this->clients; client; client = client->next)
+		client->Send(message);
 	
 	IOLockUnlock(this->lockClientsQueue);
 }
@@ -665,7 +666,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				{
 					RawMessageAddRule* rawMessageAddRule = (RawMessageAddRule*) message;
 					
-					//TODO: refctor message
+					//TODO: refactor message
 					MessageRuleAdded* responce = MessageRuleAdded::Create(client->unit, rawMessageAddRule->id, 0, 0);
 					
 					Rule *rule;
