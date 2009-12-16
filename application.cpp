@@ -224,8 +224,8 @@ Applications::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *fileP
 		return NULL;
 	
 	char procName[MAXCOMLEN] = {0};
-	vnode_attr vnodeAttr;
-	bzero(&vnodeAttr, sizeof(vnode_attr)); 
+	//vnode_attr vnodeAttr;
+	//bzero(&vnodeAttr, sizeof(vnode_attr)); 
 	
 	Application *result = new Application();
 	if(!result)
@@ -255,7 +255,7 @@ Applications::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *fileP
 			va.va_data_size != 0
 			) 
 		{
-			IOLog("aplication size is: %d\n", va.va_data_size);
+			IOLog("aplication size is: %llu\n", va.va_data_size);
 		}
 	}
 	else

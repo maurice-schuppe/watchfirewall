@@ -461,7 +461,7 @@ KcGetSocketOption						/* called when the user process makes the getsockopt call
 bool 
 Firewall::RegisterKernelControl()
 {
-	IOLog("clients %d\n", clients);
+	IOLog("clients %p\n", clients);
 	
 	if(this->lockClientsQueue = IOLockAlloc())
 	{
@@ -669,7 +669,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 					//TODO: refactor message
 					MessageRuleAdded* responce = MessageRuleAdded::Create(client->unit, rawMessageAddRule->id, 0, 0);
 					
-					Rule *rule;
+					Rule *rule = NULL;
 					switch(firewall.rules.AddRule(rawMessageAddRule, &rule))
 					{
 						case -1://memory error

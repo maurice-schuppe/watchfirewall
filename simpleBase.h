@@ -22,7 +22,7 @@ public:
 		return references;
 	}
 	
-	virtual void Free() { delete this; }	
+	virtual void Free();	
 };
 
 
