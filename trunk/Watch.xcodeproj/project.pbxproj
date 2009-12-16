@@ -17,6 +17,7 @@
 		3DA2FA3310414FFF001D9D2C /* bundleid.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA2FA3210414FFF001D9D2C /* bundleid.h */; };
 		3DC6A4CD0FB5FBB20026849A /* messages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6A4CC0FB5FBB20026849A /* messages.cpp */; };
 		3DCA11B10FB6B9C00063A402 /* messageType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DCA11B00FB6B9C00063A402 /* messageType.h */; };
+		3DCAB2BC10C1AC31001C6BC9 /* simpleBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DCAB2BB10C1AC31001C6BC9 /* simpleBase.cpp */; };
 		DF04F61E0F7F611B001E5512 /* rule.h in Headers */ = {isa = PBXBuildFile; fileRef = DF04F61C0F7F611B001E5512 /* rule.h */; };
 		DF04F61F0F7F611B001E5512 /* rule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF04F61D0F7F611B001E5512 /* rule.cpp */; };
 		DF18434A0F89B9C70058E488 /* cookie.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1843480F89B9C70058E488 /* cookie.h */; };
@@ -60,6 +61,7 @@
 		3DA2FA3210414FFF001D9D2C /* bundleid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundleid.h; sourceTree = "<group>"; };
 		3DC6A4CC0FB5FBB20026849A /* messages.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = messages.cpp; sourceTree = "<group>"; };
 		3DCA11B00FB6B9C00063A402 /* messageType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = messageType.h; sourceTree = "<group>"; };
+		3DCAB2BB10C1AC31001C6BC9 /* simpleBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simpleBase.cpp; sourceTree = "<group>"; };
 		DF04F61C0F7F611B001E5512 /* rule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rule.h; sourceTree = "<group>"; };
 		DF04F61D0F7F611B001E5512 /* rule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rule.cpp; sourceTree = "<group>"; };
 		DF0F09F60F250DA400DBDD52 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
@@ -147,6 +149,7 @@
 				3D8E1C090FC1BF82009863D7 /* application.h */,
 				3D8E1C0A0FC1BF82009863D7 /* application.cpp */,
 				3DA2FA3210414FFF001D9D2C /* bundleid.h */,
+				3DCAB2BB10C1AC31001C6BC9 /* simpleBase.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -262,6 +265,7 @@
 				3D93F09D0FB1D1B30021BCD5 /* client.cpp in Sources */,
 				3DC6A4CD0FB5FBB20026849A /* messages.cpp in Sources */,
 				3D8E1C0C0FC1BF82009863D7 /* application.cpp in Sources */,
+				3DCAB2BC10C1AC31001C6BC9 /* simpleBase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,7 +321,7 @@
 				GCC_ENABLE_FLOATING_POINT_LIBRARY_CALLS = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
+				GCC_MODEL_TUNING = "";
 				GCC_USE_INDIRECT_FUNCTION_CALLS = YES;
 				GCC_VERSION = 4.2;
 				INFOPLIST_FILE = Info.plist;
