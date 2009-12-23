@@ -15,7 +15,7 @@ Client::ClearQueue(ClientMessageNode *root)
 bool 
 Client::InitWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 {
-	IOLog("client state refernces: %d; thread: %d; lQueue: %d; lThread: %d; nest: %d \n", this->references, this->thread, this->lockQueue, this->lockWorkThread, this->next);
+	IOLog("client state refernces: %ld; thread: %p; lQueue: %p; lThread: %p; nest: %p \n", this->references, this->thread, this->lockQueue, this->lockWorkThread, this->next);
 	
 	this->registredMessageClases = MessageClassFirewall | MessageClassCommon;
 	
