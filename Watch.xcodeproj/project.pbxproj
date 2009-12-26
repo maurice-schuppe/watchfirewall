@@ -7,26 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		32A4FEBC0562C75700D090E7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
-		32A4FEBE0562C75700D090E7 /* watch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A224C3CFF42312311CA2CB7 /* watch.cpp */; settings = {ATTRIBUTES = (); }; };
-		3D8E1C0B0FC1BF82009863D7 /* application.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D8E1C090FC1BF82009863D7 /* application.h */; };
-		3D8E1C0C0FC1BF82009863D7 /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D8E1C0A0FC1BF82009863D7 /* application.cpp */; };
-		3D93F09C0FB1D1B30021BCD5 /* client.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D93F09A0FB1D1B30021BCD5 /* client.h */; };
-		3D93F09D0FB1D1B30021BCD5 /* client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D93F09B0FB1D1B30021BCD5 /* client.cpp */; };
-		3DA010730FB7081D00DE86CA /* simpleBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA010710FB7081D00DE86CA /* simpleBase.h */; };
-		3DA2FA3310414FFF001D9D2C /* bundleid.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA2FA3210414FFF001D9D2C /* bundleid.h */; };
-		3DC6A4CD0FB5FBB20026849A /* messages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6A4CC0FB5FBB20026849A /* messages.cpp */; };
-		3DCA11B10FB6B9C00063A402 /* messageType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DCA11B00FB6B9C00063A402 /* messageType.h */; };
-		3DCAB2BC10C1AC31001C6BC9 /* simpleBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DCAB2BB10C1AC31001C6BC9 /* simpleBase.cpp */; };
-		DF04F61E0F7F611B001E5512 /* rule.h in Headers */ = {isa = PBXBuildFile; fileRef = DF04F61C0F7F611B001E5512 /* rule.h */; };
-		DF04F61F0F7F611B001E5512 /* rule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF04F61D0F7F611B001E5512 /* rule.cpp */; };
-		DF18434A0F89B9C70058E488 /* cookie.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1843480F89B9C70058E488 /* cookie.h */; };
-		DF18434B0F89B9C70058E488 /* cookie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF1843490F89B9C70058E488 /* cookie.cpp */; };
-		DF18470A0F89137B009A2B16 /* firewall.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1847080F89137B009A2B16 /* firewall.h */; };
-		DF18470B0F89137B009A2B16 /* firewall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF1847090F89137B009A2B16 /* firewall.cpp */; };
-		DF30088F0F3D811100D714EB /* messages.h in Headers */ = {isa = PBXBuildFile; fileRef = DF30088E0F3D811100D714EB /* messages.h */; };
-		DF431F6E0F07B14400ADB9CB /* ServerConnection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF431F6D0F07B14400ADB9CB /* ServerConnection.cpp */; };
-		DF7F269C0F04D8730084F62D /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF7F26990F04D7F90084F62D /* Console.cpp */; };
+		DFE2F8C210E61242008E71F5 /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8B010E61242008E71F5 /* application.cpp */; };
+		DFE2F8C310E61242008E71F5 /* application.h in Headers */ = {isa = PBXBuildFile; fileRef = DFE2F8B110E61242008E71F5 /* application.h */; };
+		DFE2F8C410E61242008E71F5 /* client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8B210E61242008E71F5 /* client.cpp */; };
+		DFE2F8C510E61242008E71F5 /* client.h in Headers */ = {isa = PBXBuildFile; fileRef = DFE2F8B310E61242008E71F5 /* client.h */; };
+		DFE2F8C610E61242008E71F5 /* cookie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8B410E61242008E71F5 /* cookie.cpp */; };
+		DFE2F8C710E61242008E71F5 /* cookie.h in Headers */ = {isa = PBXBuildFile; fileRef = DFE2F8B510E61242008E71F5 /* cookie.h */; };
+		DFE2F8C810E61242008E71F5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DFE2F8B610E61242008E71F5 /* InfoPlist.strings */; };
+		DFE2F8C910E61242008E71F5 /* firewall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8B810E61242008E71F5 /* firewall.cpp */; };
+		DFE2F8CA10E61242008E71F5 /* firewall.h in Headers */ = {isa = PBXBuildFile; fileRef = DFE2F8B910E61242008E71F5 /* firewall.h */; };
+		DFE2F8CB10E61242008E71F5 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DFE2F8BA10E61242008E71F5 /* Info.plist */; };
+		DFE2F8CC10E61242008E71F5 /* messages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8BB10E61242008E71F5 /* messages.cpp */; };
+		DFE2F8CD10E61242008E71F5 /* messages.h in Headers */ = {isa = PBXBuildFile; fileRef = DFE2F8BC10E61242008E71F5 /* messages.h */; };
+		DFE2F8CE10E61242008E71F5 /* rule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8BD10E61242008E71F5 /* rule.cpp */; };
+		DFE2F8CF10E61242008E71F5 /* rule.h in Headers */ = {isa = PBXBuildFile; fileRef = DFE2F8BE10E61242008E71F5 /* rule.h */; };
+		DFE2F8D010E61242008E71F5 /* simpleBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8BF10E61242008E71F5 /* simpleBase.cpp */; };
+		DFE2F8D110E61242008E71F5 /* simpleBase.h in Headers */ = {isa = PBXBuildFile; fileRef = DFE2F8C010E61242008E71F5 /* simpleBase.h */; };
+		DFE2F8D210E61242008E71F5 /* watch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8C110E61242008E71F5 /* watch.cpp */; };
+		DFE2F8DB10E61276008E71F5 /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8D910E61276008E71F5 /* Console.cpp */; };
+		DFE2F8F510E6143D008E71F5 /* ServerConnection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8D610E6125B008E71F5 /* ServerConnection.cpp */; };
+		DFE2F90F10E6150F008E71F5 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DFE2F90E10E6150F008E71F5 /* Info.plist */; };
+		DFE2F91310E61572008E71F5 /* Main.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFE2F91210E61572008E71F5 /* Main.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -49,33 +50,36 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
-		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		1A224C3CFF42312311CA2CB7 /* watch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = watch.cpp; sourceTree = "<group>"; };
-		32A4FEC30562C75700D090E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		32A4FEC40562C75800D090E7 /* Watch.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Watch.kext; sourceTree = BUILT_PRODUCTS_DIR; };
-		3D8E1C090FC1BF82009863D7 /* application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = application.h; sourceTree = "<group>"; };
-		3D8E1C0A0FC1BF82009863D7 /* application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = application.cpp; sourceTree = "<group>"; };
-		3D93F09A0FB1D1B30021BCD5 /* client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = client.h; sourceTree = "<group>"; };
-		3D93F09B0FB1D1B30021BCD5 /* client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = client.cpp; sourceTree = "<group>"; };
-		3DA010710FB7081D00DE86CA /* simpleBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simpleBase.h; sourceTree = "<group>"; };
-		3DA2FA3210414FFF001D9D2C /* bundleid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundleid.h; sourceTree = "<group>"; };
-		3DC6A4CC0FB5FBB20026849A /* messages.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = messages.cpp; sourceTree = "<group>"; };
-		3DCA11B00FB6B9C00063A402 /* messageType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = messageType.h; sourceTree = "<group>"; };
-		3DCAB2BB10C1AC31001C6BC9 /* simpleBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simpleBase.cpp; sourceTree = "<group>"; };
-		DF04F61C0F7F611B001E5512 /* rule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rule.h; sourceTree = "<group>"; };
-		DF04F61D0F7F611B001E5512 /* rule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rule.cpp; sourceTree = "<group>"; };
 		DF0F09F60F250DA400DBDD52 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		DF1843480F89B9C70058E488 /* cookie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cookie.h; sourceTree = "<group>"; };
-		DF1843490F89B9C70058E488 /* cookie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cookie.cpp; sourceTree = "<group>"; };
-		DF1847080F89137B009A2B16 /* firewall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = firewall.h; sourceTree = "<group>"; };
-		DF1847090F89137B009A2B16 /* firewall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = firewall.cpp; sourceTree = "<group>"; };
-		DF30088E0F3D811100D714EB /* messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = messages.h; sourceTree = "<group>"; };
-		DF431F6C0F07B14400ADB9CB /* ServerConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerConnection.h; sourceTree = "<group>"; };
-		DF431F6D0F07B14400ADB9CB /* ServerConnection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ServerConnection.cpp; sourceTree = "<group>"; };
 		DF7F26680F04D5AC0084F62D /* WatchConsole */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = WatchConsole; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF7F26980F04D7F90084F62D /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
-		DF7F26990F04D7F90084F62D /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
 		DF82061B0F1A64CB0046C608 /* Kernel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework.static; name = Kernel.framework; path = System/Library/Frameworks/Kernel.framework; sourceTree = SDKROOT; };
+		DFE2F8B010E61242008E71F5 /* application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = application.cpp; sourceTree = "<group>"; };
+		DFE2F8B110E61242008E71F5 /* application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = application.h; sourceTree = "<group>"; };
+		DFE2F8B210E61242008E71F5 /* client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = client.cpp; sourceTree = "<group>"; };
+		DFE2F8B310E61242008E71F5 /* client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = client.h; sourceTree = "<group>"; };
+		DFE2F8B410E61242008E71F5 /* cookie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cookie.cpp; sourceTree = "<group>"; };
+		DFE2F8B510E61242008E71F5 /* cookie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cookie.h; sourceTree = "<group>"; };
+		DFE2F8B710E61242008E71F5 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DFE2F8B810E61242008E71F5 /* firewall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = firewall.cpp; sourceTree = "<group>"; };
+		DFE2F8B910E61242008E71F5 /* firewall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = firewall.h; sourceTree = "<group>"; };
+		DFE2F8BA10E61242008E71F5 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DFE2F8BB10E61242008E71F5 /* messages.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = messages.cpp; sourceTree = "<group>"; };
+		DFE2F8BC10E61242008E71F5 /* messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = messages.h; sourceTree = "<group>"; };
+		DFE2F8BD10E61242008E71F5 /* rule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rule.cpp; sourceTree = "<group>"; };
+		DFE2F8BE10E61242008E71F5 /* rule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rule.h; sourceTree = "<group>"; };
+		DFE2F8BF10E61242008E71F5 /* simpleBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simpleBase.cpp; sourceTree = "<group>"; };
+		DFE2F8C010E61242008E71F5 /* simpleBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simpleBase.h; sourceTree = "<group>"; };
+		DFE2F8C110E61242008E71F5 /* watch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = watch.cpp; sourceTree = "<group>"; };
+		DFE2F8D410E6125B008E71F5 /* bundleid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundleid.h; sourceTree = "<group>"; };
+		DFE2F8D510E6125B008E71F5 /* messageType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = messageType.h; sourceTree = "<group>"; };
+		DFE2F8D610E6125B008E71F5 /* ServerConnection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ServerConnection.cpp; sourceTree = "<group>"; };
+		DFE2F8D710E6125B008E71F5 /* ServerConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerConnection.h; sourceTree = "<group>"; };
+		DFE2F8D910E61276008E71F5 /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
+		DFE2F8DA10E61276008E71F5 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
+		DFE2F8FE10E61487008E71F5 /* AppTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DFE2F90E10E6150F008E71F5 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DFE2F91210E61572008E71F5 /* Main.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Main.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,28 +97,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DFE2F8FC10E61487008E71F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		089C166AFE841209C02AAC07 /* Watch */ = {
 			isa = PBXGroup;
 			children = (
+				DFE2F8DD10E612A5008E71F5 /* AppTest */,
+				DFE2F8DC10E61294008E71F5 /* Daemon */,
+				DFE2F8D810E61276008E71F5 /* ConsoleTest */,
+				DFE2F8D310E6125B008E71F5 /* Shared */,
+				DFE2F8AF10E61242008E71F5 /* Kext */,
 				DF0F09F60F250DA400DBDD52 /* IOKit.framework */,
 				DF82061B0F1A64CB0046C608 /* Kernel.framework */,
-				247142CAFF3F8F9811CA285C /* Source */,
-				089C167CFE841241C02AAC07 /* Resources */,
 				19C28FB6FE9D52B211CA2CBB /* Products */,
 			);
 			name = Watch;
-			sourceTree = "<group>";
-		};
-		089C167CFE841241C02AAC07 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				32A4FEC30562C75700D090E7 /* Info.plist */,
-				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
-			);
-			name = Resources;
 			sourceTree = "<group>";
 		};
 		19C28FB6FE9D52B211CA2CBB /* Products */ = {
@@ -122,36 +127,85 @@
 			children = (
 				32A4FEC40562C75800D090E7 /* Watch.kext */,
 				DF7F26680F04D5AC0084F62D /* WatchConsole */,
+				DFE2F8FE10E61487008E71F5 /* AppTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		247142CAFF3F8F9811CA285C /* Source */ = {
+		DFE2F8AF10E61242008E71F5 /* Kext */ = {
 			isa = PBXGroup;
 			children = (
-				1A224C3CFF42312311CA2CB7 /* watch.cpp */,
-				DF7F26980F04D7F90084F62D /* Console.h */,
-				DF7F26990F04D7F90084F62D /* Console.cpp */,
-				DF431F6C0F07B14400ADB9CB /* ServerConnection.h */,
-				DF431F6D0F07B14400ADB9CB /* ServerConnection.cpp */,
-				3DCA11B00FB6B9C00063A402 /* messageType.h */,
-				DF30088E0F3D811100D714EB /* messages.h */,
-				3DC6A4CC0FB5FBB20026849A /* messages.cpp */,
-				DF04F61C0F7F611B001E5512 /* rule.h */,
-				DF04F61D0F7F611B001E5512 /* rule.cpp */,
-				DF1847080F89137B009A2B16 /* firewall.h */,
-				DF1847090F89137B009A2B16 /* firewall.cpp */,
-				DF1843480F89B9C70058E488 /* cookie.h */,
-				DF1843490F89B9C70058E488 /* cookie.cpp */,
-				3D93F09A0FB1D1B30021BCD5 /* client.h */,
-				3D93F09B0FB1D1B30021BCD5 /* client.cpp */,
-				3DA010710FB7081D00DE86CA /* simpleBase.h */,
-				3D8E1C090FC1BF82009863D7 /* application.h */,
-				3D8E1C0A0FC1BF82009863D7 /* application.cpp */,
-				3DA2FA3210414FFF001D9D2C /* bundleid.h */,
-				3DCAB2BB10C1AC31001C6BC9 /* simpleBase.cpp */,
+				DFE2F8DE10E612EC008E71F5 /* Resources */,
+				DFE2F8B010E61242008E71F5 /* application.cpp */,
+				DFE2F8B110E61242008E71F5 /* application.h */,
+				DFE2F8B210E61242008E71F5 /* client.cpp */,
+				DFE2F8B310E61242008E71F5 /* client.h */,
+				DFE2F8B410E61242008E71F5 /* cookie.cpp */,
+				DFE2F8B510E61242008E71F5 /* cookie.h */,
+				DFE2F8B810E61242008E71F5 /* firewall.cpp */,
+				DFE2F8B910E61242008E71F5 /* firewall.h */,
+				DFE2F8BB10E61242008E71F5 /* messages.cpp */,
+				DFE2F8BC10E61242008E71F5 /* messages.h */,
+				DFE2F8BD10E61242008E71F5 /* rule.cpp */,
+				DFE2F8BE10E61242008E71F5 /* rule.h */,
+				DFE2F8BF10E61242008E71F5 /* simpleBase.cpp */,
+				DFE2F8C010E61242008E71F5 /* simpleBase.h */,
+				DFE2F8C110E61242008E71F5 /* watch.cpp */,
 			);
-			name = Source;
+			path = Kext;
+			sourceTree = "<group>";
+		};
+		DFE2F8D310E6125B008E71F5 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				DFE2F8D410E6125B008E71F5 /* bundleid.h */,
+				DFE2F8D510E6125B008E71F5 /* messageType.h */,
+				DFE2F8D610E6125B008E71F5 /* ServerConnection.cpp */,
+				DFE2F8D710E6125B008E71F5 /* ServerConnection.h */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		DFE2F8D810E61276008E71F5 /* ConsoleTest */ = {
+			isa = PBXGroup;
+			children = (
+				DFE2F8D910E61276008E71F5 /* Console.cpp */,
+				DFE2F8DA10E61276008E71F5 /* Console.h */,
+			);
+			path = ConsoleTest;
+			sourceTree = "<group>";
+		};
+		DFE2F8DC10E61294008E71F5 /* Daemon */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Daemon;
+			sourceTree = "<group>";
+		};
+		DFE2F8DD10E612A5008E71F5 /* AppTest */ = {
+			isa = PBXGroup;
+			children = (
+				DFE2F90410E614CB008E71F5 /* Resources */,
+			);
+			path = AppTest;
+			sourceTree = "<group>";
+		};
+		DFE2F8DE10E612EC008E71F5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DFE2F8BA10E61242008E71F5 /* Info.plist */,
+				DFE2F8B610E61242008E71F5 /* InfoPlist.strings */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		DFE2F90410E614CB008E71F5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DFE2F91210E61572008E71F5 /* Main.xib */,
+				DFE2F90E10E6150F008E71F5 /* Info.plist */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -161,15 +215,13 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF30088F0F3D811100D714EB /* messages.h in Headers */,
-				DF04F61E0F7F611B001E5512 /* rule.h in Headers */,
-				DF18470A0F89137B009A2B16 /* firewall.h in Headers */,
-				DF18434A0F89B9C70058E488 /* cookie.h in Headers */,
-				3D93F09C0FB1D1B30021BCD5 /* client.h in Headers */,
-				3DCA11B10FB6B9C00063A402 /* messageType.h in Headers */,
-				3DA010730FB7081D00DE86CA /* simpleBase.h in Headers */,
-				3D8E1C0B0FC1BF82009863D7 /* application.h in Headers */,
-				3DA2FA3310414FFF001D9D2C /* bundleid.h in Headers */,
+				DFE2F8C310E61242008E71F5 /* application.h in Headers */,
+				DFE2F8C510E61242008E71F5 /* client.h in Headers */,
+				DFE2F8C710E61242008E71F5 /* cookie.h in Headers */,
+				DFE2F8CA10E61242008E71F5 /* firewall.h in Headers */,
+				DFE2F8CD10E61242008E71F5 /* messages.h in Headers */,
+				DFE2F8CF10E61242008E71F5 /* rule.h in Headers */,
+				DFE2F8D110E61242008E71F5 /* simpleBase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,6 +266,23 @@
 			productReference = DF7F26680F04D5AC0084F62D /* WatchConsole */;
 			productType = "com.apple.product-type.tool";
 		};
+		DFE2F8FD10E61487008E71F5 /* AppTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DFE2F90310E61488008E71F5 /* Build configuration list for PBXNativeTarget "AppTest" */;
+			buildPhases = (
+				DFE2F8FA10E61487008E71F5 /* Resources */,
+				DFE2F8FB10E61487008E71F5 /* Sources */,
+				DFE2F8FC10E61487008E71F5 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AppTest;
+			productName = AppTest;
+			productReference = DFE2F8FE10E61487008E71F5 /* AppTest.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -228,6 +297,7 @@
 			targets = (
 				32A4FEB80562C75700D090E7 /* Watch */,
 				DF7F26670F04D5AC0084F62D /* WatchConsole */,
+				DFE2F8FD10E61487008E71F5 /* AppTest */,
 			);
 		};
 /* End PBXProject section */
@@ -237,7 +307,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				32A4FEBC0562C75700D090E7 /* InfoPlist.strings in Resources */,
+				DFE2F8C810E61242008E71F5 /* InfoPlist.strings in Resources */,
+				DFE2F8CB10E61242008E71F5 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DFE2F8FA10E61487008E71F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DFE2F90F10E6150F008E71F5 /* Info.plist in Resources */,
+				DFE2F91310E61572008E71F5 /* Main.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,14 +338,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				32A4FEBE0562C75700D090E7 /* watch.cpp in Sources */,
-				DF04F61F0F7F611B001E5512 /* rule.cpp in Sources */,
-				DF18470B0F89137B009A2B16 /* firewall.cpp in Sources */,
-				DF18434B0F89B9C70058E488 /* cookie.cpp in Sources */,
-				3D93F09D0FB1D1B30021BCD5 /* client.cpp in Sources */,
-				3DC6A4CD0FB5FBB20026849A /* messages.cpp in Sources */,
-				3D8E1C0C0FC1BF82009863D7 /* application.cpp in Sources */,
-				3DCAB2BC10C1AC31001C6BC9 /* simpleBase.cpp in Sources */,
+				DFE2F8C210E61242008E71F5 /* application.cpp in Sources */,
+				DFE2F8C410E61242008E71F5 /* client.cpp in Sources */,
+				DFE2F8C610E61242008E71F5 /* cookie.cpp in Sources */,
+				DFE2F8C910E61242008E71F5 /* firewall.cpp in Sources */,
+				DFE2F8CC10E61242008E71F5 /* messages.cpp in Sources */,
+				DFE2F8CE10E61242008E71F5 /* rule.cpp in Sources */,
+				DFE2F8D010E61242008E71F5 /* simpleBase.cpp in Sources */,
+				DFE2F8D210E61242008E71F5 /* watch.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,18 +353,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF7F269C0F04D8730084F62D /* Console.cpp in Sources */,
-				DF431F6E0F07B14400ADB9CB /* ServerConnection.cpp in Sources */,
+				DFE2F8DB10E61276008E71F5 /* Console.cpp in Sources */,
+				DFE2F8F510E6143D008E71F5 /* ServerConnection.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DFE2F8FB10E61487008E71F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		089C167DFE841241C02AAC07 /* InfoPlist.strings */ = {
+		DFE2F8B610E61242008E71F5 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				089C167EFE841241C02AAC07 /* English */,
+				DFE2F8B710E61242008E71F5 /* English */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -301,7 +388,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = Kext/Info.plist;
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				MODULE_NAME = com.janbird.watch;
 				MODULE_START = watch_start;
@@ -324,7 +411,7 @@
 				GCC_MODEL_TUNING = "";
 				GCC_USE_INDIRECT_FUNCTION_CALLS = YES;
 				GCC_VERSION = 4.2;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = Kext/Info.plist;
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				MODULE_NAME = com.janbird.watch;
 				MODULE_START = watch_start;
@@ -408,6 +495,54 @@
 			};
 			name = Release;
 		};
+		DFE2F90110E61488008E71F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = AppTest/Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = AppTest;
+			};
+			name = Debug;
+		};
+		DFE2F90210E61488008E71F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = AppTest/Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = AppTest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -434,6 +569,15 @@
 			buildConfigurations = (
 				DF7F266A0F04D5AD0084F62D /* Debug */,
 				DF7F266B0F04D5AD0084F62D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DFE2F90310E61488008E71F5 /* Build configuration list for PBXNativeTarget "AppTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DFE2F90110E61488008E71F5 /* Debug */,
+				DFE2F90210E61488008E71F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
