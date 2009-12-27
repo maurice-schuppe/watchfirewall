@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <sys/kern_control.h>
 
-#define MYBUNDLEID		"com.janbird.watch.kext"
+#include "bundleid.h"
 
 class ServerConnection 
 {
