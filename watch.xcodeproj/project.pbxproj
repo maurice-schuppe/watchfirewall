@@ -217,7 +217,7 @@
 			attributes = {
 				ORGANIZATIONNAME = Moon;
 			};
-			buildConfigurationList = 3DB8B76810E77C0C0070342D /* Build configuration list for PBXProject "Watch" */;
+			buildConfigurationList = 3DB8B76810E77C0C0070342D /* Build configuration list for PBXProject "watch" */;
 			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 0;
 			mainGroup = 3DB8B76310E77C0C0070342D;
@@ -440,7 +440,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3DB8B76810E77C0C0070342D /* Build configuration list for PBXProject "Watch" */ = {
+		3DB8B76810E77C0C0070342D /* Build configuration list for PBXProject "watch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3DB8B76610E77C0C0070342D /* Debug */,
