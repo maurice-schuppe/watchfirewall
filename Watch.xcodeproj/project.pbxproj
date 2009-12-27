@@ -16,7 +16,6 @@
 		DFE2F8C810E61242008E71F5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DFE2F8B610E61242008E71F5 /* InfoPlist.strings */; };
 		DFE2F8C910E61242008E71F5 /* firewall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8B810E61242008E71F5 /* firewall.cpp */; };
 		DFE2F8CA10E61242008E71F5 /* firewall.h in Headers */ = {isa = PBXBuildFile; fileRef = DFE2F8B910E61242008E71F5 /* firewall.h */; };
-		DFE2F8CB10E61242008E71F5 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DFE2F8BA10E61242008E71F5 /* Info.plist */; };
 		DFE2F8CC10E61242008E71F5 /* messages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8BB10E61242008E71F5 /* messages.cpp */; };
 		DFE2F8CD10E61242008E71F5 /* messages.h in Headers */ = {isa = PBXBuildFile; fileRef = DFE2F8BC10E61242008E71F5 /* messages.h */; };
 		DFE2F8CE10E61242008E71F5 /* rule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8BD10E61242008E71F5 /* rule.cpp */; };
@@ -26,7 +25,6 @@
 		DFE2F8D210E61242008E71F5 /* watch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8C110E61242008E71F5 /* watch.cpp */; };
 		DFE2F8DB10E61276008E71F5 /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8D910E61276008E71F5 /* Console.cpp */; };
 		DFE2F8F510E6143D008E71F5 /* ServerConnection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE2F8D610E6125B008E71F5 /* ServerConnection.cpp */; };
-		DFE2F90F10E6150F008E71F5 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DFE2F90E10E6150F008E71F5 /* Info.plist */; };
 		DFE2F91310E61572008E71F5 /* Main.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFE2F91210E61572008E71F5 /* Main.xib */; };
 /* End PBXBuildFile section */
 
@@ -308,7 +306,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFE2F8C810E61242008E71F5 /* InfoPlist.strings in Resources */,
-				DFE2F8CB10E61242008E71F5 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,7 +313,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DFE2F90F10E6150F008E71F5 /* Info.plist in Resources */,
 				DFE2F91310E61572008E71F5 /* Main.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
