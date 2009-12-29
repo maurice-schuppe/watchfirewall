@@ -45,8 +45,8 @@ public:
 	UInt64 aksRuelTime;
 	UInt64 obtainedRuleTime;
 	
-	DeferredData *rootDefferedData;
-	DeferredData *lastDefferedData;
+	DeferredData *deferredDataHead;
+	DeferredData *deferredDataLast;
 	
 	Rule *rule;
 	
@@ -111,27 +111,23 @@ public:
 	static mbuf_tag_id_t mbufTagId;
 	
 public:
-	SocketCookie * RemoveFromChain(SocketCookie *cookie)
+	SocketCookie * Remove(SocketCookie *cookie)
 	{
-		//::IOLog("removed socket cookie\n");
 		IOLockLock(lock);
 		if(cookie->prev)
 			cookie->prev->next = cookie->next;
+		else
+			socketCookies = cookie->next;
 		
 		if(cookie->next)
 			cookie->next->prev = cookie->prev;
-		
-		if(cookie == socketCookies)
-			socketCookies = cookie->next;
-		
-		cookie->prev = cookie->next = NULL;
 		
 		IOLockUnlock(lock);
 		
 		return cookie;
 	}
 	
-	void AddToChain(SocketCookie *cookie)
+	void Add(SocketCookie *cookie)
 	{
 		IOLockLock(lock);
 		cookie->next = socketCookies;

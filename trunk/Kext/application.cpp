@@ -3,7 +3,6 @@
 #include <sys/vnode_if.h>
 
 #include "application.h"
-//#include "firewall.h"
 
 void
 hexdump(const unsigned char *sha1, char* buffer)
@@ -55,15 +54,12 @@ Applications::Init()
 {
 	closing = 0;
 	
-	//testOpenFile();
-	
 	if(lock = IOLockAlloc())
 	{
 		if(lockRoutine = IOLockAlloc())
 		{
-			if(thread = IOCreateThread(CheckApplicationsIsLiveRoutine, this))
+			if(thread = IOCreateThread(CheckIsLiveRoutine, this))
 			{
-				
 				if(processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, CallbackProcessListener, this))
 				{
 					return true;
@@ -103,8 +99,8 @@ Applications::Free()
 		}
 		
 		IOLockLock(lock);
-		while (applications)
-			RemoveFromChain(applications)->Release();
+		while (head)
+			Remove(head)->Release();
 		IOLockUnlock(lock);
 		
 		IOLockFree(lock);
@@ -113,9 +109,8 @@ Applications::Free()
 	}
 }
 
-
 Application* 
-Applications::GetApplication()
+Applications::Get()
 {
 	if(closing)
 		return NULL;
@@ -123,7 +118,7 @@ Applications::GetApplication()
 	//search in existing
 	pid_t pid = proc_selfpid();
 	IOLockLock(lock);	
-	Application* result = applications;
+	Application* result = head;
 	
 	while(result)
 	{
@@ -137,7 +132,7 @@ Applications::GetApplication()
 		result = result->next;
 	}
 	
-	result = AddApplication(NULL, NULL, NULL);
+	result = Add(NULL, NULL, NULL);
 	if(result)
 		result->Retain();
 	
@@ -145,80 +140,16 @@ Applications::GetApplication()
 	return result;	
 }
 
-
-//Application* 
-//Applications::AddApplication(vfs_context_t vfsContext, vnode_t vnode)
-//{
-//	char procName[MAXCOMLEN] = {0};
-//	vnode_attr vnodeAttr;
-//	bzero(&vnodeAttr, sizeof(vnode_attr)); 
-//	
-//	Application *result = new Application();
-//	if(!result)
-//		return NULL;
-//	
-//	
-//	if(vfsContext && vnode && (vnode_getattr(vnode, &vnodeAttr, vfsContext) == 0))
-//	{
-//		//test
-//		//unsigned char cdHash[SHA1_RESULTLEN];
-//		char textCdHash[SHA1_RESULTLEN * 2 + 1] = {0};
-//		//vn_getcdhash(vnode, 0, cdHash);
-//		//hexdump(cdHash, textCdHash);
-//		
-//		
-//		char filePath[1024] = {0};//in memory not in stack..
-//		int size = 1024;
-//		vn_getpath(vnode, filePath, &size);
-//		result->filePath = OSString::withCString(filePath);
-//
-//		result->uid = kauth_cred_getuid(vfs_context_ucred(vfsContext));
-//		
-//		proc_t proc = vfs_context_proc(vfsContext);
-//		result->pid = proc_pid(proc);
-//		result->p_pid = proc_ppid(proc);
-//		
-//		proc_name(result->pid, procName, MAXCOMLEN);
-//		result->processName = OSString::withCString(procName);
-//		//??release proc
-//
-//		::IOLog("pid: %d pidByContext: %d  cdhask: %s \n", proc_selfpid(), result->pid, textCdHash);
-//
-//	}
-//	else
-//	{
-//		proc_selfname(procName, MAXCOMLEN);
-//		result->processName = OSString::withCString(procName);
-//		result->filePath = OSString::withCString("");
-//		result->uid = kauth_getuid();
-//		result->pid = proc_selfpid();
-//		result->p_pid = proc_selfppid();
-//	}
-//	
-//	result->Retain();
-//	
-//	::IOLog("application added pid: %d path: %s\n", result->pid, result->filePath->getCStringNoCopy());
-//	
-//	result->next = applications;
-//	applications = result;
-//	
-//	if(result->next)
-//		result->next->prev = result;
-//	
-//	return result;
-//}
-
-
 void 
-Applications::AddApplicationLocked(kauth_cred_t cred, vnode_t vnode, const char *filePath)
+Applications::AddLocked(kauth_cred_t cred, vnode_t vnode, const char *filePath)
 {
 	IOLockLock(lock);
-	AddApplication(cred, vnode, filePath);
+	Add(cred, vnode, filePath);
 	IOLockUnlock(lock);
 }
 
 Application* 
-Applications::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath)
+Applications::Add(kauth_cred_t cred, vnode_t vnode, const char *filePath)
 {
 	if(closing)
 		return NULL;
@@ -267,10 +198,8 @@ Applications::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *fileP
 	
 	result->Retain();
 	
-	IOLog("application added pid: %d path: %s\n", result->pid, result->filePath->getCStringNoCopy());
-	
-	result->next = applications;
-	applications = result;
+	result->next = head;
+	head = result;
 	
 	if(result->next)
 		result->next->prev = result;
@@ -279,7 +208,6 @@ Applications::AddApplication(kauth_cred_t cred, vnode_t vnode, const char *fileP
 	
 	return result;
 }
-
 
 int 
 Applications::CallbackProcessListener
@@ -294,46 +222,16 @@ Applications::CallbackProcessListener
  )
 {
 	if(KAUTH_FILEOP_EXEC == action && idata != NULL)
-	{
-		//IOLog("application: %d", idata);
-		 ((Applications*) idata)->AddApplicationLocked(credential, (vnode_t)arg0, (const char *) arg1);
-	}
+		 ((Applications*) idata)->AddLocked(credential, (vnode_t)arg0, (const char *) arg1);
 	
 	return KAUTH_RESULT_DEFER;
 }
 
-//int 
-//Applications::CallbackVnodeListener
-//(
-// kauth_cred_t    credential,
-// void *          idata,
-// kauth_action_t  action,
-// uintptr_t       arg0,
-// uintptr_t       arg1,
-// uintptr_t       arg2,
-// uintptr_t       arg3
-// )
-//{
-//	if(Application::closing == 0 && action & KAUTH_VNODE_EXECUTE)
-//	{
-//		if(vnode_isdir((vnode_t) arg1) == false)
-//		{
-//			IOLockLock(Application::lock);
-//			Application::AddApplication((vfs_context_t)arg0, (vnode_t) arg1);
-//			countProcessesToCheck++;
-//			IOLockUnlock(Application::lock);
-//		}
-//	}
-//	
-//	return KAUTH_RESULT_DEFER;
-//}
-
-
 void
-Applications::CheckApplicationsIsLiveRoutine(void *arg)
+Applications::CheckIsLiveRoutine(void *arg)
 {
 	Applications *applications = (Applications*) arg;
-	Application *app = NULL;
+	Application *checked = NULL;
 	
 	IOLockLock(applications->lockRoutine);
 	
@@ -346,39 +244,37 @@ Applications::CheckApplicationsIsLiveRoutine(void *arg)
 			break;
 	
 		IOLockLock(applications->lock);
-		if(app == NULL)
-			app = applications->applications;
+		if(checked == NULL)
+			checked = applications->head;
 		else
 		{
-			Application* a = app;
-			app = app->next;
+			Application* a = checked;
+			checked = checked->next;
 			a->Release();
 		}
 		
 		if(applications->countProcessesToCheck > 0)
 			applications->countProcessesToCheck--;
 		
-		if(app)
+		if(checked)
 		{	
-			proc_t pr = proc_find(app->pid);
+			proc_t pr = proc_find(checked->pid);
 			if(pr)
 			{
 				proc_rele(pr);
-				app->Retain();//cashing for next loop
+				checked->Retain();//cashing for next loop
 			}
 			else
 			{
-				//IOLog("app routine delete: %d ref: %d\n", app->pid, app->references);
-				applications->RemoveFromChain(app);
-				app->Release();
-				app = NULL;
+				applications->Remove(checked);
+				checked->Release();
+				checked = NULL;
 				applications->countProcessesToCheck++;
 			}
 		}
 		IOLockUnlock(applications->lock);
 	}	
 
-	//IOLog("app routine exit\n");
 	IOLockUnlock(applications->lockRoutine);
 	applications->thread = NULL;
 	IOExitThread();

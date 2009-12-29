@@ -94,8 +94,8 @@ public:
 	{
 		if(rule->prev)
 			rule->prev->next = rule->next;
-		
-		if(rule == root)
+		else
+		//if(rule == root)
 			root = rule->next;
 		
 		if(rule->next)

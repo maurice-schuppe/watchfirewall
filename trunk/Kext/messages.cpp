@@ -2,26 +2,26 @@
 #include "messageType.h"
 
 
-MessageText*
-MessageText::Create(const char* format,...)
+Message*
+Message::CreateText(const char* format,...)
 {
     va_list argList;
 	
     if (!format)
         return 0;
 
-	MessageText *message = new(255 + sizeof(RawMessageBase)) MessageText;
+	Message *message = new(255 + sizeof(RawMessageBase)) Message;
 	
 	if(!message)
 		return NULL;
 	
     va_start(argList, format);
 	
-    message->rawMessage.size = vsnprintf((char*)(message->rawMessage.textBuffer), 254, format, argList) + sizeof(RawMessageBase) + 1;
+    message->raw.size = vsnprintf((char*)(&message->raw/* - by end*/), 254, format, argList) + sizeof(RawMessageBase) + 1;
 
     va_end (argList);
 
-	message->rawMessage.type = MessageTypeText;
+	message->raw.type = MessageTypeText;
 	message->references = 1;
 	
     return message;
@@ -29,13 +29,13 @@ MessageText::Create(const char* format,...)
 
 SInt32 nextTextMessage;//TODO: only for debug
 
-MessageText*
-MessageText::CreateFromCookie(const char* message, SocketCookie* cookie)
+Message*
+Message::CreateTextFromCookie(const char* message, SocketCookie* cookie)
 {
 	UInt64 time;
 	clock_get_uptime(&time);
 	UInt32 mc = OSIncrementAtomic(&nextTextMessage);
-	return Create("%d %lld %11s %20s path: %s  so: %9d  pid: %3d  uid: %3d  domain: %3d  type: %3d  protocol: %3d", 
+	return CreateText("%d %lld %11s %20s path: %s  so: %9d  pid: %3d  uid: %3d  domain: %3d  type: %3d  protocol: %3d", 
 					  mc,
 					  time,
 					  message, 
@@ -49,178 +49,180 @@ MessageText::CreateFromCookie(const char* message, SocketCookie* cookie)
 					  cookie->sockProtocol);
 }
 
-MessageAskRule*
-MessageAskRule::Create(char* processName, char* filePath, UInt16 sockDomain, UInt16 sockType, UInt16 sockProtocol,	sockaddr* sockAddress, UInt8 direction,
+Message*
+Message::CreateAskRule(char* processName, char* filePath, UInt16 sockDomain, UInt16 sockType, UInt16 sockProtocol,	sockaddr* sockAddress, UInt8 direction,
 					   pid_t pid, uid_t uid)
 {
 	//TODO: implement
 	return NULL;
 }
 
-MessageRegistredForInfoRule*
-MessageRegistredForInfoRule::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+Message*
+Message::CreateRegistredForInfoRule(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 {
-	MessageRegistredForInfoRule *message = new MessageRegistredForInfoRule;
+	Message *message = new(sizeof(RawMessageRegistredForInfoRule)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState);
+		((RawMessageRegistredForInfoRule*)&message->raw)->Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
 }
 
-MessageUnregistredInfoRule*
-MessageUnregistredInfoRule::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+Message*
+Message::CreateUnregistredInfoRule(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 {
-	MessageUnregistredInfoRule *message = new MessageUnregistredInfoRule;
+	//TODO: size
+	Message *message = new(sizeof(RawMessageUnregistredInfoRule)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState);
+		((RawMessageUnregistredInfoRule*)&message->raw)->Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
 }
 
-MessageRegistredForInfoSocket*
-MessageRegistredForInfoSocket::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+Message*
+Message::CreateRegistredForInfoSocket(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 {
-	MessageRegistredForInfoSocket *message = new MessageRegistredForInfoSocket;
+	Message *message = new(sizeof(RawMessageRegistredForInfoSocket)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState);
+		((RawMessageRegistredForInfoSocket*)&message->raw)->Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
 }
 
-MessageUnregistredInfoSocket*
-MessageUnregistredInfoSocket::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+Message*
+Message::CreateUnregistredInfoSocket(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 {
-	MessageUnregistredInfoSocket *message = new MessageUnregistredInfoSocket;
+	Message *message = new (sizeof(RawMessageUnregistredInfoSocket)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState);
+		((RawMessageUnregistredInfoSocket*)&message->raw)->Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
 }
 
-MessageRegistredForAsk*
-MessageRegistredForAsk::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+Message*
+Message::CreateRegistredForAsk(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 {
-	MessageRegistredForAsk *message = new MessageRegistredForAsk;
+	Message *message = new (sizeof(RawMessageRegistredForAsk)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState);
+		((RawMessageRegistredForAsk*)&message->raw)->Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
 }
 
-MessageUnregistredAsk*
-MessageUnregistredAsk::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+Message*
+Message::CreateUnregistredAsk(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 {
-	MessageUnregistredAsk *message = new MessageUnregistredAsk;
+	Message *message = new (sizeof(RawMessageUnregistredAsk)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState);
+		((RawMessageUnregistredAsk*)&message->raw)->Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
 }
 
-MessageFirewallActivated*
-MessageFirewallActivated::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+Message*
+Message::CreateFirewallActivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 {
-	MessageFirewallActivated *message = new MessageFirewallActivated;
+	Message *message = new (sizeof(RawMessageFirewallActivated)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState); 
+		((RawMessageFirewallActivated*)&message->raw)->Init(unitId, clientMessageId, actionState); 
 		message->references = 1;
 	}
 	return message;
 }
 
-MessageFirewallDeactivated*
-MessageFirewallDeactivated::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+Message*
+Message::CreateFirewallDeactivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 {
-	MessageFirewallDeactivated *message = new MessageFirewallDeactivated;
+	Message *message = new (sizeof(RawMessageFirewallDeactivated)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState);
+		((RawMessageFirewallActivated*)&message->raw)->Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
 }
 
-MessageFirewallClosing*
-MessageFirewallClosing::Create()
+Message*
+Message::CreateFirewallClosing()
 {
-	MessageFirewallClosing *message = new MessageFirewallClosing();
+	Message *message = new Message();
 	if(message)
 	{
-		message->rawMessage.Init(); 
+		RawMessageFirewallClosing* rawMessageFirewallClosing = (RawMessageFirewallClosing*)&message->raw; 
+		rawMessageFirewallClosing->Init(); 
 		message->references = 1;
 	}
 	return message;
 }
 
 
-MessageRuleAdded*
-MessageRuleAdded::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
+Message*
+Message::CreateRuleAdded(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
 {
-	MessageRuleAdded* message = new MessageRuleAdded();
+	Message* message = new (sizeof(RawMessageRuleAdded)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState, ruleId);
-		message->references = 1;
-	}
-	
-	return message;
-}
-
-MessageRuleDeleted* 
-MessageRuleDeleted::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
-{
-	MessageRuleDeleted* message = new MessageRuleDeleted();
-	if(message)
-	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState, ruleId);
+		((RawMessageRuleAdded*)&message->raw)->Init(unitId, clientMessageId, actionState, ruleId);
 		message->references = 1;
 	}
 	
 	return message;
 }
 
-
-MessageRuleDeactivated*
-MessageRuleDeactivated::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
+Message* 
+Message::CreateRuleDeleted(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
 {
-	MessageRuleDeactivated* message = new MessageRuleDeactivated();
+	Message* message = new (sizeof(RawMessageRuleDeleted)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState, ruleId);
+		((RawMessageRuleDeleted*)&message->raw)->Init(unitId, clientMessageId, actionState, ruleId);
 		message->references = 1;
 	}
 	
 	return message;
 }
 
-MessageRuleActivated*
-MessageRuleActivated::Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
+
+Message*
+Message::CreateRuleDeactivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
 {
-	MessageRuleActivated* message = new MessageRuleActivated();
+	Message* message = new (sizeof(RawMessageRuleDeactivated)) Message;
 	if(message)
 	{
-		message->rawMessage.Init(unitId, clientMessageId, actionState, ruleId);
+		((RawMessageRuleDeactivated*)&message->raw)->Init(unitId, clientMessageId, actionState, ruleId);
 		message->references = 1;
 	}
 	
 	return message;
 }
 
-MessageSocketData*
-MessageSocketData::Create(UInt8 direction, UInt8 stateOperation, UInt32 stateByRuleId, pid_t pid, uid_t uid, socket_t so, UInt32 packets, UInt32 bytes, sockaddr *fromAddress, sockaddr *toAddress, OSString *processName)
+Message*
+Message::CreateRuleActivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
+{
+	Message* message = new (sizeof(RawMessageRuleActivated)) Message;
+	if(message)
+	{
+		((RawMessageRuleActivated*)&message->raw)->Init(unitId, clientMessageId, actionState, ruleId);
+		message->references = 1;
+	}
+	
+	return message;
+}
+
+Message*
+Message::CreateSocketData(UInt8 direction, UInt8 stateOperation, UInt32 stateByRuleId, pid_t pid, uid_t uid, socket_t so, UInt32 packets, UInt32 bytes, sockaddr *fromAddress, sockaddr *toAddress, OSString *processName)
 {
 	//calculate size
 	int neddedSize = sizeof(RawMessageSocketData);//- 3
@@ -240,24 +242,25 @@ MessageSocketData::Create(UInt8 direction, UInt8 stateOperation, UInt32 stateByR
 		neddedSize += processNameSize;
 	}
 	
-	MessageSocketData* message = new(neddedSize) MessageSocketData; 
+	//TODO: is real
+	Message* message = new(neddedSize) Message; 
 	if(message)
 	{
-		message->rawMessage.Init(neddedSize, direction, stateOperation, stateByRuleId, pid, uid, so, packets, bytes, fromAddress, toAddress, processNameC, processNameSize);
+		((RawMessageSocketData*)&message->raw)->Init(neddedSize, direction, stateOperation, stateByRuleId, pid, uid, so, packets, bytes, fromAddress, toAddress, processNameC, processNameSize);
 		message->references = 1;
 	}
 	
 	return message;
 }
 
-MessageSocketOpen*
-MessageSocketOpen::Create()
+Message*
+Message::CreateSocketOpen(socket_t so)
 {
 	return NULL;
 }
 
-MessageSocketClosed*
-MessageSocketClosed::Create()
+Message*
+Message::CreateSocketClosed(socket_t so)
 {
 	return NULL;
 }

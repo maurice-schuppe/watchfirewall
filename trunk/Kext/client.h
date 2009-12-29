@@ -7,6 +7,9 @@
 #include <IOKit/IOLocks.h>
 #include <IOKit/IOLib.h>
 
+#include <sys/queue.h>
+#include <sys/sys_domain.h>
+
 #include "messages.h"
 #include "simpleBase.h"
 
@@ -31,7 +34,8 @@ public:
 	IOSimpleLock *lockQueue;
 	IOLock *lockWorkThread;
 	IOThread thread;
-	ClientMessageNode *messageQueueRoot;
+	
+	ClientMessageNode *messageQueueHead;
 	ClientMessageNode *messageQueueLast;
 	
 	Client* next;
@@ -46,6 +50,8 @@ public:
 
 	void Send(Message* message);
 	static void SendThread(void* arg);
+	
+	void ShowSocketStates();
 
 };
 
