@@ -1,7 +1,6 @@
 #include "messages.h"
 #include "messageType.h"
 
-
 Message*
 Message::CreateText(const char* format,...)
 {
@@ -17,7 +16,7 @@ Message::CreateText(const char* format,...)
 	
     va_start(argList, format);
 	
-    message->raw.size = vsnprintf((char*)(&message->raw/* - by end*/), 254, format, argList) + sizeof(RawMessageBase) + 1;
+    message->raw.size = vsnprintf((char*)&message->raw + sizeof(RawMessageBase), 254, format, argList) + sizeof(RawMessageBase) + 1;
 
     va_end (argList);
 
@@ -49,6 +48,223 @@ Message::CreateTextFromCookie(const char* message, SocketCookie* cookie)
 					  cookie->sockProtocol);
 }
 
+Message*	
+Message::CreateSfltUnregistered()//??????
+{
+	Message *message = new(sizeof(RawMessageSfltUnregistered)) Message;
+	if(message)
+	{
+		RawMessageSfltUnregistered* rawMessage = (RawMessageSfltUnregistered*)&message->raw;
+		rawMessage->Init();
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltAttach(socket_t so)
+{
+	Message *message = new(sizeof(RawMessageSfltAttach)) Message;
+	if(message)
+	{
+		RawMessageSfltAttach* rawMessage = (RawMessageSfltAttach*)&message->raw;
+		rawMessage->Init((UInt64)so);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltDetach(socket_t so)
+{
+	Message *message = new(sizeof(RawMessageSfltDetach)) Message;
+	if(message)
+	{
+		RawMessageSfltDetach* rawMessage = (RawMessageSfltDetach*)&message->raw;
+		rawMessage->Init((UInt64)so);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltNotify(socket_t so, UInt16 event)
+{
+	Message *message = new(sizeof(RawMessageSfltNotify)) Message;
+	if(message)
+	{
+		RawMessageSfltNotify* rawMessage = (RawMessageSfltNotify*)&message->raw;
+		rawMessage->Init((UInt64)so, event);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltGetPeerName(socket_t so, sockaddr *sa)
+{
+	size_t neededSize = RawMessageSfltGetPeerName::GetNeededSize((SockAddress*)sa);
+	Message *message = new(neededSize) Message;
+	if(message)
+	{
+		RawMessageSfltGetPeerName* rawMessage = (RawMessageSfltGetPeerName*)&message->raw;
+		rawMessage->Init(neededSize, (UInt64)so, (SockAddress*)sa);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltGetSockName(socket_t so, sockaddr *sa)
+{
+	size_t neededSize = RawMessageSfltGetSockName::GetNeededSize((SockAddress*)sa);
+	Message *message = new(neededSize) Message;
+	if(message)
+	{
+		RawMessageSfltGetSockName* rawMessage = (RawMessageSfltGetSockName*)&message->raw;
+		rawMessage->Init(neededSize, (UInt64)so, (SockAddress*)sa);
+		message->references = 1;
+	}
+	return message;
+}
+
+
+Message*	
+Message::CreateSfltDataIn(socket_t so, const sockaddr *from)
+{
+	size_t neededSize = RawMessageSfltDataIn::GetNeededSize((SockAddress*)from);
+	Message *message = new(neededSize) Message;
+	if(message)
+	{
+		RawMessageSfltDataIn* rawMessage = (RawMessageSfltDataIn*)&message->raw;
+		rawMessage->Init(neededSize, (UInt64)so, (SockAddress*)from);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltDataOut(socket_t so, const sockaddr *to)
+{
+	size_t neededSize = RawMessageSfltDataOut::GetNeededSize((SockAddress*)to);
+	Message *message = new(neededSize) Message;
+	if(message)
+	{
+		RawMessageSfltDataOut* rawMessage = (RawMessageSfltDataOut*)&message->raw;
+		rawMessage->Init(neededSize, (UInt64)so, (SockAddress*)to);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltConnectIn(socket_t so, const sockaddr *from)
+{
+	size_t neededSize = RawMessageSfltConnectIn::GetNeededSize((SockAddress*)from);
+	Message *message = new(neededSize) Message;
+	if(message)
+	{
+		RawMessageSfltConnectIn* rawMessage = (RawMessageSfltConnectIn*)&message->raw;
+		rawMessage->Init(neededSize, (UInt64)so, (SockAddress*)from);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltConnectOut(socket_t so, const sockaddr *to)
+{
+	size_t neededSize = RawMessageSfltConnectOut::GetNeededSize((SockAddress*)to);
+	Message *message = new(neededSize) Message;
+	if(message)
+	{
+		RawMessageSfltConnectOut* rawMessage = (RawMessageSfltConnectOut*)&message->raw;
+		rawMessage->Init(neededSize, (UInt64)so, (SockAddress*)to);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltBind(socket_t so, const sockaddr *to)
+{
+	size_t neededSize = RawMessageSfltBind::GetNeededSize((SockAddress*)to);
+	Message *message = new(neededSize) Message;
+	if(message)
+	{
+		RawMessageSfltBind* rawMessage = (RawMessageSfltBind*)&message->raw;
+		rawMessage->Init(neededSize, (UInt64)so, (SockAddress*)to);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltSetOption(socket_t so, sockopt_t opt)
+{
+	Message *message = new(sizeof(RawMessageSfltSetOption)) Message;
+	if(message)
+	{
+		RawMessageSfltSetOption* rawMessage = (RawMessageSfltSetOption*)&message->raw;
+		rawMessage->Init((UInt64)so);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltGetOption(socket_t so, sockopt_t opt)
+{
+	Message *message = new(sizeof(RawMessageSfltGetOption)) Message;
+	if(message)
+	{
+		RawMessageSfltGetOption* rawMessage = (RawMessageSfltGetOption*)&message->raw;
+		rawMessage->Init((UInt64)so);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltListen(socket_t so)
+{
+	Message *message = new(sizeof(RawMessageSfltListen)) Message;
+	if(message)
+	{
+		RawMessageSfltListen* rawMessage = (RawMessageSfltListen*)&message->raw;
+		rawMessage->Init((UInt64)so);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltIoctl(socket_t so, UInt32 request, const char* argp)
+{
+	Message *message = new(sizeof(RawMessageSfltIoctl)) Message;
+	if(message)
+	{
+		RawMessageSfltIoctl* rawMessage = (RawMessageSfltIoctl*)&message->raw;
+		rawMessage->Init((UInt64)so, request);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*	
+Message::CreateSfltAccept(socket_t so_listen, socket_t so, const sockaddr *local, const sockaddr *remote)
+{
+	size_t neededSize = RawMessageSfltAccept::GetNeededSize((SockAddress*)local, (SockAddress*)remote);
+	Message *message = new(neededSize) Message;
+	if(message)
+	{
+		RawMessageSfltAccept* rawMessage = (RawMessageSfltAccept*)&message->raw;
+		rawMessage->Init(neededSize, (UInt64)so_listen, (UInt64)so, (SockAddress*)local, (SockAddress*)remote);
+		message->references = 1;
+	}
+	return message;
+}
+
 Message*
 Message::CreateAskRule(char* processName, char* filePath, UInt16 sockDomain, UInt16 sockType, UInt16 sockProtocol,	sockaddr* sockAddress, UInt8 direction,
 					   pid_t pid, uid_t uid)
@@ -63,7 +279,8 @@ Message::CreateRegistredForInfoRule(UInt32 unitId, UInt32 clientMessageId, UInt3
 	Message *message = new(sizeof(RawMessageRegistredForInfoRule)) Message;
 	if(message)
 	{
-		((RawMessageRegistredForInfoRule*)&message->raw)->Init(unitId, clientMessageId, actionState);
+		RawMessageRegistredForInfoRule* rawMessage = (RawMessageRegistredForInfoRule*)&message->raw;
+		rawMessage->Init(unitId, clientMessageId, actionState);
 		message->references = 1;
 	}
 	return message;
@@ -222,18 +439,18 @@ Message::CreateRuleActivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actio
 }
 
 Message*
-Message::CreateSocketData(UInt8 direction, UInt8 stateOperation, UInt32 stateByRuleId, pid_t pid, uid_t uid, socket_t so, UInt32 packets, UInt32 bytes, sockaddr *fromAddress, sockaddr *toAddress, OSString *processName)
+Message::CreateSocketData(UInt8 direction, UInt8 stateOperation, UInt32 stateByRuleId, pid_t pid, uid_t uid, socket_t so, UInt32 packets, UInt32 bytes, sockaddr *from, sockaddr *to, OSString *processName)
 {
 	//calculate size
 	int neddedSize = sizeof(RawMessageSocketData);//- 3
 	int processNameSize = 0;
 	const char *processNameC = NULL;
 	
-	if(fromAddress != NULL)
-		neddedSize += fromAddress->sa_len;
+	if(from != NULL)
+		neddedSize += from->sa_len;
 	
-	if(toAddress != NULL)
-		neddedSize += toAddress->sa_len;
+	if(to != NULL)
+		neddedSize += to->sa_len;
 	
 	if(processName != NULL)
 	{
@@ -246,7 +463,7 @@ Message::CreateSocketData(UInt8 direction, UInt8 stateOperation, UInt32 stateByR
 	Message* message = new(neddedSize) Message; 
 	if(message)
 	{
-		((RawMessageSocketData*)&message->raw)->Init(neddedSize, direction, stateOperation, stateByRuleId, pid, uid, so, packets, bytes, fromAddress, toAddress, processNameC, processNameSize);
+		((RawMessageSocketData*)&message->raw)->Init(neddedSize, direction, stateOperation, stateByRuleId, pid, uid, (UInt64)so, packets, bytes, (SockAddress*)from, (SockAddress*)to, processNameC, processNameSize);
 		message->references = 1;
 	}
 	

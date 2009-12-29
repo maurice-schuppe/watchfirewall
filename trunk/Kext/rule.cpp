@@ -14,7 +14,7 @@ Rule::Init(RawMessageAddRule *message)
 		{
 			if(this->filePath = OSString::withCString(message->GetFilePath()))
 			{
-				sockaddr *t = message->GetSockAddress();
+				sockaddr *t = (sockaddr*)message->GetSockAddress();
 				if(t)
 				{
 					this->fromSockAddress = (sockaddr*)new char[t->sa_len];
