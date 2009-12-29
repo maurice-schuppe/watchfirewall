@@ -1,5 +1,49 @@
 #include "client.h"
 
+//#ifdef KERNEL_PRIVATE
+
+/*
+ * internal structure maintained for each register controller
+ */
+struct ctl_cb;
+//struct socket;
+
+struct kctl
+{
+	TAILQ_ENTRY(kctl)		next;					/* controller chain */
+	
+	/* controller information provided when registering */
+	char					name[MAX_KCTL_NAME];	/* unique nke identifier, provided by DTS */
+	u_int32_t				id;
+	u_int32_t				reg_unit;
+	
+	/* misc communication information */
+	u_int32_t				flags;					/* support flags */
+	u_int32_t				recvbufsize;			/* request more than the default buffer size */
+	u_int32_t				sendbufsize;			/* request more than the default buffer size */
+	
+	/* Dispatch functions */
+	ctl_connect_func		connect;				/* Make contact */
+	ctl_disconnect_func		disconnect;				/* Break contact */
+	ctl_send_func			send;					/* Send data to nke */
+	ctl_setopt_func			setopt;					/* set kctl configuration */
+	ctl_getopt_func			getopt;					/* get kctl configuration */
+	
+	TAILQ_HEAD(, ctl_cb)	kcb_head;
+	u_int32_t				lastunit;
+};
+
+struct ctl_cb {
+	TAILQ_ENTRY(ctl_cb)		next;					/* controller chain */
+	lck_mtx_t				*mtx;
+	/*struct*/ socket_t			so;					/* controlling socket */
+	struct kctl				*kctl;					/* back pointer to controller */
+	u_int32_t				unit;
+	void					*userdata;
+};
+
+//#endif /* KERNEL_PRIVATE */
+
 void 
 Client::ClearQueue(ClientMessageNode *root)
 {
@@ -58,8 +102,8 @@ Client::Free()
 {
 	//send exit thread
 	IOLog("client begin destroed\n");
-	ClearQueue(this->messageQueueRoot);
-	this->messageQueueRoot = NULL;
+	ClearQueue(this->messageQueueHead);
+	this->messageQueueHead = NULL;
 	this->messageQueueLast = NULL;
 	
 	if(this->lockQueue)
@@ -84,7 +128,7 @@ Client::Send(Message* message)
 	if(message == NULL || this->exitState)
 		return;
 	
-	if(!(message->GetRawMessageType() & this->registredMessageClases))
+	if(!(message->raw.type & this->registredMessageClases))
 		return;
 	
 	ClientMessageNode * node = new ClientMessageNode();
@@ -98,7 +142,7 @@ Client::Send(Message* message)
 	IOInterruptState istate = IOSimpleLockLockDisableInterrupt(this->lockQueue);
 	
 	if(this->messageQueueLast == NULL)
-		this->messageQueueRoot = node;
+		this->messageQueueHead = node;
 	else
 		this->messageQueueLast->next = node;
 	
@@ -138,8 +182,8 @@ Client::SendThread(void* arg)
 		
 		IOInterruptState istate = IOSimpleLockLockDisableInterrupt(client->lockQueue);
 
-		node = client->messageQueueRoot;
-		client->messageQueueRoot = NULL;
+		node = client->messageQueueHead;
+		client->messageQueueHead = NULL;
 		client->messageQueueLast = NULL;
 		
 		IOSimpleLockUnlockEnableInterrupt(client->lockQueue, istate);
@@ -154,7 +198,7 @@ Client::SendThread(void* arg)
 					goto exitAndClearQueue;
 
 				ctl_getenqueuespace(client->kernelKontrolReference, client->unit, &size);
-				if(size < node->message->GetRawMessageSize())
+				if(size < node->message->raw.size)
 				{
 					if(k++ < 3)
 					{
@@ -169,7 +213,7 @@ Client::SendThread(void* arg)
 					if(client->exitState)
 						goto exitAndClearQueue;
 					
-					switch(ctl_enqueuedata(client->kernelKontrolReference, client->unit, node->message->GetRawMessage(), node->message->GetRawMessageSize(), 0))
+					switch(ctl_enqueuedata(client->kernelKontrolReference, client->unit, &node->message->raw, node->message->raw.size, 0))
 					{
 						case EINVAL: // - Invalid parameters.
 							::IOLog("ctl_enqueuedata return: Invalid parameter.\n");
@@ -225,6 +269,50 @@ Client::UnregisterMessageClasses(UInt16 classes)
 	OSBitOrAtomic(~classes, &this->registredMessageClases);
 	return true;
 }	
+
+void
+Client::ShowSocketStates()
+{
+	if(this->kernelKontrolReference)
+	{
+		struct ctl_cb	*kcb_next = NULL;
+		struct kctl		*kc = (struct kctl*)this->kernelKontrolReference;
+		
+		//kc->kcb_head.tqh_first-
+		TAILQ_FOREACH(kcb_next, &kc->kcb_head, next) 
+		{
+			IOLog("from class: %lu  from kctl-id: %u unit: %u is same: %d \n", this->unit, kc->id, kcb_next->unit, kcb_next->userdata == this);
+
+			int isConnected = sock_isconnected(kcb_next->so);
+			
+			IOLog("client: %lu  state is: %d \n", this->unit, isConnected);
+			
+			if(isConnected)
+			{
+				isConnected = sock_shutdown(kcb_next->so, SHUT_RDWR);
+				IOLog("sock_shutdown return: %d \n", isConnected);
+				
+				if(!isConnected)
+					sock_close(kcb_next->so);
+				
+				//IOLog("invoke disconnect \n");
+				//kc->disconnect(kc, kcb_next->unit, kcb_next->userdata);
+			}
+		}
+		
+		//kc->kcb_head.tqh_first;
+		
+//		while(kcb_next = TAILQ_FIRST(&kc->kcb_head))
+//		{
+//			//kcb_next->kctl = 0;
+//			//kcb_next->unit = 0;
+//			TAILQ_REMOVE(&kc->kcb_head, kcb_next, next);
+//		}
+		
+		
+		//kc->disconnect(kc, kc->reg_unit, this);
+	}
+}
 
 
 

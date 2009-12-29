@@ -16,6 +16,24 @@ enum MessagesClass
 enum ServerMessagesType 
 {
 	MessageTypeText						= MessageClassCommon | 0x01, //dymmu
+	
+	MessageTypeSfltUnregistered			= MessageClassCommon | 0x02, //debug
+	MessageTypeSfltAttach				= MessageClassCommon | 0x03, //debug
+	MessageTypeSfltDetach				= MessageClassCommon | 0x04, //debug
+	MessageTypeSfltNotify				= MessageClassCommon | 0x05, //debug
+	MessageTypeSfltGetPeerName			= MessageClassCommon | 0x06, //debug
+	MessageTypeSfltGetSockName			= MessageClassCommon | 0x07, //debug
+	MessageTypeSfltDataIn				= MessageClassCommon | 0x08, //debug
+	MessageTypeSfltDataOut				= MessageClassCommon | 0x09, //debug
+	MessageTypeSfltConnectIn			= MessageClassCommon | 0x0A, //debug
+	MessageTypeSfltConnectOut			= MessageClassCommon | 0x0B, //debug
+	MessageTypeSfltBind					= MessageClassCommon | 0x0C, //debug
+	MessageTypeSfltSetOption			= MessageClassCommon | 0x0D, //debug
+	MessageTypeSfltGetOption			= MessageClassCommon | 0x0E, //debug
+	MessageTypeSfltListen				= MessageClassCommon | 0x0F, //debug
+	MessageTypeSfltIoctl				= MessageClassCommon | 0x10, //debug
+	MessageTypeSfltAccept				= MessageClassCommon | 0x11, //debug
+	
 	MessageTypeAskRule					= MessageClassAsk |  0x01,
 	
 	MessageTypeRuleAdded				= MessageClassInfoRule | 0x01,
@@ -66,6 +84,240 @@ struct RawMessageBase
 	inline void Init(UInt16 size, UInt16 type){this->size = size, this->type = type;}
 };
 
+struct RawMessageSfltUnregistered : public RawMessageBase
+{
+
+	//	static void		Unregistered(sflt_handle handle);
+	inline void Init()
+	{
+		RawMessageBase::Init(sizeof(RawMessageSfltUnregistered), MessageTypeSfltUnregistered);
+	}
+};
+
+struct RawMessageSfltAttach : public RawMessageBase		
+{
+	//	static errno_t	Attach(void	**cookie, socket_t so);
+	socket_t so;
+	
+	inline void Init(socket_t so)
+	{
+		RawMessageBase::Init(sizeof(RawMessageSfltAttach), MessageTypeSfltAttach);
+		this->so = so;
+	}
+};
+
+struct RawMessageSfltDetach : public RawMessageBase		
+{
+	//	static void		Detach(void	*cookie, socket_t so);
+	socket_t so;
+	inline void Init(socket_t so)
+	{
+		RawMessageBase::Init(sizeof(RawMessageSfltDetach), MessageTypeSfltDetach);
+		this->so = so;
+	}
+};
+
+struct RawMessageSfltNotify : public RawMessageBase		
+{
+	//	static void		Notify(void *cookie, socket_t so, sflt_event_t event, void *param);
+	socket_t so;
+	int event;
+	inline void Init(socket_t so, int event)
+	{
+		RawMessageBase::Init(sizeof(RawMessageSfltNotify), MessageTypeSfltNotify);
+		this->so = so;
+		this->event = event;
+	}
+};
+
+struct RawMessageSfltGetPeerName : public RawMessageBase	
+{
+	//	static int		GetPeerName(void *cookie, socket_t so, sockaddr **sa);
+	socket_t so;
+	sockaddr sa;
+	inline void Init(UInt16 size, socket_t so , sockaddr *sa)
+	{
+		RawMessageBase::Init(size, MessageTypeSfltGetPeerName);
+		this->so = so;
+		if(sa)
+			memcpy(&this->sa, sa, sa->sa_len);
+		else
+		{
+			this->sa.sa_len = sizeof(sockaddr);
+			this->sa.sa_family = AF_UNSPEC;
+		}
+	}
+};
+
+struct RawMessageSfltGetSockName : public RawMessageBase	
+{
+	//	static int		GetSockName(void *cookie, socket_t so, sockaddr **sa);
+	socket_t so;
+	sockaddr sa;
+	inline void Init(UInt16 size, socket_t so , sockaddr *sa)
+	{
+		RawMessageBase::Init(size, MessageTypeSfltGetSockName);
+		this->so = so;
+		if(sa)
+			memcpy(&this->sa, sa, sa->sa_len);
+		else
+		{
+			this->sa.sa_len = sizeof(sockaddr);
+			this->sa.sa_family = AF_UNSPEC;
+		}
+	}
+};
+
+struct RawMessageSfltDataIn : public RawMessageBase		
+{
+	//	static errno_t	DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags);
+	socket_t so;
+	sockaddr from;
+	
+	inline void Init(UInt16 size, socket_t so, sockaddr *from)
+	{
+		RawMessageBase::Init(size, MessageTypeSfltDataIn);
+		
+		this->so = so;
+		if(from)
+			memcpy(&this->from, from, from->sa_len);
+		else 
+		{
+			this->from.sa_len = sizeof(sockaddr);
+			this->from.sa_family = AF_UNSPEC;
+		}
+	}
+};
+
+struct RawMessageSfltDataOut : public RawMessageBase		
+{
+	//	static errno_t	DataOut(void *cookie, socket_t so, const sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags);
+	socket_t so;
+	sockaddr to;
+	
+	inline void Init(UInt16 size, socket_t so, sockaddr *to)
+	{
+		RawMessageBase::Init(size, MessageTypeSfltDataOut);
+		
+		this->so = so;
+		if(to)
+			memcpy(&this->to, to, to->sa_len);
+		else 
+		{
+			this->to.sa_len = sizeof(sockaddr);
+			this->to.sa_family = AF_UNSPEC;
+		}
+	}
+};
+
+struct RawMessageSfltConnectIn : public RawMessageBase	
+{
+	//	static errno_t	ConnectIn(void *cookie, socket_t so, const sockaddr *from);
+	socket_t so;
+	sockaddr from;
+	
+	inline void Init(UInt16 size, socket_t so, sockaddr *from)
+	{
+		RawMessageBase::Init(size, MessageTypeSfltConnectIn);
+		
+		this->so = so;
+		if(from)
+			memcpy(&this->from, from, from->sa_len);
+		else 
+		{
+			this->from.sa_len = sizeof(sockaddr);
+			this->from.sa_family = AF_UNSPEC;
+		}
+	}
+};
+
+struct RawMessageSfltConnectOut : public RawMessageBase	
+{
+	//	static errno_t	ConnectOut(void *cookie, socket_t so, const sockaddr *to);
+	socket_t so;
+	sockaddr to;
+	
+	inline void Init(UInt16 size, socket_t so, sockaddr *to)
+	{
+		RawMessageBase::Init(size, MessageTypeSfltConnectOut);
+		
+		this->so = so;
+		if(to)
+			memcpy(&this->to, to, to->sa_len);
+		else 
+		{
+			this->to.sa_len = sizeof(sockaddr);
+			this->to.sa_family = AF_UNSPEC;
+		}
+	}
+};
+
+struct RawMessageSfltBind : public RawMessageBase			
+{
+	//	static errno_t	Bind(void *cookie, socket_t so, const sockaddr *to);
+	socket_t so;
+	sockaddr to;
+	
+	inline void Init(UInt16 size, socket_t so, sockaddr *to)
+	{
+		RawMessageBase::Init(size, MessageTypeSfltBind);
+		
+		this->so = so;
+		if(to)
+			memcpy(&this->to, to, to->sa_len);
+		else 
+		{
+			this->to.sa_len = sizeof(sockaddr);
+			this->to.sa_family = AF_UNSPEC;
+		}
+	}
+};
+
+struct RawMessageSfltSetOption : public RawMessageBase	
+{
+	//	static errno_t	SetOption(void *cookie, socket_t so, sockopt_t opt);
+	inline void Init()
+	{
+		RawMessageBase::Init(sizeof(RawMessageSfltSetOption), MessageTypeSfltSetOption);
+	}
+};
+
+struct RawMessageSfltGetOption : public RawMessageBase	
+{
+	//	static errno_t	GetOption(void *cookie, socket_t so, sockopt_t opt);
+	inline void Init()
+	{
+		RawMessageBase::Init(sizeof(RawMessageSfltGetOption), MessageTypeSfltGetOption);
+	}
+};
+
+struct RawMessageSfltListen : public RawMessageBase		
+{
+	//	static errno_t	Listen(void *cookie, socket_t so);
+	inline void Init()
+	{
+		RawMessageBase::Init(sizeof(RawMessageSfltListen), MessageTypeSfltListen);
+	}
+};
+
+struct RawMessageSfltIoctl : public RawMessageBase		
+{
+	//	static errno_t	Ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp);
+	inline void Init()
+	{
+		RawMessageBase::Init(sizeof(RawMessageSfltIoctl), MessageTypeSfltIoctl);
+	}
+};
+
+struct RawMessageSfltAccept : public RawMessageBase		
+{
+	//	static errno_t	Accept(void *cookie, socket_t so_listen, socket_t so, const sockaddr *local, const sockaddr *remote);
+	inline void Init(UInt16 size)
+	{
+		RawMessageBase::Init(size, MessageTypeSfltAccept);
+	}
+};
+
 struct RawMessageClientAction : public RawMessageBase
 {
 	UInt32 messageId;
@@ -77,7 +329,6 @@ struct RawMessageClientActionResponce : public RawMessageBase
 	UInt32 clientMessageId;
 	UInt32 actionState;
 	
-public:
 	inline void Init(UInt16 size, UInt16 type, UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 	{
 		RawMessageBase::Init(size, type);

@@ -167,7 +167,6 @@ int main()
 close:;
 	serverConnection.Close();
 	printf("Connection Closed\n");
-	//free(data);
 	
 	int a;
 	scanf("%d",&a);

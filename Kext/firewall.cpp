@@ -104,7 +104,7 @@ Firewall::Attach(void **cookie, socket_t so)
 		return ENOMEM;
 	}
 
-	socketCookie->application = firewall.applications.GetApplication();
+	socketCookie->application = firewall.applications.Get();
 	
 	if(!socketCookie->application)
 	{
@@ -116,9 +116,9 @@ Firewall::Attach(void **cookie, socket_t so)
 	socketCookie->state = SocketCookieStateALLOWED;
 	
 	*cookie = socketCookie;
-	firewall.socketCookies.AddToChain(socketCookie);
+	firewall.socketCookies.Add(socketCookie);
 	
-	Message *messsage = MessageText::CreateFromCookie("attach", socketCookie);
+	Message *messsage = Message::CreateTextFromCookie("attach", socketCookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -129,13 +129,13 @@ Firewall::Attach(void **cookie, socket_t so)
 void	
 Firewall::Detach(void *cookie, socket_t so)
 {
-	Message *messsage = MessageText::CreateFromCookie("detach", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("detach", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 
 	if(cookie)
 	{
-		firewall.socketCookies.RemoveFromChain((SocketCookie*)cookie)->Free();
+		firewall.socketCookies.Remove((SocketCookie*)cookie)->Free();
 	}
 }
 
@@ -143,7 +143,7 @@ void
 Firewall::Notify(void *cookie, socket_t so, sflt_event_t event, void *param)
 {
 	
-	Message *messsage = MessageText::CreateFromCookie("notify", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("notify", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -152,7 +152,7 @@ Firewall::Notify(void *cookie, socket_t so, sflt_event_t event, void *param)
 int		
 Firewall::GetPeerName(void *cookie, socket_t so, struct sockaddr **sa)
 {
-	Message *messsage = MessageText::CreateFromCookie("getpername", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("getpername", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -163,7 +163,7 @@ Firewall::GetPeerName(void *cookie, socket_t so, struct sockaddr **sa)
 int		
 Firewall::GetSockName(void *cookie, socket_t so, struct sockaddr **sa)
 {
-	Message *messsage = MessageText::CreateFromCookie("getsockname", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("getsockname", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -190,7 +190,7 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 		//IOLog("sock address: %s", sa);
 	}
 	
-	Message *messsage = MessageText::CreateFromCookie("data in", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("data in", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -247,7 +247,7 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 errno_t	
 Firewall::DataOut(void *cookie, socket_t so, const sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
-	Message *messsage = MessageText::CreateFromCookie("data out", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("data out", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -261,7 +261,7 @@ Firewall::ConnectIn(void *cookie, socket_t so, const sockaddr *from)
 
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
-	Message *messsage = MessageText::CreateFromCookie("connect in", scookie);
+	Message *messsage = Message::CreateTextFromCookie("connect in", scookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -292,7 +292,7 @@ errno_t
 Firewall::ConnectOut(void *cookie, socket_t so, const sockaddr *to)
 {
 	
-	Message *messsage = MessageText::CreateFromCookie("connect out", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("connect out", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -304,7 +304,7 @@ errno_t
 Firewall::Bind(void *cookie, socket_t so, const sockaddr *to)
 {
 
-	Message *messsage = MessageText::CreateFromCookie("bind", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("bind", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -319,7 +319,7 @@ errno_t
 Firewall::SetOption(void *cookie, socket_t so, sockopt_t opt)
 {
 
-	Message *messsage = MessageText::CreateFromCookie("setoption", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("setoption", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -329,7 +329,7 @@ Firewall::SetOption(void *cookie, socket_t so, sockopt_t opt)
 errno_t	
 Firewall::GetOption(void *cookie, socket_t so, sockopt_t opt)
 {
-	Message *messsage = MessageText::CreateFromCookie("getoption", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("getoption", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -340,7 +340,7 @@ errno_t
 Firewall::Listen(void *cookie, socket_t so)
 {
 
-	Message *messsage = MessageText::CreateFromCookie("listen", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("listen", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -354,7 +354,7 @@ errno_t
 Firewall::Ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp)
 {
 
-	Message *messsage = MessageText::CreateFromCookie("ioctl", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("ioctl", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -364,7 +364,7 @@ Firewall::Ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp)
 errno_t 
 Firewall::Accept(void *cookie, socket_t so_listen, socket_t so, const struct sockaddr *local, const struct sockaddr *remote)
 {
-	Message *messsage = MessageText::CreateFromCookie("accept", (SocketCookie*)cookie);
+	Message *messsage = Message::CreateTextFromCookie("accept", (SocketCookie*)cookie);
 	firewall.Send(messsage);
 	messsage->Release();
 	
@@ -484,15 +484,15 @@ bool Firewall::UnregisterKernelControl()
 	if(kernelControlReference == NULL)
 		return true;
 
-	Message *message = MessageFirewallClosing::Create();
+	Message *message = Message::CreateFirewallClosing();
 	if(!message)
 		return false;
 	
 	int counts = 3;
-	while(clients)
+	while(clients && counts)
 	{
-		if(!counts)
-			return false;
+		//if(!counts)
+		//	return false;
 		//Send firewall down
 		Send(message);
 		IOSleep(200);
@@ -500,6 +500,13 @@ bool Firewall::UnregisterKernelControl()
 	}
 	
 	message->Release();
+
+	IOLockLock(firewall.lockClientsQueue);
+	
+	for(Client *cl = clients; cl ; cl = cl->next)
+		cl->ShowSocketStates();
+
+	IOLockUnlock(firewall.lockClientsQueue);
 	
 	if(ctl_deregister(kernelControlReference))	
 		return false;
@@ -577,8 +584,6 @@ errno_t
 Firewall::KcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 {
 	IOLog("Client disconnecting \n");
-	//return KERN_SUCCESS;
-
 	
 	IOLockLock(firewall.lockClientsQueue);
 	
@@ -639,10 +644,10 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				{
 					RawMessageDeleteRule *rawMessageDeleteRule = (RawMessageDeleteRule*) message;
 					
-					MessageRuleDeleted* responce = MessageRuleDeleted::Create(client->unit, message->messageId, 0, rawMessageDeleteRule->ruleId);
+					Message* responce = Message::CreateRuleDeleted(client->unit, message->messageId, 0, rawMessageDeleteRule->ruleId);
 					if(responce == NULL)
 						break;
-					
+					RawMessageRuleDeleted *rawResponce = (RawMessageRuleDeleted*)&responce->raw;
 					Rule *rule; //????
 					switch(firewall.rules.DeleteRule(rawMessageDeleteRule->ruleId, &rule))
 					{
@@ -650,7 +655,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 							firewall.Send(responce);
 							break;
 						case 1://not exist
-							responce->rawMessage.actionState = 1;
+							rawResponce->actionState = 1;
 							client->Send(responce);
 							break;
 					}
@@ -667,13 +672,16 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 					RawMessageAddRule* rawMessageAddRule = (RawMessageAddRule*) message;
 					
 					//TODO: refactor message
-					MessageRuleAdded* responce = MessageRuleAdded::Create(client->unit, rawMessageAddRule->id, 0, 0);
+					Message* responce = Message::CreateRuleAdded(client->unit, rawMessageAddRule->id, 0, 0);
+					if(responce == NULL)
+						break;
 					
+					RawMessageRuleAdded* rawResponce = (RawMessageRuleAdded*)&responce->raw;
 					Rule *rule = NULL;
 					switch(firewall.rules.AddRule(rawMessageAddRule, &rule))
 					{
 						case -1://memory error
-							responce->rawMessage.actionState = -1;
+							rawResponce->actionState = -1;
 							client->Send(responce);
 						   break;
 						case 0://ok
@@ -681,7 +689,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 							firewall.Send(responce);
 						   break;
 						case 1://already exist
-							responce->rawMessage.actionState = 1;
+							rawResponce->actionState = 1;
 							client->Send(responce);
 						   break;
 					}
@@ -730,15 +738,15 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeActivateFirewall:
 				{
-					MessageFirewallActivated* responce = MessageFirewallActivated::Create(client->unit, message->messageId, 0);
-					if(responce == NULL)
-						break;
+					Message* responce = Message::CreateFirewallActivated(client->unit, message->messageId, 0);
+					if(responce == NULL) break;
+					RawMessageFirewallActivated* rawResponce = (RawMessageFirewallActivated*)&responce->raw;
 					
 					if(firewall.firewallUp == false)
 					{
 						firewall.firewallUp = true;
 						//send message
-						responce->rawMessage.actionState = 1;
+						rawResponce->actionState = 1;
 						
 					}
 					firewall.Send(responce);
@@ -748,14 +756,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeDeactivateFirewall:
 				{
-					MessageFirewallActivated* responce = MessageFirewallActivated::Create(client->unit, message->messageId, 0);
-					if(responce == NULL)
-						break;
+					Message* responce = Message::CreateFirewallDeactivated(client->unit, message->messageId, 0);
+					if(responce == NULL) break;
+					RawMessageFirewallDeactivated* rawResponce = (RawMessageFirewallDeactivated*)&responce->raw;
 
 					if(firewall.firewallUp == true)
 					{
 						firewall.firewallUp = false;
-						responce->rawMessage.actionState = 1;
+						rawResponce->actionState = 1;
 					}
 
 					firewall.Send(responce);
@@ -765,14 +773,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeRegisterForAsk:
 				{
-					MessageRegistredForAsk* responce = MessageRegistredForAsk::Create(client->unit, message->messageId, 0);
-					if(responce == NULL)
-						break;
+					Message* responce = Message::CreateRegistredForAsk(client->unit, message->messageId, 0);
+					if(responce == NULL) break;
+					RawMessageRegistredForAsk *rawResponce = (RawMessageRegistredForAsk*)&responce->raw;
 					
 					if(client->RegisterMessageClasses(MessageClassAsk))
 						OSIncrementAtomic(&firewall.countRegistredAsk);
 					else
-						responce->rawMessage.actionState = 1;
+						rawResponce->actionState = 1;
 					
 					client->Send(responce);
 					responce->Release();
@@ -781,14 +789,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeUnregisterAsk:
 				{
-					MessageUnregistredAsk* responce = MessageUnregistredAsk::Create(client->unit, message->messageId, 0);
-					if(responce == NULL)
-						break;
+					Message* responce = Message::CreateUnregistredAsk(client->unit, message->messageId, 0);
+					if(responce == NULL) break;
+					RawMessageUnregistredAsk* rawResponce = (RawMessageUnregistredAsk*)&responce->raw;
 					
 					if(client->UnregisterMessageClasses(MessageClassAsk))
 						OSDecrementAtomic(&firewall.countRegistredAsk);
 					else
-						responce->rawMessage.actionState = 1;
+						rawResponce->actionState = 1;
 					
 					client->Send(responce);
 					responce->Release();
@@ -797,14 +805,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeRegisterForInfoRule:
 				{
-					MessageRegistredForInfoRule* responce = MessageRegistredForInfoRule::Create(client->unit, message->messageId, 0);
-					if(responce == NULL)
-						break;
+					Message* responce = Message::CreateRegistredForInfoRule(client->unit, message->messageId, 0);
+					if(responce == NULL) break;
+					RawMessageRegistredForInfoRule* rawResponce = (RawMessageRegistredForInfoRule*)&responce->raw;
 					
 					if(client->RegisterMessageClasses(MessageClassInfoRule))
 						OSIncrementAtomic(&firewall.countRegistredInfoRule);
 					else
-						responce->rawMessage.actionState = 1;
+						rawResponce->actionState = 1;
 					
 					client->Send(responce);
 					responce->Release();
@@ -813,14 +821,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 
 			case MessageTypeUnregisterInfoRule:
 				{
-					MessageUnregistredInfoRule* responce = MessageUnregistredInfoRule::Create(client->unit, message->messageId, 0);
-					if(responce == NULL)
-						break;
+					Message* responce = Message::CreateUnregistredInfoRule(client->unit, message->messageId, 0);
+					if(responce == NULL) break;
+					RawMessageUnregistredInfoRule* rawResponce = (RawMessageUnregistredInfoRule*)&responce->raw;
 					
 					if(client->UnregisterMessageClasses(MessageClassInfoRule))
 						OSDecrementAtomic(&firewall.countRegistredInfoRule);
 					else
-						responce->rawMessage.actionState = 1;
+						rawResponce->actionState = 1;
 
 					client->Send(responce);
 					responce->Release();
@@ -829,14 +837,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeRegisterForInfoSocket:
 				{
-					MessageRegistredForInfoRule* responce = MessageRegistredForInfoRule::Create(client->unit, message->messageId, 0);
-					if(responce == NULL)
-						break;
+					Message* responce = Message::CreateRegistredForInfoSocket(client->unit, message->messageId, 0);
+					if(responce == NULL) break;
+					RawMessageRegistredForInfoSocket *rawResponce = (RawMessageRegistredForInfoSocket*)&responce->raw;
 					
 					if(client->RegisterMessageClasses(MessageClassInfoSocket))
 						OSIncrementAtomic(&firewall.countRegistredInfoSocket);
 					else
-						responce->rawMessage.actionState = 1;
+						rawResponce->actionState = 1;
 						//((RawMessageRegistredForInfoSocket*) &responce->m)->actionState = 1;
 
 					client->Send(responce);
@@ -846,14 +854,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeUnregisterInfoSocket:
 				{
-					MessageUnregistredInfoSocket* responce = MessageUnregistredInfoSocket::Create(client->unit, message->messageId, 0);
-					if(responce ==NULL)
-						break;
+					Message* responce = Message::CreateUnregistredInfoSocket(client->unit, message->messageId, 0);
+					if(responce == NULL) break;
+					RawMessageUnregistredInfoSocket* rawResponce = (RawMessageUnregistredInfoSocket*)&responce->raw;
 					
 					if(client->UnregisterMessageClasses(MessageClassInfoSocket))
 						OSDecrementAtomic(&firewall.countRegistredInfoSocket);
 					else
-						responce->rawMessage.actionState = 1;
+						rawResponce->actionState = 1;
 					
 					client->Send(responce);
 					responce->Release();

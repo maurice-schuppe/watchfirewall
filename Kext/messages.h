@@ -11,270 +11,31 @@
 class __attribute__((visibility("hidden"))) Message : public SimpleBase
 {
 public:
+	RawMessageBase raw;
 	
-	virtual void * GetRawMessage() = 0;
-	virtual size_t GetRawMessageSize() = 0;
-	virtual UInt16 GetRawMessageType() = 0;
-	
-	inline void *operator new(size_t size, UInt16 neededSize){ return ::new char[neededSize + sizeof(Message)]; }
+	//TODO: refactor
+	inline void *operator new(size_t size, size_t rawMessageSize){ return ::new char[size + rawMessageSize - sizeof(RawMessageBase)]; }
 	inline void *operator new(size_t size){ return ::new char[size]; }
+	
+	static Message* CreateText(const char* format,...);
+	static Message* CreateTextFromCookie(const char* message, SocketCookie* cookie);
+	static Message* CreateAskRule(char* processName, char* filePath, UInt16 sockDomain, UInt16 sockType, UInt16 sockProtocol, sockaddr* sockAddress, UInt8 direction, pid_t pid, uid_t uid);
+	static Message* CreateRuleAdded(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
+	static Message* CreateRuleDeleted(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
+	static Message* CreateRuleDeactivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
+	static Message* CreateRuleActivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
+	static Message* CreateSocketData(UInt8 direction, UInt8 stateOperation, UInt32 stateByRuleId, pid_t pid, uid_t uid, socket_t so, UInt32 packets, UInt32 bytes, sockaddr *fromAddress, sockaddr *toAddress, OSString *processName);
+	static Message* CreateSocketOpen(socket_t so);
+	static Message* CreateSocketClosed(socket_t so);
+	static Message* CreateFirewallActivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
+	static Message* CreateFirewallDeactivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
+	static Message* CreateRegistredForAsk(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
+	static Message* CreateUnregistredAsk(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
+	static Message* CreateRegistredForInfoRule(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
+	static Message* CreateUnregistredInfoRule(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
+	static Message* CreateRegistredForInfoSocket(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
+	static Message* CreateUnregistredInfoSocket(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
+	static Message* CreateFirewallClosing();
 };
-
-class __attribute__((visibility("hidden"))) MessageText : public Message
-{
-public:
-	RawMessageText rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageText* Create(const char* format,...);
-	static MessageText* CreateFromCookie(const char* message, SocketCookie* cookie);
-
-};
-
-class __attribute__((visibility("hidden"))) MessageAskRule : public Message
-{
-public:
-	RawMessageAskRule rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageAskRule* Create(char* processName, char* filePath, UInt16 sockDomain, UInt16 sockType, UInt16 sockProtocol,	sockaddr* sockAddress, UInt8 direction,
-									  pid_t pid, uid_t uid);
-	
-};
-
-class __attribute__((visibility("hidden"))) MessageRuleAdded : public Message
-{
-public:
-	RawMessageRuleAdded rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageRuleAdded* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
-	
-};
-
-class __attribute__((visibility("hidden"))) MessageRuleDeleted : public Message
-{
-public:
-	RawMessageRuleDeleted rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageRuleDeleted* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
-	
-};
-
-class __attribute__((visibility("hidden"))) MessageRuleDeactivated : public Message
-{
-public:
-	RawMessageRuleDeactivated rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageRuleDeactivated* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
-	
-};
-
-class __attribute__((visibility("hidden"))) MessageRuleActivated : public Message
-{
-public:
-	RawMessageRuleActivated rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageRuleActivated* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
-	
-};
-
-class __attribute__((visibility("hidden"))) MessageSocketData	: public Message
-{
-public:
-	RawMessageSocketData rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageSocketData* Create(UInt8 direction, UInt8 stateOperation, UInt32 stateByRuleId, pid_t pid, uid_t uid, socket_t so, UInt32 packets, UInt32 bytes, sockaddr *fromAddress, sockaddr *toAddress, OSString *processName);
-	
-};
-
-class __attribute__((visibility("hidden"))) MessageSocketOpen : public Message
-{
-public:
-	RawMessageSocketOpen rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageSocketOpen* Create();
-	
-};
-
-class __attribute__((visibility("hidden"))) MessageSocketClosed : public Message
-{
-public:
-	RawMessageSocketClosed rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageSocketClosed* Create();
-	
-};
-
-class __attribute__((visibility("hidden"))) MessageFirewallActivated : public Message
-{
-public:
-	RawMessageFirewallActivated rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageFirewallActivated* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
-	
-};
-
-
-class __attribute__((visibility("hidden"))) MessageFirewallDeactivated : public Message
-{
-public:
-	RawMessageFirewallDeactivated rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageFirewallDeactivated* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
-	
-};
-
-
-class __attribute__((visibility("hidden"))) MessageRegistredForAsk : public Message
-{
-public:
-	RawMessageRegistredForAsk rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageRegistredForAsk* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
-	
-};
-
-
-class __attribute__((visibility("hidden"))) MessageUnregistredAsk : public Message
-{
-public:
-	RawMessageUnregistredAsk rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageUnregistredAsk* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
-	
-};
-
-
-class __attribute__((visibility("hidden"))) MessageRegistredForInfoRule : public Message
-{
-public:
-	RawMessageRegistredForInfoRule rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageRegistredForInfoRule* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
-	
-};
-
-
-class __attribute__((visibility("hidden"))) MessageUnregistredInfoRule : public Message
-{
-public:
-	RawMessageUnregistredInfoRule rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageUnregistredInfoRule* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
-	
-};
-
-
-class __attribute__((visibility("hidden"))) MessageRegistredForInfoSocket : public Message
-{
-public:
-	RawMessageRegistredForInfoSocket rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageRegistredForInfoSocket* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
-	
-};
-
-
-class __attribute__((visibility("hidden"))) MessageUnregistredInfoSocket : public Message
-{
-public:
-	RawMessageUnregistredInfoSocket rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageUnregistredInfoSocket* Create(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState);
-	
-};
-
-
-class __attribute__((visibility("hidden"))) MessageFirewallClosing : public Message
-{
-public:
-	RawMessageFirewallClosing rawMessage;
-	
-	void * GetRawMessage() { return &rawMessage; };
-	size_t GetRawMessageSize() { return rawMessage.size; };
-	UInt16 GetRawMessageType() { return rawMessage.type; };
-	
-	static MessageFirewallClosing* Create();
-	
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif

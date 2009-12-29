@@ -24,8 +24,6 @@ public:
 
 	virtual void Free()
 	{
-		::IOLog("application deleted pid: %d\n", this->pid);
-		
 		if(filePath)
 			filePath->release();
 		
@@ -36,11 +34,11 @@ public:
 	}
 };
 
-
 class __attribute__((visibility("hidden"))) Applications
 {
 public:
-	Application *applications;
+	
+	Application *head;
 	IOLock *lock;
 	IOLock *lockRoutine;
 	IOThread thread;
@@ -52,12 +50,12 @@ public:
 public:
 	bool Init();
 	void Free();
-	Application* GetApplication(); 
-	//Application* AddApplication(vfs_context_t vfsContext, vnode_t vnode);
-	Application* AddApplication(kauth_cred_t cred, vnode_t vnode, const char *filePath);
-	void		 AddApplicationLocked(kauth_cred_t cred, vnode_t vnode, const char *filePath);
 
-	static void CheckApplicationsIsLiveRoutine(void *arg);
+	Application* Get(); 
+	Application* Add(kauth_cred_t cred, vnode_t vnode, const char *filePath);
+	void		 AddLocked(kauth_cred_t cred, vnode_t vnode, const char *filePath);
+
+	static void CheckIsLiveRoutine(void *arg);
 	static int CallbackProcessListener
 	(
 	 kauth_cred_t    credential,
@@ -68,34 +66,21 @@ public:
 	 uintptr_t       arg2,
 	 uintptr_t       arg3
 	 );
-//	static int CallbackVnodeListener
-//	(
-//	 kauth_cred_t    credential,
-//	 void *          idata,
-//	 kauth_action_t  action,
-//	 uintptr_t       arg0,
-//	 uintptr_t       arg1,
-//	 uintptr_t       arg2,
-//	 uintptr_t       arg3
-//	 );
 	
 public:
 	
-	Application* RemoveFromChain(Application* application)
+	Application* Remove(Application* application)
 	{
 		if(application->prev)
 			application->prev->next = application->next;
-		
-		if(application == applications)
-			applications = application->next;
+		else
+			head = application->next;
 		
 		if(application->next)
 			application->next->prev = application->prev;
 		
-		application->prev = application->next = NULL;
 		return application;
 	}
-	
 };
 
 #endif WATCH_APPLICATION_H
