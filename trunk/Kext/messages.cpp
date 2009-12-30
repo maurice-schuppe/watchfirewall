@@ -274,118 +274,6 @@ Message::CreateAskRule(char* processName, char* filePath, UInt16 sockDomain, UIn
 }
 
 Message*
-Message::CreateRegistredForInfoRule(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
-{
-	Message *message = new(sizeof(RawMessageRegistredForInfoRule)) Message;
-	if(message)
-	{
-		RawMessageRegistredForInfoRule* rawMessage = (RawMessageRegistredForInfoRule*)&message->raw;
-		rawMessage->Init(unitId, clientMessageId, actionState);
-		message->references = 1;
-	}
-	return message;
-}
-
-Message*
-Message::CreateUnregistredInfoRule(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
-{
-	//TODO: size
-	Message *message = new(sizeof(RawMessageUnregistredInfoRule)) Message;
-	if(message)
-	{
-		((RawMessageUnregistredInfoRule*)&message->raw)->Init(unitId, clientMessageId, actionState);
-		message->references = 1;
-	}
-	return message;
-}
-
-Message*
-Message::CreateRegistredForInfoSocket(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
-{
-	Message *message = new(sizeof(RawMessageRegistredForInfoSocket)) Message;
-	if(message)
-	{
-		((RawMessageRegistredForInfoSocket*)&message->raw)->Init(unitId, clientMessageId, actionState);
-		message->references = 1;
-	}
-	return message;
-}
-
-Message*
-Message::CreateUnregistredInfoSocket(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
-{
-	Message *message = new (sizeof(RawMessageUnregistredInfoSocket)) Message;
-	if(message)
-	{
-		((RawMessageUnregistredInfoSocket*)&message->raw)->Init(unitId, clientMessageId, actionState);
-		message->references = 1;
-	}
-	return message;
-}
-
-Message*
-Message::CreateRegistredForAsk(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
-{
-	Message *message = new (sizeof(RawMessageRegistredForAsk)) Message;
-	if(message)
-	{
-		((RawMessageRegistredForAsk*)&message->raw)->Init(unitId, clientMessageId, actionState);
-		message->references = 1;
-	}
-	return message;
-}
-
-Message*
-Message::CreateUnregistredAsk(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
-{
-	Message *message = new (sizeof(RawMessageUnregistredAsk)) Message;
-	if(message)
-	{
-		((RawMessageUnregistredAsk*)&message->raw)->Init(unitId, clientMessageId, actionState);
-		message->references = 1;
-	}
-	return message;
-}
-
-Message*
-Message::CreateFirewallActivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
-{
-	Message *message = new (sizeof(RawMessageFirewallActivated)) Message;
-	if(message)
-	{
-		((RawMessageFirewallActivated*)&message->raw)->Init(unitId, clientMessageId, actionState); 
-		message->references = 1;
-	}
-	return message;
-}
-
-Message*
-Message::CreateFirewallDeactivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
-{
-	Message *message = new (sizeof(RawMessageFirewallDeactivated)) Message;
-	if(message)
-	{
-		((RawMessageFirewallActivated*)&message->raw)->Init(unitId, clientMessageId, actionState);
-		message->references = 1;
-	}
-	return message;
-}
-
-Message*
-Message::CreateFirewallClosing()
-{
-	Message *message = new Message();
-	if(message)
-	{
-		RawMessageFirewallClosing* rawMessageFirewallClosing = (RawMessageFirewallClosing*)&message->raw; 
-		rawMessageFirewallClosing->Init(); 
-		message->references = 1;
-	}
-	return message;
-}
-
-
-Message*
 Message::CreateRuleAdded(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
 {
 	Message* message = new (sizeof(RawMessageRuleAdded)) Message;
@@ -411,6 +299,18 @@ Message::CreateRuleDeleted(UInt32 unitId, UInt32 clientMessageId, UInt32 actionS
 	return message;
 }
 
+Message*
+Message::CreateRuleActivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
+{
+	Message* message = new (sizeof(RawMessageRuleActivated)) Message;
+	if(message)
+	{
+		((RawMessageRuleActivated*)&message->raw)->Init(unitId, clientMessageId, actionState, ruleId);
+		message->references = 1;
+	}
+	
+	return message;
+}
 
 Message*
 Message::CreateRuleDeactivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
@@ -419,19 +319,6 @@ Message::CreateRuleDeactivated(UInt32 unitId, UInt32 clientMessageId, UInt32 act
 	if(message)
 	{
 		((RawMessageRuleDeactivated*)&message->raw)->Init(unitId, clientMessageId, actionState, ruleId);
-		message->references = 1;
-	}
-	
-	return message;
-}
-
-Message*
-Message::CreateRuleActivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId)
-{
-	Message* message = new (sizeof(RawMessageRuleActivated)) Message;
-	if(message)
-	{
-		((RawMessageRuleActivated*)&message->raw)->Init(unitId, clientMessageId, actionState, ruleId);
 		message->references = 1;
 	}
 	
@@ -497,3 +384,113 @@ Message::CreateSocketClosed(socket_t so)
 	return message;
 }
 
+Message*
+Message::CreateFirewallActivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+{
+	Message *message = new (sizeof(RawMessageFirewallActivated)) Message;
+	if(message)
+	{
+		((RawMessageFirewallActivated*)&message->raw)->Init(unitId, clientMessageId, actionState); 
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::CreateFirewallDeactivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+{
+	Message *message = new (sizeof(RawMessageFirewallDeactivated)) Message;
+	if(message)
+	{
+		((RawMessageFirewallActivated*)&message->raw)->Init(unitId, clientMessageId, actionState);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::CreateClientSubscribedAsaProviderOfRules(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+{
+	Message *message = new (sizeof(RawMessageClientSubscribedAsaProviderOfRules)) Message;
+	if(message)
+	{
+		((RawMessageClientSubscribedAsaProviderOfRules*)&message->raw)->Init(unitId, clientMessageId, actionState);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::CreateClientUnsubscribedAsaProviderOfRules(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+{
+	Message *message = new (sizeof(RawMessageClientUnsubscribedAsaProviderOfRules)) Message;
+	if(message)
+	{
+		((RawMessageClientUnsubscribedAsaProviderOfRules*)&message->raw)->Init(unitId, clientMessageId, actionState);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::CreateClientSubscribedToInfoRules(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+{
+	Message *message = new(sizeof(RawMessageClientSubscribedToInfoRules)) Message;
+	if(message)
+	{
+		RawMessageClientSubscribedToInfoRules* rawMessage = (RawMessageClientSubscribedToInfoRules*)&message->raw;
+		rawMessage->Init(unitId, clientMessageId, actionState);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::CreateClientUnsubscribedFromInfoRules(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+{
+	//TODO: size
+	Message *message = new(sizeof(RawMessageClientUnsubscribedFromInfoRules)) Message;
+	if(message)
+	{
+		((RawMessageClientUnsubscribedFromInfoRules*)&message->raw)->Init(unitId, clientMessageId, actionState);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::CreateClientSubscribedToInfoSockets(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+{
+	Message *message = new(sizeof(RawMessageClientSubscribedToInfoSockets)) Message;
+	if(message)
+	{
+		((RawMessageClientSubscribedToInfoSockets*)&message->raw)->Init(unitId, clientMessageId, actionState);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::CreateClientUnsubscribedFromInfoSockets(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
+{
+	Message *message = new (sizeof(RawMessageClientUnsubscribedFromInfoSockets)) Message;
+	if(message)
+	{
+		((RawMessageClientUnsubscribedFromInfoSockets*)&message->raw)->Init(unitId, clientMessageId, actionState);
+		message->references = 1;
+	}
+	return message;
+}
+
+Message*
+Message::CreateFirewallClosing()
+{
+	Message *message = new Message();
+	if(message)
+	{
+		RawMessageFirewallClosing* rawMessageFirewallClosing = (RawMessageFirewallClosing*)&message->raw; 
+		rawMessageFirewallClosing->Init(); 
+		message->references = 1;
+	}
+	return message;
+}

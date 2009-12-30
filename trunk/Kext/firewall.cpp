@@ -281,7 +281,7 @@ Firewall::ConnectIn(void *cookie, socket_t so, const sockaddr *from)
 	
 	
 	
-	if(firewall.countRegistredInfoSocket)
+	if(firewall.countSubscribersForInfoSockets)
 	{
 		//send message connected
 	}
@@ -601,14 +601,14 @@ Firewall::KcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 			
 			curr->CloseSignal();
 			//update counts of listen etc...
-			if(curr->registredMessageClases & MessageClassAsk)
-				OSDecrementAtomic(&firewall.countRegistredAsk);
+			if(curr->registredMessageClases & MessageClassProviderOfRules)
+				OSDecrementAtomic(&firewall.countSubscriberAsaProviderOfRules);
 
-			if(curr->registredMessageClases & MessageClassInfoRule)
-				OSDecrementAtomic(&firewall.countRegistredInfoRule);
+			if(curr->registredMessageClases & MessageClassInfoRules)
+				OSDecrementAtomic(&firewall.countSubscribersForInfoRules);
 			
-			if(curr->registredMessageClases & MessageClassInfoSocket)
-				OSDecrementAtomic(&firewall.countRegistredInfoSocket);
+			if(curr->registredMessageClases & MessageClassInfoSockets)
+				OSDecrementAtomic(&firewall.countSubscribersForInfoSockets);
 
 			curr->Release();
 			break;
@@ -771,14 +771,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				}
 				break;
 				
-			case MessageTypeRegisterForAsk:
+			case MessageTypeSubscribeAsaProviderOfRules:
 				{
-					Message* responce = Message::CreateRegistredForAsk(client->unit, message->messageId, 0);
+					Message* responce = Message::CreateClientSubscribedAsaProviderOfRules(client->unit, message->messageId, 0);
 					if(responce == NULL) break;
-					RawMessageRegistredForAsk *rawResponce = (RawMessageRegistredForAsk*)&responce->raw;
+					RawMessageClientSubscribedAsaProviderOfRules *rawResponce = (RawMessageClientSubscribedAsaProviderOfRules*)&responce->raw;
 					
-					if(client->RegisterMessageClasses(MessageClassAsk))
-						OSIncrementAtomic(&firewall.countRegistredAsk);
+					if(client->RegisterMessageClasses(MessageClassProviderOfRules))
+						OSIncrementAtomic(&firewall.countSubscriberAsaProviderOfRules);
 					else
 						rawResponce->actionState = 1;
 					
@@ -787,14 +787,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				}
 				break;
 				
-			case MessageTypeUnregisterAsk:
+			case MessageTypeUnsubscribeAsaProviderOfRules:
 				{
-					Message* responce = Message::CreateUnregistredAsk(client->unit, message->messageId, 0);
+					Message* responce = Message::CreateClientUnsubscribedAsaProviderOfRules(client->unit, message->messageId, 0);
 					if(responce == NULL) break;
-					RawMessageUnregistredAsk* rawResponce = (RawMessageUnregistredAsk*)&responce->raw;
+					RawMessageClientUnsubscribedAsaProviderOfRules* rawResponce = (RawMessageClientUnsubscribedAsaProviderOfRules*)&responce->raw;
 					
-					if(client->UnregisterMessageClasses(MessageClassAsk))
-						OSDecrementAtomic(&firewall.countRegistredAsk);
+					if(client->UnregisterMessageClasses(MessageClassProviderOfRules))
+						OSDecrementAtomic(&firewall.countSubscriberAsaProviderOfRules);
 					else
 						rawResponce->actionState = 1;
 					
@@ -803,14 +803,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				}
 				break;
 				
-			case MessageTypeRegisterForInfoRule:
+			case MessageTypeSubscribeToInfoRules:
 				{
-					Message* responce = Message::CreateRegistredForInfoRule(client->unit, message->messageId, 0);
+					Message* responce = Message::CreateClientSubscribedToInfoRules(client->unit, message->messageId, 0);
 					if(responce == NULL) break;
-					RawMessageRegistredForInfoRule* rawResponce = (RawMessageRegistredForInfoRule*)&responce->raw;
+					RawMessageClientSubscribedToInfoRules* rawResponce = (RawMessageClientSubscribedToInfoRules*)&responce->raw;
 					
-					if(client->RegisterMessageClasses(MessageClassInfoRule))
-						OSIncrementAtomic(&firewall.countRegistredInfoRule);
+					if(client->RegisterMessageClasses(MessageClassInfoRules))
+						OSIncrementAtomic(&firewall.countSubscribersForInfoRules);
 					else
 						rawResponce->actionState = 1;
 					
@@ -819,14 +819,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				}
 				break;
 
-			case MessageTypeUnregisterInfoRule:
+			case MessageTypeUnsubscribeFromInfoRules:
 				{
-					Message* responce = Message::CreateUnregistredInfoRule(client->unit, message->messageId, 0);
+					Message* responce = Message::CreateClientUnsubscribedFromInfoRules(client->unit, message->messageId, 0);
 					if(responce == NULL) break;
-					RawMessageUnregistredInfoRule* rawResponce = (RawMessageUnregistredInfoRule*)&responce->raw;
+					RawMessageClientUnsubscribedFromInfoRules* rawResponce = (RawMessageClientUnsubscribedFromInfoRules*)&responce->raw;
 					
-					if(client->UnregisterMessageClasses(MessageClassInfoRule))
-						OSDecrementAtomic(&firewall.countRegistredInfoRule);
+					if(client->UnregisterMessageClasses(MessageClassInfoRules))
+						OSDecrementAtomic(&firewall.countSubscribersForInfoRules);
 					else
 						rawResponce->actionState = 1;
 
@@ -835,14 +835,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				}
 				break;
 				
-			case MessageTypeRegisterForInfoSocket:
+			case MessageTypeSubscribeToInfoSockets:
 				{
-					Message* responce = Message::CreateRegistredForInfoSocket(client->unit, message->messageId, 0);
+					Message* responce = Message::CreateClientSubscribedToInfoSockets(client->unit, message->messageId, 0);
 					if(responce == NULL) break;
-					RawMessageRegistredForInfoSocket *rawResponce = (RawMessageRegistredForInfoSocket*)&responce->raw;
+					RawMessageClientSubscribedToInfoSockets *rawResponce = (RawMessageClientSubscribedToInfoSockets*)&responce->raw;
 					
-					if(client->RegisterMessageClasses(MessageClassInfoSocket))
-						OSIncrementAtomic(&firewall.countRegistredInfoSocket);
+					if(client->RegisterMessageClasses(MessageClassInfoSockets))
+						OSIncrementAtomic(&firewall.countSubscribersForInfoSockets);
 					else
 						rawResponce->actionState = 1;
 						//((RawMessageRegistredForInfoSocket*) &responce->m)->actionState = 1;
@@ -852,14 +852,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				}
 				break;
 				
-			case MessageTypeUnregisterInfoSocket:
+			case MessageTypeUnsubscribeFromInfoSockets:
 				{
-					Message* responce = Message::CreateUnregistredInfoSocket(client->unit, message->messageId, 0);
+					Message* responce = Message::CreateClientUnsubscribedFromInfoSockets(client->unit, message->messageId, 0);
 					if(responce == NULL) break;
-					RawMessageUnregistredInfoSocket* rawResponce = (RawMessageUnregistredInfoSocket*)&responce->raw;
+					RawMessageClientUnsubscribedFromInfoSockets* rawResponce = (RawMessageClientUnsubscribedFromInfoSockets*)&responce->raw;
 					
-					if(client->UnregisterMessageClasses(MessageClassInfoSocket))
-						OSDecrementAtomic(&firewall.countRegistredInfoSocket);
+					if(client->UnregisterMessageClasses(MessageClassInfoSockets))
+						OSDecrementAtomic(&firewall.countSubscribersForInfoSockets);
 					else
 						rawResponce->actionState = 1;
 					

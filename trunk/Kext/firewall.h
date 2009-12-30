@@ -42,9 +42,9 @@ public:
 	bool	closing;
 	UInt32	countAttachedSockets;
 	
-	volatile SInt32 countRegistredInfoSocket;
-	volatile SInt32 countRegistredInfoRule;
-	volatile SInt32 countRegistredAsk;
+	volatile SInt32 countSubscribersForInfoSockets;
+	volatile SInt32 countSubscribersForInfoRules;
+	volatile SInt32 countSubscriberAsaProviderOfRules;
 	
 	Rules	rules;
 	Applications applications;
