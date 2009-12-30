@@ -602,7 +602,7 @@ Firewall::KcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 			curr->CloseSignal();
 			//update counts of listen etc...
 			if(curr->registredMessageClases & MessageClassProviderOfRules)
-				OSDecrementAtomic(&firewall.countSubscriberAsaProviderOfRules);
+				OSDecrementAtomic(&firewall.countSubscribersAsaProviderOfRules);
 
 			if(curr->registredMessageClases & MessageClassInfoRules)
 				OSDecrementAtomic(&firewall.countSubscribersForInfoRules);
@@ -778,7 +778,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 					RawMessageClientSubscribedAsaProviderOfRules *rawResponce = (RawMessageClientSubscribedAsaProviderOfRules*)&responce->raw;
 					
 					if(client->RegisterMessageClasses(MessageClassProviderOfRules))
-						OSIncrementAtomic(&firewall.countSubscriberAsaProviderOfRules);
+						OSIncrementAtomic(&firewall.countSubscribersAsaProviderOfRules);
 					else
 						rawResponce->actionState = 1;
 					
@@ -794,7 +794,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 					RawMessageClientUnsubscribedAsaProviderOfRules* rawResponce = (RawMessageClientUnsubscribedAsaProviderOfRules*)&responce->raw;
 					
 					if(client->UnregisterMessageClasses(MessageClassProviderOfRules))
-						OSDecrementAtomic(&firewall.countSubscriberAsaProviderOfRules);
+						OSDecrementAtomic(&firewall.countSubscribersAsaProviderOfRules);
 					else
 						rawResponce->actionState = 1;
 					
