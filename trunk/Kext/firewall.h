@@ -44,7 +44,7 @@ public:
 	
 	volatile SInt32 countSubscribersForInfoSockets;
 	volatile SInt32 countSubscribersForInfoRules;
-	volatile SInt32 countSubscriberAsaProviderOfRules;
+	volatile SInt32 countSubscribersAsaProviderOfRules;
 	
 	Rules	rules;
 	Applications applications;
