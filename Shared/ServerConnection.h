@@ -8,6 +8,7 @@
 #include <sys/kern_control.h>
 
 #include "bundleid.h"
+#include "messageType.h"
 
 class ServerConnection 
 {
@@ -16,6 +17,7 @@ public :
 	bool Close();
 	
 	int	Send( const void* data, size_t size);
+	
 	
 	ServerConnection()
 	{
