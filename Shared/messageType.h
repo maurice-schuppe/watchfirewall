@@ -6,75 +6,75 @@
 
 enum MessagesClass
 {
-	MessageClassInfoRule	= 0x0100,
-	MessageClassInfoSocket	= 0x0200,
-	MessageClassAsk			= 0x0400,
-	MessageClassFirewall	= 0x0800,
-	MessageClassClient		= 0x1000,
-	MessageClassCommon		= 0x2000
+	MessageClassInfoRules							= 0x0100,
+	MessageClassInfoSockets							= 0x0200,
+	MessageClassProviderOfRules						= 0x0400,
+	MessageClassFirewall							= 0x0800,
+	MessageClassClient								= 0x1000,
+	MessageClassCommon								= 0x2000
 };
 
 enum ServerMessagesType 
 {
-	MessageTypeText						= MessageClassCommon | 0x01, //dymmu
+	MessageTypeText									= MessageClassCommon | 0x01, //dymmu
 	
-	MessageTypeSfltUnregistered			= MessageClassCommon | 0x02, //debug
-	MessageTypeSfltAttach				= MessageClassCommon | 0x03, //debug
-	MessageTypeSfltDetach				= MessageClassCommon | 0x04, //debug
-	MessageTypeSfltNotify				= MessageClassCommon | 0x05, //debug
-	MessageTypeSfltGetPeerName			= MessageClassCommon | 0x06, //debug
-	MessageTypeSfltGetSockName			= MessageClassCommon | 0x07, //debug
-	MessageTypeSfltDataIn				= MessageClassCommon | 0x08, //debug
-	MessageTypeSfltDataOut				= MessageClassCommon | 0x09, //debug
-	MessageTypeSfltConnectIn			= MessageClassCommon | 0x0A, //debug
-	MessageTypeSfltConnectOut			= MessageClassCommon | 0x0B, //debug
-	MessageTypeSfltBind					= MessageClassCommon | 0x0C, //debug
-	MessageTypeSfltSetOption			= MessageClassCommon | 0x0D, //debug
-	MessageTypeSfltGetOption			= MessageClassCommon | 0x0E, //debug
-	MessageTypeSfltListen				= MessageClassCommon | 0x0F, //debug
-	MessageTypeSfltIoctl				= MessageClassCommon | 0x10, //debug
-	MessageTypeSfltAccept				= MessageClassCommon | 0x11, //debug
+	MessageTypeSfltUnregistered						= MessageClassCommon | 0x02, //debug
+	MessageTypeSfltAttach							= MessageClassCommon | 0x03, //debug
+	MessageTypeSfltDetach							= MessageClassCommon | 0x04, //debug
+	MessageTypeSfltNotify							= MessageClassCommon | 0x05, //debug
+	MessageTypeSfltGetPeerName						= MessageClassCommon | 0x06, //debug
+	MessageTypeSfltGetSockName						= MessageClassCommon | 0x07, //debug
+	MessageTypeSfltDataIn							= MessageClassCommon | 0x08, //debug
+	MessageTypeSfltDataOut							= MessageClassCommon | 0x09, //debug
+	MessageTypeSfltConnectIn						= MessageClassCommon | 0x0A, //debug
+	MessageTypeSfltConnectOut						= MessageClassCommon | 0x0B, //debug
+	MessageTypeSfltBind								= MessageClassCommon | 0x0C, //debug
+	MessageTypeSfltSetOption						= MessageClassCommon | 0x0D, //debug
+	MessageTypeSfltGetOption						= MessageClassCommon | 0x0E, //debug
+	MessageTypeSfltListen							= MessageClassCommon | 0x0F, //debug
+	MessageTypeSfltIoctl							= MessageClassCommon | 0x10, //debug
+	MessageTypeSfltAccept							= MessageClassCommon | 0x11, //debug
 	
-	MessageTypeAskRule					= MessageClassAsk |  0x01,
+	MessageTypeRequestRule							= MessageClassProviderOfRules |  0x01,
 	
-	MessageTypeRuleAdded				= MessageClassInfoRule | 0x01,
-	MessageTypeRuleDeleted				= MessageClassInfoRule | 0x02,
-	MessageTypeRuleDeactivated			= MessageClassInfoRule | 0x03,
-	MessageTypeRuleActivated			= MessageClassInfoRule | 0x04,
+	MessageTypeRuleAdded							= MessageClassInfoRules | 0x01,
+	MessageTypeRuleDeleted							= MessageClassInfoRules | 0x02,
+	MessageTypeRuleDeactivated						= MessageClassInfoRules | 0x03,
+	MessageTypeRuleActivated						= MessageClassInfoRules | 0x04,
 	
-	MessageTypeSocketData				= MessageClassInfoSocket | 0x07,
-	MessageTypeSocketOpen				= MessageClassInfoSocket | 0x08,
-	MessageTypeSocketClosed				= MessageClassInfoSocket | 0x09,
+	MessageTypeSocketData							= MessageClassInfoSockets | 0x07,
+	MessageTypeSocketOpen							= MessageClassInfoSockets | 0x08,
+	MessageTypeSocketClosed							= MessageClassInfoSockets | 0x09,
 	
-	MessageTypeFirewallActivated		= MessageClassFirewall | 0x01,
-	MessageTypeFirewallDeactivated		= MessageClassFirewall | 0x02,
-	
-	MessageTypeRegistredForAsk			= MessageClassFirewall | 0x03,
-	MessageTypeUnregistredAsk			= MessageClassFirewall | 0x04,
-	MessageTypeRegistredForInfoRule		= MessageClassFirewall | 0x05,
-	MessageTypeUnregistredInfoRule		= MessageClassFirewall | 0x06,
-	MessageTypeRegistredForInfoSocket	= MessageClassFirewall | 0x07,
-	MessageTypeUnregistredInfoSocket	= MessageClassFirewall | 0x08,
+	MessageTypeFirewallActivated					= MessageClassFirewall | 0x01,
+	MessageTypeFirewallDeactivated					= MessageClassFirewall | 0x02,
 
-	MessageTypeFirewallClosing			= MessageClassFirewall | 0x09
+	MessageTypeClientSubscribedAsaProviderOfRules	= MessageClassFirewall | 0x03,
+	MessageTypeClientUnsubscribedAsaProviderOfRules	= MessageClassFirewall | 0x04,
+	MessageTypeClientSubscribedToInfoRules			= MessageClassFirewall | 0x05,
+	MessageTypeClientUnsubscribedFromInfoRules		= MessageClassFirewall | 0x06,
+	MessageTypeClientSubscribedToInfoSockets		= MessageClassFirewall | 0x07,
+	MessageTypeClientUnsubscribedFromInfoSockets	= MessageClassFirewall | 0x08,
+
+	MessageTypeFirewallClosing						= MessageClassFirewall | 0x09
 };
 
 enum ClientMessagesType
 {
-	MessageTypeAddRule					= MessageClassClient | 0x01,
-	MessageTypeDeleteRule				= MessageClassClient | 0x02,
-	MessageTypeActivateRule				= MessageClassClient | 0x03,
-	MessageTypeDeactivateRule			= MessageClassClient | 0x04,
+	MessageTypeAddRule								= MessageClassClient | 0x01,
+	MessageTypeDeleteRule							= MessageClassClient | 0x02,
+	MessageTypeActivateRule							= MessageClassClient | 0x03,
+	MessageTypeDeactivateRule						= MessageClassClient | 0x04,
 
-	MessageTypeActivateFirewall			= MessageClassClient | 0x05,
-	MessageTypeDeactivateFirewall		= MessageClassClient | 0x06,
+	MessageTypeActivateFirewall						= MessageClassClient | 0x05,
+	MessageTypeDeactivateFirewall					= MessageClassClient | 0x06,
 
-	MessageTypeRegisterForAsk			= MessageClassClient | 0x07,
-	MessageTypeUnregisterAsk			= MessageClassClient | 0x08,
-	MessageTypeRegisterForInfoRule		= MessageClassClient | 0x09,
-	MessageTypeUnregisterInfoRule		= MessageClassClient | 0x0A,
-	MessageTypeRegisterForInfoSocket	= MessageClassClient | 0x0B,
-	MessageTypeUnregisterInfoSocket		= MessageClassClient | 0x0C
+	MessageTypeSubscribeAsaProviderOfRules			= MessageClassClient | 0x07,
+	MessageTypeUnsubscribeAsaProviderOfRules		= MessageClassClient | 0x08,
+	MessageTypeSubscribeToInfoRules					= MessageClassClient | 0x09,
+	MessageTypeUnsubscribeFromInfoRules				= MessageClassClient | 0x0A,
+	MessageTypeSubscribeToInfoSockets				= MessageClassClient | 0x0B,
+	MessageTypeUnsubscribeFromInfoSockets			= MessageClassClient | 0x0C
 };
 
 struct SockAddress
@@ -424,7 +424,7 @@ struct RawMessageText : public RawMessageBase
 	char textBuffer[4];
 };
 
-struct RawMessageAskRule : public RawMessageBase
+struct RawMessageRequestRule : public RawMessageBase
 {
 	UInt16 processNameOffset;//0 for all
 	UInt16 filePathOffset;//0 for all
@@ -441,6 +441,8 @@ struct RawMessageAskRule : public RawMessageBase
 	UInt32 uid;
 	
 	char buffer[4];
+	
+	//TODO: implement
 };
 
 struct RawMessageRuleAdded : public RawMessageClientActionResponce
@@ -487,53 +489,53 @@ struct RawMessageRuleActivated : public RawMessageClientActionResponce
 	}
 };
 
-struct RawMessageRegistredForAsk : public RawMessageClientActionResponce
+struct RawMessageClientSubscribedAsaProviderOfRules : public RawMessageClientActionResponce
 {
 	inline void Init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 	{ 
-		RawMessageClientActionResponce::Init(sizeof(RawMessageRegistredForAsk), MessageTypeRegistredForAsk, unitId, clientMessageId, actionState); 
+		RawMessageClientActionResponce::Init(sizeof(RawMessageClientSubscribedAsaProviderOfRules), MessageTypeClientSubscribedAsaProviderOfRules, unitId, clientMessageId, actionState); 
 	}
 };
 
-struct RawMessageUnregistredAsk : public RawMessageClientActionResponce
+struct RawMessageClientUnsubscribedAsaProviderOfRules : public RawMessageClientActionResponce
 {
 	inline void Init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 	{ 
-		RawMessageClientActionResponce::Init(sizeof(RawMessageUnregistredAsk), MessageTypeUnregistredAsk, unitId, clientMessageId, actionState); 
+		RawMessageClientActionResponce::Init(sizeof(RawMessageClientUnsubscribedAsaProviderOfRules), MessageTypeClientUnsubscribedAsaProviderOfRules, unitId, clientMessageId, actionState); 
 	}	
 };
 
-struct RawMessageRegistredForInfoRule : public RawMessageClientActionResponce
+struct RawMessageClientSubscribedToInfoRules : public RawMessageClientActionResponce
 {
 	inline void Init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 	{ 
-		RawMessageClientActionResponce::Init(sizeof(RawMessageRegistredForInfoRule), MessageTypeRegistredForInfoRule, unitId, clientMessageId, actionState); 
+		RawMessageClientActionResponce::Init(sizeof(RawMessageClientSubscribedToInfoRules), MessageTypeClientSubscribedToInfoRules, unitId, clientMessageId, actionState); 
 	}	
 };
 
-struct RawMessageUnregistredInfoRule : public RawMessageClientActionResponce
+struct RawMessageClientUnsubscribedFromInfoRules : public RawMessageClientActionResponce
 {
 	inline void Init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 	{ 
-		RawMessageClientActionResponce::Init(sizeof(RawMessageUnregistredInfoRule), MessageTypeUnregisterInfoRule, unitId, clientMessageId, actionState); 
+		RawMessageClientActionResponce::Init(sizeof(RawMessageClientUnsubscribedFromInfoRules), MessageTypeClientUnsubscribedFromInfoRules, unitId, clientMessageId, actionState); 
 	}	
 };
 
 
 //////
-struct RawMessageRegistredForInfoSocket : public RawMessageClientActionResponce
+struct RawMessageClientSubscribedToInfoSockets : public RawMessageClientActionResponce
 {
 	inline void Init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 	{ 
-		RawMessageClientActionResponce::Init(sizeof(RawMessageRegistredForInfoSocket), MessageTypeRegistredForInfoSocket, unitId, clientMessageId, actionState); 
+		RawMessageClientActionResponce::Init(sizeof(RawMessageClientSubscribedToInfoSockets), MessageTypeClientSubscribedToInfoSockets, unitId, clientMessageId, actionState); 
 	}	
 };
 
-struct RawMessageUnregistredInfoSocket : public RawMessageClientActionResponce
+struct RawMessageClientUnsubscribedFromInfoSockets : public RawMessageClientActionResponce
 {
 	inline void Init(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState)
 	{ 
-		RawMessageClientActionResponce::Init(sizeof(RawMessageUnregistredInfoSocket), MessageTypeUnregisterInfoSocket, unitId, clientMessageId, actionState); 
+		RawMessageClientActionResponce::Init(sizeof(RawMessageClientUnsubscribedFromInfoSockets), MessageTypeClientUnsubscribedFromInfoSockets, unitId, clientMessageId, actionState); 
 	}	
 };
 
@@ -727,51 +729,51 @@ struct RawMessageDeactivateFirewall : public RawMessageClientAction
 	}
 };
 
-struct RawMessageRegisterForAsk : public RawMessageClientAction 
+struct RawMessageSubscribeAsaProviderOfRules : public RawMessageClientAction 
 {
 	inline void Init(UInt32 messageId)
 	{
-		RawMessageClientAction::Init(sizeof(RawMessageRegisterForAsk), MessageTypeRegisterForAsk, messageId);
+		RawMessageClientAction::Init(sizeof(RawMessageSubscribeAsaProviderOfRules), MessageTypeSubscribeAsaProviderOfRules, messageId);
 	}
 };
 
-struct RawMessageUnregisterAsk : public RawMessageClientAction  
+struct RawMessageUnsubscribeAsaProviderOfRules : public RawMessageClientAction  
 {
 	inline void Init(UInt32 messageId)
 	{
-		RawMessageClientAction::Init(sizeof(RawMessageUnregisterAsk), MessageTypeUnregisterAsk, messageId);
+		RawMessageClientAction::Init(sizeof(RawMessageUnsubscribeAsaProviderOfRules), MessageTypeUnsubscribeAsaProviderOfRules, messageId);
 	}
 };
 
-struct RawMessageRegisterForInfoRule : public RawMessageClientAction  
+struct RawMessageSubscribeToInfoRules : public RawMessageClientAction  
 {
 	inline void Init(UInt32 messageId)
 	{
-		RawMessageClientAction::Init(sizeof(RawMessageRegisterForInfoRule), MessageTypeRegisterForInfoRule, messageId);
+		RawMessageClientAction::Init(sizeof(RawMessageSubscribeToInfoRules), MessageTypeSubscribeToInfoRules, messageId);
 	}
 };
 
-struct RawMessageUnregisterInfoRule : public RawMessageClientAction  
+struct RawMessageUnsubscribeFromInfoRules : public RawMessageClientAction  
 {
 	inline void Init(UInt32 messageId)
 	{
-		RawMessageClientAction::Init(sizeof(RawMessageUnregisterInfoRule), MessageTypeUnregisterInfoRule, messageId);
+		RawMessageClientAction::Init(sizeof(RawMessageUnsubscribeFromInfoRules), MessageTypeUnsubscribeFromInfoRules, messageId);
 	}
 };
 
-struct RawMessageRegisterForInfoSocket : public RawMessageClientAction  
+struct RawMessageSubscribeToInfoSockets : public RawMessageClientAction  
 {
 	inline void Init(UInt32 messageId)
 	{
-		RawMessageClientAction::Init(sizeof(RawMessageRegisterForInfoSocket), MessageTypeRegisterForInfoSocket, messageId);
+		RawMessageClientAction::Init(sizeof(RawMessageSubscribeToInfoSockets), MessageTypeSubscribeToInfoSockets, messageId);
 	}
 };
 
-struct RawMessageUnregisterInfoSocket : public RawMessageClientAction  
+struct RawMessageUnsubscribeFromInfoSockets : public RawMessageClientAction  
 {
 	inline void Init(UInt32 messageId)
 	{
-		RawMessageClientAction::Init(sizeof(RawMessageUnregisterInfoSocket), MessageTypeUnregisterInfoSocket, messageId);
+		RawMessageClientAction::Init(sizeof(RawMessageUnsubscribeFromInfoSockets), MessageTypeUnsubscribeFromInfoSockets, messageId);
 	}
 };
 

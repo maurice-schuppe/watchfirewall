@@ -80,9 +80,9 @@ int main()
 					}
 					break;
 
-				case MessageTypeAskRule:
+				case MessageTypeRequestRule:
 					{
-						RawMessageAskRule* messageAskRule = (RawMessageAskRule*)message;
+						RawMessageRequestRule* messageRequestRule = (RawMessageRequestRule*)message;
 					}
 					break;
 					
@@ -141,40 +141,40 @@ int main()
 					break;
 					
 					
-				case MessageTypeRegistredForAsk:
+				case MessageTypeClientSubscribedAsaProviderOfRules:
 					{
-						RawMessageRegistredForAsk* messageRegistredForAsk = (RawMessageRegistredForAsk*)message;
+						RawMessageClientSubscribedAsaProviderOfRules* messageRegistredForAsk = (RawMessageClientSubscribedAsaProviderOfRules*)message;
 					}
 					break;
 					
-				case MessageTypeUnregistredAsk:
+				case MessageTypeClientUnsubscribedAsaProviderOfRules:
 					{
-						RawMessageUnregistredAsk* messageUnregistredAsk = (RawMessageUnregistredAsk*)message;
+						RawMessageClientUnsubscribedAsaProviderOfRules* messageUnregistredAsk = (RawMessageClientUnsubscribedAsaProviderOfRules*)message;
 					}
 					break;
 					
-				case MessageTypeRegistredForInfoRule:
+				case MessageTypeClientSubscribedToInfoRules:
 					{
-						RawMessageRegistredForInfoRule* messageRegistredForInfoRule = (RawMessageRegistredForInfoRule*)message;
+						RawMessageClientSubscribedToInfoRules* messageRegistredForInfoRule = (RawMessageClientSubscribedToInfoRules*)message;
 					}
 					break;
 					
-				case MessageTypeUnregistredInfoRule:
+				case MessageTypeClientUnsubscribedFromInfoRules:
 					{
-						RawMessageUnregistredInfoRule* messageUnregistredInfoRule = (RawMessageUnregistredInfoRule*)message;
+						RawMessageClientUnsubscribedFromInfoRules* messageUnregistredInfoRule = (RawMessageClientUnsubscribedFromInfoRules*)message;
 					}
 					break;
 					
-				case MessageTypeRegistredForInfoSocket:
+				case MessageTypeClientSubscribedToInfoSockets:
 					{
-						RawMessageRegistredForInfoSocket* messageRegistredForInfoSocket = (RawMessageRegistredForInfoSocket*)message;
+						RawMessageClientSubscribedToInfoSockets* messageRegistredForInfoSocket = (RawMessageClientSubscribedToInfoSockets*)message;
 						printf("client registred for info rule: %s", messageRegistredForInfoSocket->actionState ? "success" : "error");
 					}
 					break;
 					
-				case MessageTypeUnregistredInfoSocket:
+				case MessageTypeClientUnsubscribedFromInfoSockets:
 					{
-						RawMessageUnregistredInfoSocket* messageUnregistredInfoSocket = (RawMessageUnregistredInfoSocket*)message;
+						RawMessageClientUnsubscribedFromInfoSockets* messageUnregistredInfoSocket = (RawMessageClientUnsubscribedFromInfoSockets*)message;
 					}
 					break;
 					
