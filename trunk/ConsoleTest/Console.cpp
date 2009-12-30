@@ -3,6 +3,11 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include <getopt.h>
 #include <sys/sysctl.h>
 #include <sys/vnode.h>
@@ -17,6 +22,25 @@ typedef void* socket_t;
 
 ServerConnection serverConnection;
 char buffer[8*1024];
+
+int SockAddressToString(const sockaddr* sa, char *buffer, int bufferLen)
+{
+//	const char *inet_ntop(int af, const void *restrict src,
+//						  char *restrict dst, socklen_t size);
+//	int inet_pton(int af, const char *restrict src, void *restrict dst);
+	if(!sa)
+		return 0;
+	
+	switch(sa->sa_family)
+	{
+		case AF_UNSPEC:
+		{
+		}
+	}
+	
+	printf("");
+	return 0;
+}
 
 /*
  SignalHandler - implemented to handle an interrupt from the command line using Ctrl-C.

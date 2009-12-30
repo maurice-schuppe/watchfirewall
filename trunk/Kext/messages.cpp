@@ -470,15 +470,30 @@ Message::CreateSocketData(UInt8 direction, UInt8 stateOperation, UInt32 stateByR
 	return message;
 }
 
+//TODO: additional info: from who
 Message*
 Message::CreateSocketOpen(socket_t so)
 {
-	return NULL;
+	Message *message = new(sizeof(RawMessageSocketOpen)) Message;
+	if(message)
+	{
+		RawMessageSocketOpen* rawMessage = (RawMessageSocketOpen*)&message->raw;
+		rawMessage->Init((UInt64)so);
+		message->references = 1;
+	}
+	return message;
 }
 
 Message*
 Message::CreateSocketClosed(socket_t so)
 {
-	return NULL;
+	Message *message = new(sizeof(RawMessageSocketClosed)) Message;
+	if(message)
+	{
+		RawMessageSocketClosed* rawMessage = (RawMessageSocketClosed*)&message->raw;
+		rawMessage->Init((UInt64)so);
+		message->references = 1;
+	}
+	return message;
 }
 

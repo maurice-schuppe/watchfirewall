@@ -633,12 +633,24 @@ struct RawMessageSocketData : public RawMessageBase
 
 struct RawMessageSocketOpen : public RawMessageBase
 {
+	UInt64 so;
 	
+	inline void Init(UInt64 so)
+	{
+		RawMessageBase::Init(sizeof(RawMessageSocketOpen), MessageTypeSocketOpen);
+		this->so = so;
+	}
 };
 
 struct RawMessageSocketClosed : public RawMessageBase
 {
+	UInt64 so;
 	
+	inline void Init(UInt64 so)
+	{
+		RawMessageBase::Init(sizeof(RawMessageSocketClosed), MessageTypeSocketClosed);
+		this->so = so;
+	}
 };
 
 
