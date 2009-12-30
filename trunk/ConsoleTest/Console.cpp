@@ -23,23 +23,41 @@ typedef void* socket_t;
 ServerConnection serverConnection;
 char buffer[8*1024];
 
-int SockAddressToString(const sockaddr* sa, char *buffer, int bufferLen)
+
+void printfSockaddr(const struct sockaddr *sa)
 {
-//	const char *inet_ntop(int af, const void *restrict src,
-//						  char *restrict dst, socklen_t size);
-//	int inet_pton(int af, const char *restrict src, void *restrict dst);
-	if(!sa)
-		return 0;
 	
-	switch(sa->sa_family)
+	printf("sockaddr: ");
+	if(!sa)
 	{
-		case AF_UNSPEC:
-		{
-		}
+		printf("undefined ");
+		return ;
 	}
 	
-	printf("");
-	return 0;
+	printf(" family: %d ", sa->sa_family);
+	char s[255]={0};
+    switch(sa->sa_family) 
+	{
+        case AF_INET:
+		{
+			sockaddr_in *sa_in = (sockaddr_in*)sa;
+            inet_ntop(AF_INET, &sa_in->sin_addr, s, 254);
+			printf("address: %s  port: %d ", s, sa_in->sin_port);
+
+            break;
+		}	
+
+        case AF_INET6:
+		{
+			sockaddr_in6 *sa_in6 =  (sockaddr_in6 *)sa;
+            inet_ntop(AF_INET6, &sa_in6->sin6_addr, s, 254);
+			printf("address: %s  port: %d ", s, sa_in6->sin6_port);
+			
+            break;
+		}	
+        default:
+            printf("Unknown ");
+    }
 }
 
 /*
@@ -178,6 +196,10 @@ int main()
 					}
 					break;
 					
+					
+					//begin debug output
+					
+					//end debug ouput
 					
 				case MessageTypeFirewallClosing:
 					goto close;
