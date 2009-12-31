@@ -2,6 +2,7 @@
 #define WATCH_MESSAGES_TYPE_H
 
 #include <libkern/OSTypes.h>
+//#include <IOKit/IOLib.h>
 #include <string.h>
 
 enum MessagesClass
@@ -111,23 +112,35 @@ struct RawMessageSfltUnregistered : public RawMessageBase
 struct RawMessageSfltAttach : public RawMessageBase		
 {
 	//	static errno_t	Attach(void	**cookie, socket_t so);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
+	UInt16 proto;
 	
-	inline void Init(UInt64 so)
+	inline void Init(UInt32 pid, UInt32 uid, UInt64 so, UInt16 proto)
 	{
 		RawMessageBase::Init(sizeof(RawMessageSfltAttach), MessageTypeSfltAttach);
+
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
+		this->proto = proto;
 	}
 };
 
 struct RawMessageSfltDetach : public RawMessageBase		
 {
 	//	static void		Detach(void	*cookie, socket_t so);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
 	
-	inline void Init(UInt64 so)
+	inline void Init(UInt32 pid, UInt32 uid,UInt64 so)
 	{
 		RawMessageBase::Init(sizeof(RawMessageSfltDetach), MessageTypeSfltDetach);
+
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
 	}
 };
@@ -135,12 +148,17 @@ struct RawMessageSfltDetach : public RawMessageBase
 struct RawMessageSfltNotify : public RawMessageBase		
 {
 	//	static void		Notify(void *cookie, socket_t so, sflt_event_t event, void *param);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
 	UInt16 event;
 	
-	inline void Init(UInt64 so, UInt16 event)
+	inline void Init(UInt32 pid, UInt32 uid, UInt64 so, UInt16 event)
 	{
 		RawMessageBase::Init(sizeof(RawMessageSfltNotify), MessageTypeSfltNotify);
+
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
 		this->event = event;
 	}
@@ -149,12 +167,17 @@ struct RawMessageSfltNotify : public RawMessageBase
 struct RawMessageSfltGetPeerName : public RawMessageBase	
 {
 	//	static int		GetPeerName(void *cookie, socket_t so, sockaddr **sa);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
 	SockAddress sa;
 	
-	inline void Init(UInt16 size, UInt64 so , SockAddress *sa)
+	inline void Init(UInt16 size, UInt32 pid, UInt32 uid, UInt64 so , SockAddress *sa)
 	{
 		RawMessageBase::Init(size, MessageTypeSfltGetPeerName);
+
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
 		if(sa)
 			memcpy(&this->sa, sa, sa->len);
@@ -164,19 +187,24 @@ struct RawMessageSfltGetPeerName : public RawMessageBase
 	
 	inline static UInt16 GetNeededSize(SockAddress *sa)
 	{
-		return sizeof(RawMessageSfltGetPeerName) + (sa) ? (sa->len - sizeof(SockAddress)) : 0; 
+		return sizeof(RawMessageSfltGetPeerName) + (sa ? sa->len - sizeof(SockAddress) : 0); 
 	}
 };
 
 struct RawMessageSfltGetSockName : public RawMessageBase	
 {
 	//	static int		GetSockName(void *cookie, socket_t so, sockaddr **sa);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
 	SockAddress sa;
 	
-	inline void Init(UInt16 size, UInt64 so , SockAddress *sa)
+	inline void Init(UInt16 size, UInt32 pid, UInt32 uid, UInt64 so , SockAddress *sa)
 	{
 		RawMessageBase::Init(size, MessageTypeSfltGetSockName);
+
+ 		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
 		if(sa)
 			memcpy(&this->sa, sa, sa->len);
@@ -186,21 +214,27 @@ struct RawMessageSfltGetSockName : public RawMessageBase
 
 	inline static UInt16 GetNeededSize(SockAddress *sa)
 	{
-		return sizeof(RawMessageSfltGetSockName) + (sa) ? (sa->len - sizeof(SockAddress)) : 0; 
+		return sizeof(RawMessageSfltGetSockName) + (sa ? sa->len - sizeof(SockAddress) : 0); 
 	}
 };
 
 struct RawMessageSfltDataIn : public RawMessageBase		
 {
 	//	static errno_t	DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
+	UInt16 proto;
 	SockAddress from;
 	
-	inline void Init(UInt16 size, UInt64 so, SockAddress *from)
+	inline void Init(UInt16 size, UInt32 pid, UInt32 uid, UInt64 so, UInt16 proto, SockAddress *from)
 	{
 		RawMessageBase::Init(size, MessageTypeSfltDataIn);
 		
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
+		this->proto = proto;
 		if(from)
 			memcpy(&this->from, from, from->len);
 		else 
@@ -209,21 +243,27 @@ struct RawMessageSfltDataIn : public RawMessageBase
 	
 	inline static UInt16 GetNeededSize(SockAddress *sa)
 	{
-		return sizeof(RawMessageSfltDataIn) + (sa) ? (sa->len - sizeof(SockAddress)) : 0; 
+		return sizeof(RawMessageSfltDataIn) + (sa ? sa->len - sizeof(SockAddress) : 0); 
 	}
 };
 
 struct RawMessageSfltDataOut : public RawMessageBase		
 {
 	//	static errno_t	DataOut(void *cookie, socket_t so, const sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
+	UInt16 proto;
 	SockAddress to;
 	
-	inline void Init(UInt16 size, UInt64 so, SockAddress *to)
+	inline void Init(UInt16 size, UInt32 pid, UInt32 uid, UInt64 so, UInt16 proto, SockAddress *to)
 	{
 		RawMessageBase::Init(size, MessageTypeSfltDataOut);
 		
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
+		this->proto = proto;
 		if(to)
 			memcpy(&this->to, to, to->len);
 		else 
@@ -232,20 +272,24 @@ struct RawMessageSfltDataOut : public RawMessageBase
 
 	inline static UInt16 GetNeededSize(SockAddress *sa)
 	{
-		return sizeof(RawMessageSfltDataOut) + (sa) ? (sa->len - sizeof(SockAddress)) : 0; 
+		return sizeof(RawMessageSfltDataOut) + (sa ? sa->len - sizeof(SockAddress) : 0); 
 	}
 };
 
 struct RawMessageSfltConnectIn : public RawMessageBase	
 {
 	//	static errno_t	ConnectIn(void *cookie, socket_t so, const sockaddr *from);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
 	SockAddress from;
 	
-	inline void Init(UInt16 size, UInt64 so, SockAddress *from)
+	inline void Init(UInt16 size, UInt32 pid, UInt32 uid, UInt64 so, SockAddress *from)
 	{
 		RawMessageBase::Init(size, MessageTypeSfltConnectIn);
 		
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
 		if(from)
 			memcpy(&this->from, from, from->len);
@@ -253,22 +297,26 @@ struct RawMessageSfltConnectIn : public RawMessageBase
 			this->from = dummySockAddress;
 	}
 
-	inline static UInt16 GetNeededSize(SockAddress *sa)
+	inline static UInt16 GetNeededSize(SockAddress *from)
 	{
-		return sizeof(RawMessageSfltConnectIn) + (sa) ? (sa->len - sizeof(SockAddress)) : 0; 
+		return sizeof(RawMessageSfltConnectIn) + (from ? from->len - sizeof(SockAddress) : 0); 
 	}
 };
 
 struct RawMessageSfltConnectOut : public RawMessageBase	
 {
 	//	static errno_t	ConnectOut(void *cookie, socket_t so, const sockaddr *to);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
 	SockAddress to;
 	
-	inline void Init(UInt16 size, UInt64 so, SockAddress *to)
+	inline void Init(UInt16 size, UInt32 pid, UInt32 uid, UInt64 so, SockAddress *to)
 	{
 		RawMessageBase::Init(size, MessageTypeSfltConnectOut);
 		
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
 		if(to)
 			memcpy(&this->to, to, to->len);
@@ -276,22 +324,26 @@ struct RawMessageSfltConnectOut : public RawMessageBase
 			this->to = dummySockAddress;
 	}
 
-	inline static UInt16 GetNeededSize(SockAddress *sa)
+	inline static UInt16 GetNeededSize(SockAddress *to)
 	{
-		return sizeof(RawMessageSfltConnectOut) + (sa) ? (sa->len - sizeof(SockAddress)) : 0; 
+		return sizeof(RawMessageSfltConnectOut) + (to ? to->len - sizeof(SockAddress) : 0); 
 	}
 };
 
 struct RawMessageSfltBind : public RawMessageBase			
 {
 	//	static errno_t	Bind(void *cookie, socket_t so, const sockaddr *to);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
 	SockAddress to;
 	
-	inline void Init(UInt16 size, UInt64 so, SockAddress *to)
+	inline void Init(UInt16 size, UInt32 pid, UInt32 uid, UInt64 so, SockAddress *to)
 	{
 		RawMessageBase::Init(size, MessageTypeSfltBind);
 		
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
 		if(to)
 			memcpy(&this->to, to, to->len);
@@ -301,7 +353,7 @@ struct RawMessageSfltBind : public RawMessageBase
 
 	inline static UInt16 GetNeededSize(SockAddress *sa)
 	{
-		return sizeof(RawMessageSfltBind) + (sa) ? (sa->len - sizeof(SockAddress)) : 0; 
+		return sizeof(RawMessageSfltBind) + (sa ? sa->len - sizeof(SockAddress) : 0); 
 	}
 };
 
@@ -309,37 +361,53 @@ struct RawMessageSfltSetOption : public RawMessageBase
 {
 	//	static errno_t	SetOption(void *cookie, socket_t so, sockopt_t opt);
 	
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
-	inline void Init(UInt64 so)
+	UInt32 optionName;
+	inline void Init(UInt32 pid, UInt32 uid, UInt64 so, UInt32 optionName)
 	{
 		RawMessageBase::Init(sizeof(RawMessageSfltSetOption), MessageTypeSfltSetOption);
 		
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
+		this->optionName = optionName;
 	}
 };
 
 struct RawMessageSfltGetOption : public RawMessageBase	
 {
 	//	static errno_t	GetOption(void *cookie, socket_t so, sockopt_t opt);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
+	UInt32 optionName;
 	
-	inline void Init(UInt64 so)
+	inline void Init(UInt32 pid, UInt32 uid, UInt64 so, UInt32 optionName)
 	{
 		RawMessageBase::Init(sizeof(RawMessageSfltGetOption), MessageTypeSfltGetOption);
 		
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
+		this->optionName = optionName;
 	}
 };
 
 struct RawMessageSfltListen : public RawMessageBase		
 {
 	//	static errno_t	Listen(void *cookie, socket_t so);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
 	
-	inline void Init(UInt64 so)
+	inline void Init(UInt32 pid, UInt32 uid, UInt64 so)
 	{
 		RawMessageBase::Init(sizeof(RawMessageSfltListen), MessageTypeSfltListen);
 		
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
 	}
 };
@@ -347,13 +415,17 @@ struct RawMessageSfltListen : public RawMessageBase
 struct RawMessageSfltIoctl : public RawMessageBase		
 {
 	//	static errno_t	Ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 so;
 	UInt32 request;
 	
-	inline void Init(UInt64 so, UInt32 request)
+	inline void Init(UInt32 pid, UInt32 uid, UInt64 so, UInt32 request)
 	{
 		RawMessageBase::Init(sizeof(RawMessageSfltIoctl), MessageTypeSfltIoctl);
 		
+		this->pid = pid;
+		this->uid = uid;
 		this->so = so;
 		this->request = request;
 	}
@@ -362,19 +434,30 @@ struct RawMessageSfltIoctl : public RawMessageBase
 struct RawMessageSfltAccept : public RawMessageBase		
 {
 	//	static errno_t	Accept(void *cookie, socket_t so_listen, socket_t so, const sockaddr *local, const sockaddr *remote);
+	UInt32 pid;
+	UInt32 uid;
 	UInt64 soListen;
 	UInt64 so;
 	
 	UInt8 data[4];//local , remote
 	
-	inline void Init(UInt16 size, UInt64 soListen, UInt64 so, const SockAddress *local, const SockAddress *remote)
+	inline void Init(UInt16 size, UInt32 pid, UInt32 uid, UInt64 soListen, UInt64 so, const SockAddress *local, const SockAddress *remote)
 	{
 		RawMessageBase::Init(size, MessageTypeSfltAccept);
 		
+		this->pid = pid;
+		this->uid = uid;
 		this->soListen = soListen;
 		this->so = so;
 		
 		//TODO: copy sockaddr structs
+		if (!local) 
+			local = &dummySockAddress;
+		memcpy(data, local, local->len);
+		
+		if(!remote)
+			remote = &dummySockAddress;
+		memcpy(data + local->len, remote, remote->len);
 	}
 	
 	inline SockAddress* GetLocal()
@@ -389,7 +472,7 @@ struct RawMessageSfltAccept : public RawMessageBase
 	
 	inline static UInt16 GetNeededSize(SockAddress *local, SockAddress *remote)
 	{
-		return sizeof(RawMessageSfltAccept) + (local ? local->len : 0) + (remote ? remote->len : 0); //-4
+		return sizeof(RawMessageSfltAccept) + (local ? local->len : sizeof(SockAddress)) + (remote ? remote->len : sizeof(SockAddress)) - 4; 
 	}
 };
 

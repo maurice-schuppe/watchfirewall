@@ -10,6 +10,13 @@
 #include <sys/kpi_socket.h>
 #include "firewall.h"
 
+//////////////helper for debug
+
+
+
+
+////////end helper for debug
+
 Firewall firewall;
 
 protocol Firewall::protocols[] =
@@ -86,7 +93,6 @@ Firewall::Unregistered(sflt_handle handle)
 	
 }
 
-
 errno_t	
 Firewall::Attach(void **cookie, socket_t so)
 {
@@ -118,9 +124,11 @@ Firewall::Attach(void **cookie, socket_t so)
 	*cookie = socketCookie;
 	firewall.socketCookies.Add(socketCookie);
 	
-	Message *messsage = Message::CreateTextFromCookie("attach", socketCookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("attach", socketCookie);
+
+	Message *message = Message::CreateSfltAttach(proc_selfpid(), kauth_getuid(), so, socketCookie->sockProtocol);
+	firewall.Send(message);
+	message->Release();
 	
 	
 	return KERN_SUCCESS;
@@ -129,9 +137,11 @@ Firewall::Attach(void **cookie, socket_t so)
 void	
 Firewall::Detach(void *cookie, socket_t so)
 {
-	Message *messsage = Message::CreateTextFromCookie("detach", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("detach", (SocketCookie*)cookie);
+
+	Message *message = Message::CreateSfltDetach(proc_selfpid(), kauth_getuid(), so);
+	firewall.Send(message);
+	message->Release();
 
 	if(cookie)
 	{
@@ -142,19 +152,22 @@ Firewall::Detach(void *cookie, socket_t so)
 void	
 Firewall::Notify(void *cookie, socket_t so, sflt_event_t event, void *param)
 {
-	
-	Message *messsage = Message::CreateTextFromCookie("notify", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("notify", (SocketCookie*)cookie);
+
+	Message *message = Message::CreateSfltNotify(proc_selfpid(), kauth_getuid(), so, event);
+	firewall.Send(message);
+	message->Release();
 	
 }
 
 int		
 Firewall::GetPeerName(void *cookie, socket_t so, struct sockaddr **sa)
 {
-	Message *messsage = Message::CreateTextFromCookie("getpername", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("getpername", (SocketCookie*)cookie);
+
+	Message *message = Message::CreateSfltGetPeerName(proc_selfpid(), kauth_getuid(), so, *sa);
+	firewall.Send(message);
+	message->Release();
 	
 	return KERN_SUCCESS;
 }
@@ -163,9 +176,11 @@ Firewall::GetPeerName(void *cookie, socket_t so, struct sockaddr **sa)
 int		
 Firewall::GetSockName(void *cookie, socket_t so, struct sockaddr **sa)
 {
-	Message *messsage = Message::CreateTextFromCookie("getsockname", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("getsockname", (SocketCookie*)cookie);
+
+	Message* message = Message::CreateSfltGetSockName(proc_selfpid(), kauth_getuid(), so, *sa);
+	firewall.Send(message);
+	message->Release();
 	
 
 	return KERN_SUCCESS;
@@ -175,7 +190,13 @@ Firewall::GetSockName(void *cookie, socket_t so, struct sockaddr **sa)
 errno_t	
 Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
-
+	Message *message = Message::CreateSfltDataIn(proc_selfpid(), kauth_getuid(), so, ((SocketCookie*)cookie)->sockProtocol, from);
+	firewall.Send(message);
+	message->Release();
+	
+	return KERN_SUCCESS;
+	
+	
 	char buffer[30];
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
@@ -190,9 +211,9 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 		//IOLog("sock address: %s", sa);
 	}
 	
-	Message *messsage = Message::CreateTextFromCookie("data in", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("data in", (SocketCookie*)cookie);
+//	firewall.Send(message);
+//	message->Release();
 	
 	return KERN_SUCCESS;
 	
@@ -247,9 +268,11 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 errno_t	
 Firewall::DataOut(void *cookie, socket_t so, const sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
-	Message *messsage = Message::CreateTextFromCookie("data out", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("data out", (SocketCookie*)cookie);
+
+	Message *message = Message::CreateSfltDataOut(proc_selfpid(), kauth_getuid(), so, ((SocketCookie*)cookie)->sockProtocol, to);
+	firewall.Send(message);
+	message->Release();
 	
 	return KERN_SUCCESS;
 }
@@ -261,9 +284,11 @@ Firewall::ConnectIn(void *cookie, socket_t so, const sockaddr *from)
 
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
-	Message *messsage = Message::CreateTextFromCookie("connect in", scookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("connect in", scookie);
+
+	Message *message = Message::CreateSfltConnectIn(proc_selfpid(), kauth_getuid(), so, from);
+	firewall.Send(message);
+	message->Release();
 	
 	return KERN_SUCCESS;
 	
@@ -291,10 +316,11 @@ Firewall::ConnectIn(void *cookie, socket_t so, const sockaddr *from)
 errno_t	
 Firewall::ConnectOut(void *cookie, socket_t so, const sockaddr *to)
 {
-	
-	Message *messsage = Message::CreateTextFromCookie("connect out", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("connect out", (SocketCookie*)cookie);
+
+	Message *message = Message::CreateSfltConnectOut(proc_selfpid(), kauth_getuid(), so, to);
+	firewall.Send(message);
+	message->Release();
 	
 	return KERN_SUCCESS;
 }
@@ -303,10 +329,11 @@ Firewall::ConnectOut(void *cookie, socket_t so, const sockaddr *to)
 errno_t	
 Firewall::Bind(void *cookie, socket_t so, const sockaddr *to)
 {
+//	Message *message = Message::CreateTextFromCookie("bind", (SocketCookie*)cookie);
 
-	Message *messsage = Message::CreateTextFromCookie("bind", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+	Message *message = Message::CreateSfltBind(proc_selfpid(), kauth_getuid(), so, to);
+	firewall.Send(message);
+	message->Release();
 	
 	
 	return KERN_SUCCESS;
@@ -318,10 +345,11 @@ Firewall::Bind(void *cookie, socket_t so, const sockaddr *to)
 errno_t	
 Firewall::SetOption(void *cookie, socket_t so, sockopt_t opt)
 {
+//	Message *message = Message::CreateTextFromCookie("setoption", (SocketCookie*)cookie);
 
-	Message *messsage = Message::CreateTextFromCookie("setoption", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+	Message *message = Message::CreateSfltSetOption(proc_selfpid(), kauth_getuid(), so, opt);
+	firewall.Send(message);
+	message->Release();
 	
 	return KERN_SUCCESS;
 }
@@ -329,9 +357,11 @@ Firewall::SetOption(void *cookie, socket_t so, sockopt_t opt)
 errno_t	
 Firewall::GetOption(void *cookie, socket_t so, sockopt_t opt)
 {
-	Message *messsage = Message::CreateTextFromCookie("getoption", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("getoption", (SocketCookie*)cookie);
+
+	Message *message = Message::CreateSfltGetOption(proc_selfpid(), kauth_getuid(), so, opt);
+	firewall.Send(message);
+	message->Release();
 	
 	return KERN_SUCCESS;
 }
@@ -340,9 +370,11 @@ errno_t
 Firewall::Listen(void *cookie, socket_t so)
 {
 
-	Message *messsage = Message::CreateTextFromCookie("listen", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("listen", (SocketCookie*)cookie);
+	
+	Message *message = Message::CreateSfltListen(proc_selfpid(), kauth_getuid(), so);
+	firewall.Send(message);
+	message->Release();
 	
 	return KERN_SUCCESS;
 	
@@ -354,20 +386,25 @@ errno_t
 Firewall::Ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp)
 {
 
-	Message *messsage = Message::CreateTextFromCookie("ioctl", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
+//	Message *message = Message::CreateTextFromCookie("ioctl", (SocketCookie*)cookie);
 	
+	Message *message = Message::CreateSfltIoctl(proc_selfpid(), kauth_getuid(), so, request, argp);
+	firewall.Send(message);
+	message->Release();
+
 	return KERN_SUCCESS;
 }
 
 errno_t 
 Firewall::Accept(void *cookie, socket_t so_listen, socket_t so, const struct sockaddr *local, const struct sockaddr *remote)
 {
-	Message *messsage = Message::CreateTextFromCookie("accept", (SocketCookie*)cookie);
-	firewall.Send(messsage);
-	messsage->Release();
-	
+//	Message *message = Message::CreateTextFromCookie("accept", (SocketCookie*)cookie);
+
+	//TODO: if firewall enabled
+	Message *message = Message::CreateSfltAccept(proc_selfpid(), kauth_getuid(), so_listen, so, local, remote);
+	firewall.Send(message);
+	message->Release();
+
 	return KERN_SUCCESS;
 	
 	//check if allowed from that remote address
