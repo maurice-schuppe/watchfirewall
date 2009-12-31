@@ -21,24 +21,24 @@ public:
 	static Message* CreateTextFromCookie(const char* message, SocketCookie* cookie);
 	
 	static Message*	CreateSfltUnregistered();//??????
-	static Message*	CreateSfltAttach(socket_t so);
-	static Message*	CreateSfltDetach(socket_t so);
-	static Message*	CreateSfltNotify(socket_t so, UInt16 event);
-	static Message*	CreateSfltGetPeerName(socket_t so, sockaddr *sa);
-	static Message*	CreateSfltGetSockName(socket_t so, sockaddr *sa);
-	static Message*	CreateSfltDataIn(socket_t so, const sockaddr *from);
-	static Message*	CreateSfltDataOut(socket_t so, const sockaddr *to);
-	static Message*	CreateSfltConnectIn(socket_t so, const sockaddr *from);
-	static Message*	CreateSfltConnectOut(socket_t so, const sockaddr *to);
-	static Message*	CreateSfltBind(socket_t so, const sockaddr *to);
-	static Message*	CreateSfltSetOption(socket_t so, sockopt_t opt);
-	static Message*	CreateSfltGetOption(socket_t so, sockopt_t opt);
-	static Message*	CreateSfltListen(socket_t so);
-	static Message*	CreateSfltIoctl(socket_t so, UInt32 request, const char* argp);
-	static Message*	CreateSfltAccept(socket_t so_listen, socket_t so, const sockaddr *local, const sockaddr *remote);
+	static Message*	CreateSfltAttach(pid_t pid, uid_t uid, socket_t so, int proto);
+	static Message*	CreateSfltDetach(pid_t pid, uid_t uid, socket_t so);
+	static Message*	CreateSfltNotify(pid_t pid, uid_t uid, socket_t so, UInt16 event);
+	static Message*	CreateSfltGetPeerName(pid_t pid, uid_t uid, socket_t so, sockaddr *sa);
+	static Message*	CreateSfltGetSockName(pid_t pid, uid_t uid, socket_t so, sockaddr *sa);
+	static Message*	CreateSfltDataIn(pid_t pid, uid_t uid, socket_t so, int proto, const sockaddr *from);
+	static Message*	CreateSfltDataOut(pid_t pid, uid_t uid, socket_t so, int proto, const sockaddr *to);
+	static Message*	CreateSfltConnectIn(pid_t pid, uid_t uid, socket_t so, const sockaddr *from);
+	static Message*	CreateSfltConnectOut(pid_t pid, uid_t uid, socket_t so, const sockaddr *to);
+	static Message*	CreateSfltBind(pid_t pid, uid_t uid, socket_t so, const sockaddr *to);
+	static Message*	CreateSfltSetOption(pid_t pid, uid_t uid, socket_t so, sockopt_t opt);
+	static Message*	CreateSfltGetOption(pid_t pid, uid_t uid, socket_t so, sockopt_t opt);
+	static Message*	CreateSfltListen(pid_t pid, uid_t uid, socket_t so);
+	static Message*	CreateSfltIoctl(pid_t pid, uid_t uid, socket_t so, UInt32 request, const char* argp);
+	static Message*	CreateSfltAccept(pid_t pid, uid_t uid, socket_t so_listen, socket_t so, const sockaddr *local, const sockaddr *remote);
 	
 	
-	static Message* CreateAskRule(char* processName, char* filePath, UInt16 sockDomain, UInt16 sockType, UInt16 sockProtocol, sockaddr* sockAddress, UInt8 direction, pid_t pid, uid_t uid);
+	static Message* CreateRequestRule(char* processName, char* filePath, UInt16 sockDomain, UInt16 sockType, UInt16 sockProtocol, sockaddr* sockAddress, UInt8 direction, pid_t pid, uid_t uid);
 	static Message* CreateRuleAdded(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
 	static Message* CreateRuleDeleted(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
 	static Message* CreateRuleActivated(UInt32 unitId, UInt32 clientMessageId, UInt32 actionState, UInt32 ruleId);
