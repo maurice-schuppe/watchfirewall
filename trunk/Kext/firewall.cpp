@@ -80,7 +80,7 @@ Firewall::UnregisterSocketFilters()
 				protocols[k].state = 0;
 	}
 	
-	IOLog("unregister soket filters \n");
+	//IOLog("unregister soket filters \n");
 	return true;
 }
 
@@ -96,9 +96,6 @@ Firewall::Unregistered(sflt_handle handle)
 errno_t	
 Firewall::Attach(void **cookie, socket_t so)
 {
-	//TODO: test
-	//return ENOMEM;
-
 	if(firewall.closing)
 		return ENOMEM;
 	
@@ -123,13 +120,15 @@ Firewall::Attach(void **cookie, socket_t so)
 	
 	*cookie = socketCookie;
 	firewall.socketCookies.Add(socketCookie);
-	
-//	Message *message = Message::CreateTextFromCookie("attach", socketCookie);
 
-	Message *message = Message::CreateSfltAttach(proc_selfpid(), kauth_getuid(), so, socketCookie->sockProtocol);
-	firewall.Send(message);
-	message->Release();
-	
+#ifdef CLIENT_DEBUG_MESSAGES	
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltAttach(proc_selfpid(), kauth_getuid(), so, socketCookie->sockProtocol);
+		firewall.Send(message);
+		message->Release();
+	}
+#endif CLIENT_DEBUG_MESSAGES	
 	
 	return KERN_SUCCESS;
 }
@@ -137,37 +136,58 @@ Firewall::Attach(void **cookie, socket_t so)
 void	
 Firewall::Detach(void *cookie, socket_t so)
 {
-//	Message *message = Message::CreateTextFromCookie("detach", (SocketCookie*)cookie);
-
-	Message *message = Message::CreateSfltDetach(proc_selfpid(), kauth_getuid(), so);
-	firewall.Send(message);
-	message->Release();
-
 	if(cookie)
 	{
 		firewall.socketCookies.Remove((SocketCookie*)cookie)->Free();
 	}
+
+	if(firewall.closing)
+		return;
+	
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltDetach(proc_selfpid(), kauth_getuid(), so);
+		firewall.Send(message);
+		message->Release();
+	}
+#endif CLIENT_DEBUG_MESSAGES
+	
 }
 
 void	
 Firewall::Notify(void *cookie, socket_t so, sflt_event_t event, void *param)
 {
-//	Message *message = Message::CreateTextFromCookie("notify", (SocketCookie*)cookie);
+	if(firewall.closing)
+		return;
 
-	Message *message = Message::CreateSfltNotify(proc_selfpid(), kauth_getuid(), so, event);
-	firewall.Send(message);
-	message->Release();
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltNotify(proc_selfpid(), kauth_getuid(), so, event);
+		firewall.Send(message);
+		message->Release();
+	}
+#endif CLIENT_DEBUG_MESSAGES
 	
+	//TODO: change socket connection state
 }
 
 int		
 Firewall::GetPeerName(void *cookie, socket_t so, struct sockaddr **sa)
 {
 //	Message *message = Message::CreateTextFromCookie("getpername", (SocketCookie*)cookie);
+	if(firewall.closing)
+		return KERN_SUCCESS;
 
-	Message *message = Message::CreateSfltGetPeerName(proc_selfpid(), kauth_getuid(), so, *sa);
-	firewall.Send(message);
-	message->Release();
+#ifdef CLIENT_DEBUG_MESSAGES	
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltGetPeerName(proc_selfpid(), kauth_getuid(), so, *sa);
+		firewall.Send(message);
+		message->Release();
+	}
+#endif CLIENT_DEBUG_MESSAGES
 	
 	return KERN_SUCCESS;
 }
@@ -177,11 +197,17 @@ int
 Firewall::GetSockName(void *cookie, socket_t so, struct sockaddr **sa)
 {
 //	Message *message = Message::CreateTextFromCookie("getsockname", (SocketCookie*)cookie);
+	if(firewall.closing)
+		return KERN_SUCCESS;
 
-	Message* message = Message::CreateSfltGetSockName(proc_selfpid(), kauth_getuid(), so, *sa);
-	firewall.Send(message);
-	message->Release();
-	
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message* message = Message::CreateSfltGetSockName(proc_selfpid(), kauth_getuid(), so, *sa);
+		firewall.Send(message);
+		message->Release();
+	}	
+#endif CLIENT_DEBUG_MESSAGES
 
 	return KERN_SUCCESS;
 }
@@ -190,32 +216,39 @@ Firewall::GetSockName(void *cookie, socket_t so, struct sockaddr **sa)
 errno_t	
 Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
-	Message *message = Message::CreateSfltDataIn(proc_selfpid(), kauth_getuid(), so, ((SocketCookie*)cookie)->sockProtocol, from);
-	firewall.Send(message);
-	message->Release();
+	if(firewall.closing)
+		return KERN_SUCCESS;
+
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltDataIn(proc_selfpid(), kauth_getuid(), so, ((SocketCookie*)cookie)->sockProtocol, from);
+		firewall.Send(message);
+		message->Release();
+	}
+#endif CLIENT_DEBUG_MESSAGES
 	
 	return KERN_SUCCESS;
 	
 	
-	char buffer[30];
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
 	if(scookie == NULL)
 		return KERN_SUCCESS;
 	
 	//int size = 30;
-	sockaddr *sa = (sockaddr*) &buffer;
-	if(KERN_SUCCESS == sock_getsockname(so, sa, 30))
-	{
-		//print name
-		//IOLog("sock address: %s", sa);
-	}
+//	sockaddr *sa = (sockaddr*) &buffer;
+//	if(KERN_SUCCESS == sock_getsockname(so, sa, 30))
+//	{
+//		//print name
+//		//IOLog("sock address: %s", sa);
+//	}
 	
 //	Message *message = Message::CreateTextFromCookie("data in", (SocketCookie*)cookie);
 //	firewall.Send(message);
 //	message->Release();
 	
-	return KERN_SUCCESS;
+//	return KERN_SUCCESS;
 	
 	//check fo socket changes
 
@@ -250,12 +283,12 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 			//scookie->aks_rule_time = time();//TODO: insert header
 			
 		case SocketCookieStateASK:
-			//cashe requiest
+			scookie->AddDeferredData(1, data, control, flags, from);//TODO: refactor
 			return EJUSTRETURN;
 		case SocketCookieStateALLOWED:
 			return KERN_SUCCESS;
 		case SocketCookieStateNOT_ALLOWED:
-			return KERN_POLICY_LIMIT;//fix return value
+			return KERN_NO_ACCESS;//KERN_POLICY_LIMIT;//fix return value
 		default:
 			break;
 	}
@@ -269,11 +302,18 @@ errno_t
 Firewall::DataOut(void *cookie, socket_t so, const sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags)
 {
 //	Message *message = Message::CreateTextFromCookie("data out", (SocketCookie*)cookie);
-
-	Message *message = Message::CreateSfltDataOut(proc_selfpid(), kauth_getuid(), so, ((SocketCookie*)cookie)->sockProtocol, to);
-	firewall.Send(message);
-	message->Release();
+	if(firewall.closing)
+		return KERN_SUCCESS;
 	
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltDataOut(proc_selfpid(), kauth_getuid(), so, ((SocketCookie*)cookie)->sockProtocol, to);
+		firewall.Send(message);
+		message->Release();
+	}	
+#endif CLIENT_DEBUG_MESSAGES
+
 	return KERN_SUCCESS;
 }
 
@@ -281,20 +321,27 @@ Firewall::DataOut(void *cookie, socket_t so, const sockaddr *to, mbuf_t *data, m
 errno_t	
 Firewall::ConnectIn(void *cookie, socket_t so, const sockaddr *from)
 {
+	if(firewall.closing)
+		return KERN_SUCCESS;
 
 	SocketCookie *scookie = (SocketCookie*)cookie;
 	
 //	Message *message = Message::CreateTextFromCookie("connect in", scookie);
 
-	Message *message = Message::CreateSfltConnectIn(proc_selfpid(), kauth_getuid(), so, from);
-	firewall.Send(message);
-	message->Release();
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltConnectIn(proc_selfpid(), kauth_getuid(), so, from);
+		firewall.Send(message);
+		message->Release();
+	}
+#endif CLIENT_DEBUG_MESSAGES
 	
 	return KERN_SUCCESS;
 	
 	//only for TCP/IP
-	//copy from address
-	scookie->SetFromAddress(from);
+	//copy from address or in 
+	scookie->SetFrom(from);//not is bounded
 
 	if(firewall.firewallUp)
 	{
@@ -318,10 +365,18 @@ Firewall::ConnectOut(void *cookie, socket_t so, const sockaddr *to)
 {
 //	Message *message = Message::CreateTextFromCookie("connect out", (SocketCookie*)cookie);
 
-	Message *message = Message::CreateSfltConnectOut(proc_selfpid(), kauth_getuid(), so, to);
-	firewall.Send(message);
-	message->Release();
-	
+	if(firewall.closing)
+		return KERN_SUCCESS;
+
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltConnectOut(proc_selfpid(), kauth_getuid(), so, to);
+		firewall.Send(message);
+		message->Release();
+	}	
+#endif CLIENT_DEBUG_MESSAGES
+
 	return KERN_SUCCESS;
 }
 
@@ -331,10 +386,17 @@ Firewall::Bind(void *cookie, socket_t so, const sockaddr *to)
 {
 //	Message *message = Message::CreateTextFromCookie("bind", (SocketCookie*)cookie);
 
-	Message *message = Message::CreateSfltBind(proc_selfpid(), kauth_getuid(), so, to);
-	firewall.Send(message);
-	message->Release();
-	
+	if(firewall.closing)
+		return KERN_SUCCESS;
+
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltBind(proc_selfpid(), kauth_getuid(), so, to);
+		firewall.Send(message);
+		message->Release();
+	}
+#endif CLIENT_DEBUG_MESSAGES
 	
 	return KERN_SUCCESS;
 	
@@ -347,10 +409,18 @@ Firewall::SetOption(void *cookie, socket_t so, sockopt_t opt)
 {
 //	Message *message = Message::CreateTextFromCookie("setoption", (SocketCookie*)cookie);
 
-	Message *message = Message::CreateSfltSetOption(proc_selfpid(), kauth_getuid(), so, opt);
-	firewall.Send(message);
-	message->Release();
-	
+	if(firewall.closing)
+		return KERN_SUCCESS;
+
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltSetOption(proc_selfpid(), kauth_getuid(), so, opt);
+		firewall.Send(message);
+		message->Release();
+	}	
+#endif CLIENT_DEBUG_MESSAGES
+
 	return KERN_SUCCESS;
 }
 
@@ -359,10 +429,18 @@ Firewall::GetOption(void *cookie, socket_t so, sockopt_t opt)
 {
 //	Message *message = Message::CreateTextFromCookie("getoption", (SocketCookie*)cookie);
 
-	Message *message = Message::CreateSfltGetOption(proc_selfpid(), kauth_getuid(), so, opt);
-	firewall.Send(message);
-	message->Release();
-	
+	if(firewall.closing)
+		return KERN_SUCCESS;
+
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltGetOption(proc_selfpid(), kauth_getuid(), so, opt);
+		firewall.Send(message);
+		message->Release();
+	}	
+#endif CLIENT_DEBUG_MESSAGES
+
 	return KERN_SUCCESS;
 }
 
@@ -372,10 +450,18 @@ Firewall::Listen(void *cookie, socket_t so)
 
 //	Message *message = Message::CreateTextFromCookie("listen", (SocketCookie*)cookie);
 	
-	Message *message = Message::CreateSfltListen(proc_selfpid(), kauth_getuid(), so);
-	firewall.Send(message);
-	message->Release();
-	
+	if(firewall.closing)
+		return KERN_SUCCESS;
+
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltListen(proc_selfpid(), kauth_getuid(), so);
+		firewall.Send(message);
+		message->Release();
+	}	
+#endif CLIENT_DEBUG_MESSAGES
+
 	return KERN_SUCCESS;
 	
 	//that is for tcp //check is alowed listen
@@ -388,10 +474,18 @@ Firewall::Ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp)
 
 //	Message *message = Message::CreateTextFromCookie("ioctl", (SocketCookie*)cookie);
 	
-	Message *message = Message::CreateSfltIoctl(proc_selfpid(), kauth_getuid(), so, request, argp);
-	firewall.Send(message);
-	message->Release();
+	if(firewall.closing)
+		return KERN_SUCCESS;
 
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltIoctl(proc_selfpid(), kauth_getuid(), so, request, argp);
+		firewall.Send(message);
+		message->Release();
+	}
+#endif CLIENT_DEBUG_MESSAGES
+	
 	return KERN_SUCCESS;
 }
 
@@ -401,10 +495,18 @@ Firewall::Accept(void *cookie, socket_t so_listen, socket_t so, const struct soc
 //	Message *message = Message::CreateTextFromCookie("accept", (SocketCookie*)cookie);
 
 	//TODO: if firewall enabled
-	Message *message = Message::CreateSfltAccept(proc_selfpid(), kauth_getuid(), so_listen, so, local, remote);
-	firewall.Send(message);
-	message->Release();
+	if(firewall.closing)
+		return KERN_SUCCESS;
 
+#ifdef CLIENT_DEBUG_MESSAGES
+	if(firewall.countSubscribersForDebug)
+	{
+		Message *message = Message::CreateSfltAccept(proc_selfpid(), kauth_getuid(), so_listen, so, local, remote);
+		firewall.Send(message);
+		message->Release();
+	}
+#endif CLIENT_DEBUG_MESSAGES
+	
 	return KERN_SUCCESS;
 	
 	//check if allowed from that remote address
@@ -451,26 +553,26 @@ Firewall::Free()
 	IOLog("firewall instance begin destroed \n");
 
 	closing = true;
-
-	IOLog("firewall instance begin destroed socket filters \n");
 	
-	if(!UnregisterSocketFilters())
-		return false;
-	
-	//check for connections
 	if(!UnregisterKernelControl())
 		return false;
 
-	while(socketCookies.Free() == false)
-		IOSleep(1);
+	if(socketCookies.HaveAttachedSockets())
+		return false;
+	
+	if(!UnregisterSocketFilters())
+		return false;
 
 	IOLog("firewall instance begin destroed applications \n");
 	applications.Free();
+	IOSleep(1);
 
 	rules.Free();
-
-	//IOSleep(200);
+	IOSleep(1);
 	
+	if(!socketCookies.Free())
+		return false;
+
 	IOLog("firewall instance destroed \n");
 	
 	return true;
@@ -498,57 +600,46 @@ KcGetSocketOption						/* called when the user process makes the getsockopt call
 bool 
 Firewall::RegisterKernelControl()
 {
-	IOLog("clients %p\n", clients);
-	
 	if(this->lockClientsQueue = IOLockAlloc())
 	{
-	
 		if(!ctl_register(&kernelControlRegistration, &kernelControlReference))
-		{
 			return true;
-		}
 	
 		IOLockFree(this->lockClientsQueue);
 		this->lockClientsQueue = NULL;
 	}
-	
-	IOLog("can't register kernel control");
 	return false;
 }
 
 bool Firewall::UnregisterKernelControl()
 {
-	if(kernelControlReference == NULL)
+	if(lockClientsQueue == NULL)
 		return true;
 
 	Message *message = Message::CreateFirewallClosing();
-	if(!message)
-		return false;
-	
-	int counts = 3;
-	while(clients && counts)
+	if(message)
 	{
-		//if(!counts)
-		//	return false;
-		//Send firewall down
 		Send(message);
-		IOSleep(200);
-		counts--;
+		message->Release();
 	}
 	
-	message->Release();
-
-	IOLockLock(firewall.lockClientsQueue);
+	for (int i = 2; i; i--) 
+	{
+		bool clientsExits = false;
+		IOLockLock(this->lockClientsQueue);
+		clientsExits = this->clients == NULL;
+		IOLockUnlock(this->lockClientsQueue);
+		
+		if(clientsExits)
+			goto deregister;
+		
+		IOSleep(200);
+	}
+	return false;
 	
-	for(Client *cl = clients; cl ; cl = cl->next)
-		cl->ShowSocketStates();
-
-	IOLockUnlock(firewall.lockClientsQueue);
-	
-	if(ctl_deregister(kernelControlReference))	
+deregister:
+	if(kernelControlReference && ctl_deregister(kernelControlReference))	
 		return false;
-	
-	IOLog("unregister kernel control \n");
 	
 	kernelControlReference = NULL;
 	
@@ -556,7 +647,6 @@ bool Firewall::UnregisterKernelControl()
 	{
 		IOLockFree(this->lockClientsQueue);
 		this->lockClientsQueue = NULL;
-		
 	}
 	return true;
 }
@@ -564,7 +654,7 @@ bool Firewall::UnregisterKernelControl()
 void 
 Firewall::Send(Message *message)
 {
-	if(!kernelControlReference || !this->lockClientsQueue)
+	if(!this->lockClientsQueue)
 		return;
 	
 	IOLockLock(this->lockClientsQueue);
@@ -575,32 +665,17 @@ Firewall::Send(Message *message)
 	IOLockUnlock(this->lockClientsQueue);
 }
 
-void 
-Firewall::SendTo(UInt32 unit, Message *message)
-{
-	IOLockLock(this->lockClientsQueue);
-
-	for(Client *curr = this->clients; curr; curr = curr->next)
-		if(curr->unit == unit)
-			curr->Send(message);
-	
-	IOLockUnlock(this->lockClientsQueue);
-}
-
 errno_t 
 Firewall::KcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **unitinfo)
 {
 	if(firewall.closing )
 		return KERN_FAILURE;
 	
-	IOLog("Client joined \n");
-	
 	Client *client = new Client();
 	if(!client) return ENOMEM;
 	
 	if(client->InitWithClient(kctlref, sac->sc_unit) == false)
 	{
-		IOLog("can't create client");
 		delete client;
 		return ENOMEM;
 	}
@@ -610,17 +685,22 @@ Firewall::KcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **uniti
 	client->next = firewall.clients;
 	firewall.clients = client;
 
+#ifdef CLIENT_DEBUG_MESSAGES
+	OSIncrementAtomic(&firewall.countSubscribersForDebug);//TODO: debug
+#endif CLIENT_DEBUG_MESSAGES
+	
 	IOLockUnlock(firewall.lockClientsQueue);
 	
 	*unitinfo = client;
-	IOLog("Client registred \n");
 	return KERN_SUCCESS;
 }
 
 errno_t 
 Firewall::KcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 {
-	IOLog("Client disconnecting \n");
+	Client *client = (Client*)unitinfo;
+	if(client == NULL)
+		return KERN_SUCCESS;
 	
 	IOLockLock(firewall.lockClientsQueue);
 	
@@ -629,7 +709,7 @@ Firewall::KcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 	
 	while(curr)
 	{
-		if(curr->unit == unit && curr->kernelKontrolReference == kctlref)
+		if(curr == client)
 		{
 			if(prev)
 				prev->next = curr->next;
@@ -647,6 +727,11 @@ Firewall::KcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 			if(curr->registredMessageClases & MessageClassInfoSockets)
 				OSDecrementAtomic(&firewall.countSubscribersForInfoSockets);
 
+#ifdef CLIENT_DEBUG_MESSAGES
+			if(curr->registredMessageClases & MessageClassCommon)
+				OSDecrementAtomic(&firewall.countSubscribersForDebug);
+#endif CLIENT_DEBUG_MESSAGES
+
 			curr->Release();
 			break;
 		}
@@ -656,7 +741,7 @@ Firewall::KcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 	}	
 	
 	IOLockUnlock(firewall.lockClientsQueue);
-	IOLog("Client disconected \n");
+	
 	return KERN_SUCCESS;
 }
 
@@ -782,11 +867,15 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 					if(firewall.firewallUp == false)
 					{
 						firewall.firewallUp = true;
-						//send message
 						rawResponce->actionState = 1;
+						firewall.Send(responce);
 						
 					}
-					firewall.Send(responce);
+					else
+					{
+						client->Send(responce);
+					}
+					
 					responce->Release();
 				}
 				break;
@@ -801,9 +890,14 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 					{
 						firewall.firewallUp = false;
 						rawResponce->actionState = 1;
+						firewall.Send(responce);
+						
 					}
-
-					firewall.Send(responce);
+					else
+					{
+						client->Send(responce);
+					}
+					
 					responce->Release();
 				}
 				break;
@@ -882,7 +976,6 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 						OSIncrementAtomic(&firewall.countSubscribersForInfoSockets);
 					else
 						rawResponce->actionState = 1;
-						//((RawMessageRegistredForInfoSocket*) &responce->m)->actionState = 1;
 
 					client->Send(responce);
 					responce->Release();

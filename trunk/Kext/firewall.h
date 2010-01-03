@@ -19,6 +19,8 @@
 #include <IOKit/IOLib.h>
 #include <IOKit/IOLocks.h>
 
+//#define CLIENT_DEBUG_MESSAGES
+
 #include "rule.h"
 #include "cookie.h"
 #include "messages.h"
@@ -40,11 +42,15 @@ struct __attribute__((visibility("hidden"))) Firewall
 public:
 	bool	firewallUp;
 	bool	closing;
-	UInt32	countAttachedSockets;
+	UInt32	countAttachedSockets __attribute__ ((aligned (4)));
 	
-	volatile SInt32 countSubscribersForInfoSockets;
-	volatile SInt32 countSubscribersForInfoRules;
-	volatile SInt32 countSubscribersAsaProviderOfRules;
+	volatile SInt32 countSubscribersForInfoSockets __attribute__ ((aligned (4)));
+	volatile SInt32 countSubscribersForInfoRules __attribute__ ((aligned (4)));
+	volatile SInt32 countSubscribersAsaProviderOfRules __attribute__ ((aligned (4)));
+	
+#ifdef CLIENT_DEBUG_MESSAGES	
+	volatile SInt32 countSubscribersForDebug __attribute__ ((aligned (4)));
+#endif CLIENT_DEBUG_MESSAGES	
 	
 	Rules	rules;
 	Applications applications;
@@ -52,8 +58,6 @@ public:
 	
 public:
 
-	//static Firewall *instance;
-	//void* operator new(size_t size, void* p){/*bzero(p, size);*/ return p;}
 	bool Init();
 	bool Free();
 	
@@ -99,7 +103,6 @@ public:
 	static errno_t KcGetSocketOption(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, int opt, void *data, size_t *len);
 
 	void Send(Message *message);
-	void SendTo(UInt32 unit, Message *message);
 };
 
 extern Firewall firewall;

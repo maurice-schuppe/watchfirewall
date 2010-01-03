@@ -6,20 +6,19 @@
 class __attribute__((visibility("hidden"))) SimpleBase
 {
 public:
-	SInt32 references;
+	SInt32 references  __attribute__ ((aligned (4)));
 	
 public:
 	
 	int Retain() { return OSIncrementAtomic(&references); }
 	int Release() 
 	{
-		if(OSDecrementAtomic(&references) == 1)
-		{
-			Free();
-			return 0;
-		}
+		SInt32 val = OSDecrementAtomic(&references) - 1;
 		
-		return references;
+		if(val == 0)
+			Free();
+		
+		return val;
 	}
 	
 	virtual void Free();	

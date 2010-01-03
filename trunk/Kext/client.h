@@ -28,7 +28,7 @@ public:
 	kern_ctl_ref kernelKontrolReference;
 	UInt32 unit;
 	
-	volatile UInt32 registredMessageClases;
+	volatile UInt32 registredMessageClases __attribute__ ((aligned (4)));
 	
 	volatile SInt32 exitState;
 	IOSimpleLock *lockQueue;
@@ -51,7 +51,7 @@ public:
 	void Send(Message* message);
 	static void SendThread(void* arg);
 	
-	void ShowSocketStates();
+	//void ShowSocketStates();
 
 };
 
