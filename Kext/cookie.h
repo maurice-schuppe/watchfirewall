@@ -29,6 +29,7 @@ public:
 	char socketAddress;
 	
 	inline void *operator new(size_t size, UInt16 additionalSize){ return ::new char[additionalSize + size]; }
+	sockaddr* GetSockAddress(){ return socketAddress ? (sockaddr*)&socketAddress : NULL; }
 
 };
 
@@ -50,8 +51,8 @@ public:
 	
 	Rule *rule;
 	
-	struct sockaddr *fromAddress;
-	struct sockaddr *toAddress;
+	struct sockaddr *from;
+	struct sockaddr *to;
 	
 	SocketCookie *prev;
 	SocketCookie *next;
@@ -83,22 +84,22 @@ public:
 		if(application)
 			application->Release();
 		
-		if(fromAddress)
-			delete fromAddress;
+		if(from)
+			delete from;
 		
-		if(toAddress)
-			delete toAddress;
+		if(to)
+			delete to;
 		
 		delete this;
 		
 	}
 	
-	bool SetFromAddress(const sockaddr *socketAddress);
-	bool SetToAddress(const sockaddr *socketAddress);
+	bool SetFrom(const sockaddr *sa);
+	bool SetTo(const sockaddr *sa);
 	
-	bool AddDeferredData(bool direction, mbuf_t data, mbuf_t control, sflt_data_flag_t flags, sockaddr *socketAddress);
+	bool AddDeferredData(bool direction, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags, const sockaddr *sa);
 	bool ClearDeferredData();
-	bool SendDeferredData(bool isUnboundConnection);
+	bool SendDeferredData();
 	
 	
 };
@@ -110,10 +111,15 @@ public:
 	SocketCookie *socketCookies;
 	static mbuf_tag_id_t mbufTagId;
 	
+	int countAttachedCookies;
+	
 public:
 	SocketCookie * Remove(SocketCookie *cookie)
 	{
 		IOLockLock(lock);
+		countAttachedCookies--;
+		IOLog("countof attached cookies : %d\n", countAttachedCookies);
+		
 		if(cookie->prev)
 			cookie->prev->next = cookie->next;
 		else
@@ -130,6 +136,8 @@ public:
 	void Add(SocketCookie *cookie)
 	{
 		IOLockLock(lock);
+		countAttachedCookies++;
+		IOLog("countof attached cookies : %d\n", countAttachedCookies);
 		cookie->next = socketCookies;
 		socketCookies = cookie;
 		
@@ -141,6 +149,7 @@ public:
 	
 	bool Init()
 	{
+		countAttachedCookies = 0;
 		if(lock == NULL)
 		{
 			IOLog("create socket cookie lock\n");

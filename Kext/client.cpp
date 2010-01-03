@@ -5,42 +5,42 @@
 /*
  * internal structure maintained for each register controller
  */
-struct ctl_cb;
+//struct ctl_cb;
 //struct socket;
 
-struct kctl
-{
-	TAILQ_ENTRY(kctl)		next;					/* controller chain */
-	
-	/* controller information provided when registering */
-	char					name[MAX_KCTL_NAME];	/* unique nke identifier, provided by DTS */
-	u_int32_t				id;
-	u_int32_t				reg_unit;
-	
-	/* misc communication information */
-	u_int32_t				flags;					/* support flags */
-	u_int32_t				recvbufsize;			/* request more than the default buffer size */
-	u_int32_t				sendbufsize;			/* request more than the default buffer size */
-	
-	/* Dispatch functions */
-	ctl_connect_func		connect;				/* Make contact */
-	ctl_disconnect_func		disconnect;				/* Break contact */
-	ctl_send_func			send;					/* Send data to nke */
-	ctl_setopt_func			setopt;					/* set kctl configuration */
-	ctl_getopt_func			getopt;					/* get kctl configuration */
-	
-	TAILQ_HEAD(, ctl_cb)	kcb_head;
-	u_int32_t				lastunit;
-};
-
-struct ctl_cb {
-	TAILQ_ENTRY(ctl_cb)		next;					/* controller chain */
-	lck_mtx_t				*mtx;
-	/*struct*/ socket_t			so;					/* controlling socket */
-	struct kctl				*kctl;					/* back pointer to controller */
-	u_int32_t				unit;
-	void					*userdata;
-};
+//struct kctl
+//{
+//	TAILQ_ENTRY(kctl)		next;					/* controller chain */
+//	
+//	/* controller information provided when registering */
+//	char					name[MAX_KCTL_NAME];	/* unique nke identifier, provided by DTS */
+//	u_int32_t				id;
+//	u_int32_t				reg_unit;
+//	
+//	/* misc communication information */
+//	u_int32_t				flags;					/* support flags */
+//	u_int32_t				recvbufsize;			/* request more than the default buffer size */
+//	u_int32_t				sendbufsize;			/* request more than the default buffer size */
+//	
+//	/* Dispatch functions */
+//	ctl_connect_func		connect;				/* Make contact */
+//	ctl_disconnect_func		disconnect;				/* Break contact */
+//	ctl_send_func			send;					/* Send data to nke */
+//	ctl_setopt_func			setopt;					/* set kctl configuration */
+//	ctl_getopt_func			getopt;					/* get kctl configuration */
+//	
+//	TAILQ_HEAD(, ctl_cb)	kcb_head;
+//	u_int32_t				lastunit;
+//};
+//
+//struct ctl_cb {
+//	TAILQ_ENTRY(ctl_cb)		next;					/* controller chain */
+//	lck_mtx_t				*mtx;
+//	/*struct*/ socket_t			so;					/* controlling socket */
+//	struct kctl				*kctl;					/* back pointer to controller */
+//	u_int32_t				unit;
+//	void					*userdata;
+//};
 
 //#endif /* KERNEL_PRIVATE */
 
@@ -50,8 +50,8 @@ Client::ClearQueue(ClientMessageNode *root)
 	while(root)
 	{
 		ClientMessageNode *curr = root;
-		curr->message->Release();
 		root = root->next;
+		curr->message->Release();
 		delete(curr);
 	}
 }
@@ -59,7 +59,7 @@ Client::ClearQueue(ClientMessageNode *root)
 bool 
 Client::InitWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 {
-	IOLog("client state refernces: %ld; thread: %p; lQueue: %p; lThread: %p; nest: %p \n", this->references, this->thread, this->lockQueue, this->lockWorkThread, this->next);
+	//IOLog("client state refernces: %ld; thread: %p; lQueue: %p; lThread: %p; nest: %p \n", this->references, this->thread, this->lockQueue, this->lockWorkThread, this->next);
 	
 	this->registredMessageClases = MessageClassFirewall | MessageClassCommon;
 	
@@ -72,27 +72,27 @@ Client::InitWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 			
 			if(this->thread = IOCreateThread(Client::SendThread, this))
 			{
-				IOLog("client created \n");
+				//IOLog("client created \n");
 				this->references = 1;
 				return true;
 			}
 			
 			IOLockFree(this->lockWorkThread);
-			IOLog("client can't create thread \n");//TODO: refactor
+			//IOLog("client can't create thread \n");//TODO: refactor
 		}
 		
 		IOSimpleLockFree(this->lockQueue);
-		IOLog("client can't create lock thread \n");//TODO: refactor
+		//IOLog("client can't create lock thread \n");//TODO: refactor
 	}
 	
-	IOLog("client can't create lock client \n");//TODO: refactor
+	//IOLog("client can't create lock client \n");//TODO: refactor
 	return false;
 }
 
 void 
 Client::CloseSignal()
 {
-	IOLog("cliend send close signal\n");
+	//IOLog("cliend send close signal\n");
 	OSIncrementAtomic(&this->exitState);
 	IOLockWakeup(this->lockWorkThread, 0, false);
 }
@@ -100,14 +100,23 @@ Client::CloseSignal()
 void
 Client::Free()
 {
-	//send exit thread
-	IOLog("client begin destroed\n");
-	ClearQueue(this->messageQueueHead);
-	this->messageQueueHead = NULL;
-	this->messageQueueLast = NULL;
+	u_int32_t ui = this->unit;
+ 	//IOLog("client begin destroed %u\n", ui);
 	
 	if(this->lockQueue)
 	{
+		ClientMessageNode * node = NULL;
+
+		IOInterruptState istate = IOSimpleLockLockDisableInterrupt(this->lockQueue);
+		
+		node = this->messageQueueHead;
+		this->messageQueueHead = NULL;
+		this->messageQueueLast = NULL;
+		
+		IOSimpleLockUnlockEnableInterrupt(this->lockQueue, istate);
+		
+		ClearQueue(node);
+		
 		IOSimpleLockFree(this->lockQueue);
 		this->lockQueue = NULL;
 	}
@@ -119,7 +128,7 @@ Client::Free()
 	}
 	
 	SimpleBase::Free();
-	::IOLog("client destored\n");
+	//::IOLog("client destored %u\n", ui);
 }
 
 void 
@@ -178,7 +187,10 @@ Client::SendThread(void* arg)
 		absolutetime_to_nanoseconds( currentTime - lastSendTime, &diff);
 		
 		if(diff < 500000000)//nano seconds
-			IOSleep(500);
+			IOSleep((500000000 - diff)/1000000);
+		
+		if(client->exitState)
+			goto exitAndClearQueue;
 		
 		IOInterruptState istate = IOSimpleLockLockDisableInterrupt(client->lockQueue);
 
@@ -245,6 +257,7 @@ exitAndClearQueue:
 	ClearQueue(node);
 exit:
 	IOLockUnlock(client->lockWorkThread);
+	//IOLog("exit send thread unit: %lu\n", client->unit);
 	client->Release();
 
 	IOExitThread();
@@ -253,23 +266,16 @@ exit:
 bool 
 Client::RegisterMessageClasses(UInt16 classes)
 {
-	if(this->registredMessageClases & classes == classes)
-		return false;
-	
-	OSBitOrAtomic(classes, &this->registredMessageClases);
-	return true;
+	return (OSBitOrAtomic(classes, &this->registredMessageClases) & classes) == classes;
 }
 
 bool 
 Client::UnregisterMessageClasses(UInt16 classes)
 {
-	if(this->registredMessageClases & classes == 0)
-		return false;
-
-	OSBitOrAtomic(~classes, &this->registredMessageClases);
-	return true;
+	return (OSBitOrAtomic(~classes, &this->registredMessageClases) & classes) == 0;
 }	
 
+/*
 void
 Client::ShowSocketStates()
 {
@@ -313,6 +319,7 @@ Client::ShowSocketStates()
 		//kc->disconnect(kc, kc->reg_unit, this);
 	}
 }
+ */
 
 
 

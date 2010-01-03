@@ -24,6 +24,9 @@ typedef void* socket_t;
 
 ServerConnection serverConnection;
 char buffer[8*1024];
+pthread_mutex_t closeMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t closeCond = PTHREAD_COND_INITIALIZER;
+bool userClosed = false;
 
 
 const char* getSockIoctlRequestName(uint32_t option)
@@ -244,292 +247,307 @@ void printfSockaddr(const struct sockaddr *sa)
  */
 static void SignalHandler(int sigraised)
 {
+	userClosed = true;
 	serverConnection.Close();
-    _exit(0);
+    //_exit(0);
+}
+
+static void CloseHandle(const ServerConnection *conn)
+{
+	printf("close handle invoked\n");
+	pthread_cond_broadcast(&closeCond);
+}
+
+static void ReciveMessageHandler(const RawMessageBase *message)
+{
+	if(!message) return;
+		
+	switch (message->type) 
+	{
+		case MessageTypeText:
+		{
+			RawMessageText* messageText = (RawMessageText*)message;
+			printf("%s \n", messageText->textBuffer);
+		}
+			break;
+			
+		case MessageTypeRequestRule:
+		{
+			RawMessageRequestRule* messageRequestRule = (RawMessageRequestRule*)message;
+		}
+			break;
+			
+		case MessageTypeRuleAdded:
+		{
+			RawMessageRuleAdded* messageRuleAdded = (RawMessageRuleAdded*)message;
+		}
+			break;
+			
+		case MessageTypeRuleDeleted:
+		{
+			RawMessageRuleDeleted* messageRuleDeleted = (RawMessageRuleDeleted*)message;
+		}
+			break;
+			
+		case MessageTypeRuleDeactivated:
+		{
+			RawMessageRuleDeactivated* messageRuleDeactivated = (RawMessageRuleDeactivated*)message;
+		}
+			break;
+			
+		case MessageTypeRuleActivated:
+		{
+			RawMessageRuleActivated* messageRuleActivated = (RawMessageRuleActivated*)message;
+		}
+			break;
+			
+		case MessageTypeSocketData:
+		{
+			RawMessageSocketData* messageSocketData = (RawMessageSocketData*)message;
+		}
+			break;
+			
+		case MessageTypeSocketOpen:
+		{
+			RawMessageSocketOpen* messageSocketOpen = (RawMessageSocketOpen*)message;
+		}
+			break;
+			
+		case MessageTypeSocketClosed:
+		{
+			RawMessageSocketClosed* messageSocketClosed = (RawMessageSocketClosed*)message;
+		}
+			break;
+			
+		case MessageTypeFirewallActivated:
+		{
+			RawMessageFirewallActivated* messageFirewallActivated = (RawMessageFirewallActivated*)message;
+		}
+			break;
+			
+		case MessageTypeFirewallDeactivated:
+		{
+			RawMessageFirewallDeactivated* messageFirewallDeactivated = (RawMessageFirewallDeactivated*)message;
+		}
+			break;
+			
+			
+		case MessageTypeClientSubscribedAsaProviderOfRules:
+		{
+			RawMessageClientSubscribedAsaProviderOfRules* messageRegistredForAsk = (RawMessageClientSubscribedAsaProviderOfRules*)message;
+		}
+			break;
+			
+		case MessageTypeClientUnsubscribedAsaProviderOfRules:
+		{
+			RawMessageClientUnsubscribedAsaProviderOfRules* messageUnregistredAsk = (RawMessageClientUnsubscribedAsaProviderOfRules*)message;
+		}
+			break;
+			
+		case MessageTypeClientSubscribedToInfoRules:
+		{
+			RawMessageClientSubscribedToInfoRules* messageRegistredForInfoRule = (RawMessageClientSubscribedToInfoRules*)message;
+		}
+			break;
+			
+		case MessageTypeClientUnsubscribedFromInfoRules:
+		{
+			RawMessageClientUnsubscribedFromInfoRules* messageUnregistredInfoRule = (RawMessageClientUnsubscribedFromInfoRules*)message;
+		}
+			break;
+			
+		case MessageTypeClientSubscribedToInfoSockets:
+		{
+			RawMessageClientSubscribedToInfoSockets* messageRegistredForInfoSocket = (RawMessageClientSubscribedToInfoSockets*)message;
+			printf("client registred for info rule: %s", messageRegistredForInfoSocket->actionState ? "success" : "error");
+		}
+			break;
+			
+		case MessageTypeClientUnsubscribedFromInfoSockets:
+		{
+			RawMessageClientUnsubscribedFromInfoSockets* messageUnregistredInfoSocket = (RawMessageClientUnsubscribedFromInfoSockets*)message;
+		}
+			break;
+			
+			
+			//begin debug output
+		case MessageTypeSfltAttach:
+		{
+			RawMessageSfltAttach *rawMessage = (RawMessageSfltAttach*)message;
+			
+			printf("attach       -> pid: %-4lu  uid: %-4lu so: %-12llu  proto: %4u\n",rawMessage->pid, rawMessage->uid, rawMessage->so, rawMessage->proto);
+		}
+			break;
+		case MessageTypeSfltDetach:
+		{
+			RawMessageSfltDetach *rawMessage = (RawMessageSfltDetach*)message;
+			
+			printf("deatch       -> pid: %-4lu  uid: %-4lu so: %-12llu\n",rawMessage->pid, rawMessage->uid, rawMessage->so);
+		}
+			break;
+			
+		case MessageTypeSfltNotify:
+		{
+			RawMessageSfltNotify *rawMessage = (RawMessageSfltNotify*)message;
+			
+			printf("notify       -> pid: %-4lu  uid: %-4lu so: %-12llu  event: %u(%s)\n",rawMessage->pid, rawMessage->uid, rawMessage->so, rawMessage->event, getSockStateName(rawMessage->event));
+		}
+			break;
+			
+		case MessageTypeSfltGetPeerName:
+		{
+			RawMessageSfltGetPeerName *rawMessage = (RawMessageSfltGetPeerName*)message;
+			
+			printf("get peer name-> pid: %-4lu  uid: %-4lu so: %-12llu  sa: ",rawMessage->pid, rawMessage->uid, rawMessage->so);
+			printfSockaddr((sockaddr*)&rawMessage->sa);
+			printf("\n");
+		}
+			break;
+			
+		case MessageTypeSfltGetSockName:
+		{
+			RawMessageSfltGetSockName *rawMessage = (RawMessageSfltGetSockName*)message;
+			
+			printf("get sock name-> pid: %-4lu  uid: %-4lu so: %-12llu  sa: ",rawMessage->pid, rawMessage->uid, rawMessage->so);
+			printfSockaddr((sockaddr*)&rawMessage->sa);
+			printf("\n");
+		}
+			break;
+			
+		case MessageTypeSfltDataIn:
+		{
+			RawMessageSfltDataIn *rawMessage = (RawMessageSfltDataIn*)message;
+			
+			printf("data in      -> pid: %-4lu  uid: %-4lu so: %-12llu  proto: %4u  from: ",rawMessage->pid, rawMessage->uid, rawMessage->so, rawMessage->proto);
+			printfSockaddr((sockaddr*)&rawMessage->from);
+			printf("\n");
+		}
+			break;
+			
+		case MessageTypeSfltDataOut:
+		{
+			RawMessageSfltDataOut *rawMessage = (RawMessageSfltDataOut*)message;
+			
+			printf("data out     -> pid: %-4lu  uid: %-4lu so: %-12llu  proto: %4u  to  : ",rawMessage->pid, rawMessage->uid, rawMessage->so, rawMessage->proto);
+			printfSockaddr((sockaddr*)&rawMessage->to);
+			printf("\n");
+		}
+			break;
+			
+		case MessageTypeSfltConnectIn:
+		{
+			RawMessageSfltConnectIn *rawMessage = (RawMessageSfltConnectIn*)message;
+			
+			printf("connect in   -> pid: %-4lu  uid: %-4lu so: %-12llu  from: ",rawMessage->pid, rawMessage->uid, rawMessage->so);
+			printfSockaddr((sockaddr*)&rawMessage->from);
+			printf("\n");
+		}
+			break;
+			
+		case MessageTypeSfltConnectOut:
+		{
+			RawMessageSfltConnectOut *rawMessage = (RawMessageSfltConnectOut*)message;
+			
+			printf("connect out  -> pid: %-4lu  uid: %-4lu so: %-12llu  to: ",rawMessage->pid, rawMessage->uid, rawMessage->so);
+			printfSockaddr((sockaddr*)&rawMessage->to);
+			printf("\n");
+		}
+			break;
+			
+		case MessageTypeSfltBind:
+		{
+			RawMessageSfltBind *rawMessage = (RawMessageSfltBind*)message;
+			
+			printf("bind         -> pid: %-4lu  uid: %-4lu so: %-12llu  to: ",rawMessage->pid, rawMessage->uid, rawMessage->so);
+			printfSockaddr((sockaddr*)&rawMessage->to);
+			printf("\n");
+		}
+			break;
+			
+		case MessageTypeSfltSetOption:
+		{
+			RawMessageSfltSetOption *rawMessage = (RawMessageSfltSetOption*)message;
+			
+			printf("set option   -> pid: %-4lu  uid: %-4lu so: %-12llu  opt: Ox%04x(%s) \n",rawMessage->pid, rawMessage->uid, rawMessage->so, (unsigned)rawMessage->optionName, getOptionName(rawMessage->optionName));
+		}
+			break;
+			
+		case MessageTypeSfltGetOption:
+		{
+			RawMessageSfltGetOption *rawMessage = (RawMessageSfltGetOption*)message;
+			
+			printf("get option   -> pid: %-4lu  uid: %-4lu so: %-12llu  opt: 0x%04x(%s) \n",rawMessage->pid, rawMessage->uid, rawMessage->so, (unsigned)rawMessage->optionName, getOptionName(rawMessage->optionName));
+		}
+			break;
+			
+		case MessageTypeSfltListen:
+		{
+			RawMessageSfltListen *rawMessage = (RawMessageSfltListen*)message;
+			
+			printf("listen       -> pid: %-4lu  uid: %-4lu so: %-12llu \n",rawMessage->pid, rawMessage->uid, rawMessage->so);
+		}
+			break;
+			
+		case MessageTypeSfltIoctl:
+		{
+			RawMessageSfltIoctl *rawMessage = (RawMessageSfltIoctl*)message;
+			printf("ioctl        -> pid: %-4lu  uid: %-4lu so: %-12llu \n",rawMessage->pid, rawMessage->uid, rawMessage->so);
+		}
+			break;
+			
+		case MessageTypeSfltAccept:
+		{
+			RawMessageSfltAccept *rawMessage = (RawMessageSfltAccept*)message;
+			
+			printf("accept       -> pid: %-4lu  uid: %-4lu so: %-12llu  soListen: %llu  local: ",rawMessage->pid, rawMessage->uid, rawMessage->so, rawMessage->soListen);
+			printfSockaddr((sockaddr*)rawMessage->GetLocal());
+			printf("remote: ");
+			printfSockaddr((sockaddr*)rawMessage->GetRemote());
+			printf("\n");
+		}
+			break;
+			//end debug ouput
+			
+		case MessageTypeFirewallClosing:
+			printf("Connection Closing \n");
+			break;
+		default:
+			break;
+	}
+	
 }
 
 int main()
 {	
 	sig_t oldHandler = signal(SIGINT, SignalHandler);
     if (oldHandler == SIG_ERR)
-        printf("Could not establish new signal handler \n");
+        printf("Could not establish new signal handler SIGINT\n");
 
-	serverConnection.Open();
-
-	int n;
-	while ((n = recv(serverConnection.gSocket, buffer, 8 * 1024 , 0)) != 0)
-	{
-		if(n == -1)
-		{
-			printf("error recieve data \n");
-			break;
-		}
-			
-		for(int k = 0; k < n;  )
-		{
-			RawMessageBase *message = (RawMessageBase*)(buffer + k);
-			
-			switch (message->type) {
-				case MessageTypeText:
-					{
-						RawMessageText* messageText = (RawMessageText*)message;
-						printf("%s \n", messageText->textBuffer);
-					}
-					break;
-
-				case MessageTypeRequestRule:
-					{
-						RawMessageRequestRule* messageRequestRule = (RawMessageRequestRule*)message;
-					}
-					break;
-					
-				case MessageTypeRuleAdded:
-					{
-						RawMessageRuleAdded* messageRuleAdded = (RawMessageRuleAdded*)message;
-					}
-					break;
-					
-				case MessageTypeRuleDeleted:
-					{
-						RawMessageRuleDeleted* messageRuleDeleted = (RawMessageRuleDeleted*)message;
-					}
-					break;
-					
-				case MessageTypeRuleDeactivated:
-					{
-						RawMessageRuleDeactivated* messageRuleDeactivated = (RawMessageRuleDeactivated*)message;
-					}
-					break;
-					
-				case MessageTypeRuleActivated:
-					{
-						RawMessageRuleActivated* messageRuleActivated = (RawMessageRuleActivated*)message;
-					}
-					break;
-					
-				case MessageTypeSocketData:
-					{
-						RawMessageSocketData* messageSocketData = (RawMessageSocketData*)message;
-					}
-					break;
-					
-				case MessageTypeSocketOpen:
-					{
-						RawMessageSocketOpen* messageSocketOpen = (RawMessageSocketOpen*)message;
-					}
-					break;
-					
-				case MessageTypeSocketClosed:
-					{
-						RawMessageSocketClosed* messageSocketClosed = (RawMessageSocketClosed*)message;
-					}
-					break;
-					
-				case MessageTypeFirewallActivated:
-					{
-						RawMessageFirewallActivated* messageFirewallActivated = (RawMessageFirewallActivated*)message;
-					}
-					break;
-					
-				case MessageTypeFirewallDeactivated:
-					{
-						RawMessageFirewallDeactivated* messageFirewallDeactivated = (RawMessageFirewallDeactivated*)message;
-					}
-					break;
-					
-					
-				case MessageTypeClientSubscribedAsaProviderOfRules:
-					{
-						RawMessageClientSubscribedAsaProviderOfRules* messageRegistredForAsk = (RawMessageClientSubscribedAsaProviderOfRules*)message;
-					}
-					break;
-					
-				case MessageTypeClientUnsubscribedAsaProviderOfRules:
-					{
-						RawMessageClientUnsubscribedAsaProviderOfRules* messageUnregistredAsk = (RawMessageClientUnsubscribedAsaProviderOfRules*)message;
-					}
-					break;
-					
-				case MessageTypeClientSubscribedToInfoRules:
-					{
-						RawMessageClientSubscribedToInfoRules* messageRegistredForInfoRule = (RawMessageClientSubscribedToInfoRules*)message;
-					}
-					break;
-					
-				case MessageTypeClientUnsubscribedFromInfoRules:
-					{
-						RawMessageClientUnsubscribedFromInfoRules* messageUnregistredInfoRule = (RawMessageClientUnsubscribedFromInfoRules*)message;
-					}
-					break;
-					
-				case MessageTypeClientSubscribedToInfoSockets:
-					{
-						RawMessageClientSubscribedToInfoSockets* messageRegistredForInfoSocket = (RawMessageClientSubscribedToInfoSockets*)message;
-						printf("client registred for info rule: %s", messageRegistredForInfoSocket->actionState ? "success" : "error");
-					}
-					break;
-					
-				case MessageTypeClientUnsubscribedFromInfoSockets:
-					{
-						RawMessageClientUnsubscribedFromInfoSockets* messageUnregistredInfoSocket = (RawMessageClientUnsubscribedFromInfoSockets*)message;
-					}
-					break;
-					
-					
-					//begin debug output
-				case MessageTypeSfltAttach:
-					{
-						RawMessageSfltAttach *rawMessage = (RawMessageSfltAttach*)message;
-						
-						printf("attach       -> pid: %-4lu  uid: %-4lu so: %-12llu  proto: %4u\n",rawMessage->pid, rawMessage->uid, rawMessage->so, rawMessage->proto);
-					}
-					break;
-				case MessageTypeSfltDetach:
-					{
-						RawMessageSfltDetach *rawMessage = (RawMessageSfltDetach*)message;
-						
-						printf("deatch       -> pid: %-4lu  uid: %-4lu so: %-12llu\n",rawMessage->pid, rawMessage->uid, rawMessage->so);
-					}
-					break;
-					
-				case MessageTypeSfltNotify:
-					{
-						RawMessageSfltNotify *rawMessage = (RawMessageSfltNotify*)message;
-						
-						printf("notify       -> pid: %-4lu  uid: %-4lu so: %-12llu  event: %u(%s)\n",rawMessage->pid, rawMessage->uid, rawMessage->so, rawMessage->event, getSockStateName(rawMessage->event));
-					}
-					break;
-					
-				case MessageTypeSfltGetPeerName:
-					{
-						RawMessageSfltGetPeerName *rawMessage = (RawMessageSfltGetPeerName*)message;
-
-						printf("get peer name-> pid: %-4lu  uid: %-4lu so: %-12llu  sa: ",rawMessage->pid, rawMessage->uid, rawMessage->so);
-						printfSockaddr((sockaddr*)&rawMessage->sa);
-						printf("\n");
-					}
-					break;
-					
-				case MessageTypeSfltGetSockName:
-					{
-						RawMessageSfltGetSockName *rawMessage = (RawMessageSfltGetSockName*)message;
-
-						printf("get sock name-> pid: %-4lu  uid: %-4lu so: %-12llu  sa: ",rawMessage->pid, rawMessage->uid, rawMessage->so);
-						printfSockaddr((sockaddr*)&rawMessage->sa);
-						printf("\n");
-					}
-					break;
-					
-				case MessageTypeSfltDataIn:
-					{
-						RawMessageSfltDataIn *rawMessage = (RawMessageSfltDataIn*)message;
-						
-						printf("data in      -> pid: %-4lu  uid: %-4lu so: %-12llu  proto: %4u  from: ",rawMessage->pid, rawMessage->uid, rawMessage->so, rawMessage->proto);
-						printfSockaddr((sockaddr*)&rawMessage->from);
-						printf("\n");
-					}
-					break;
-					
-				case MessageTypeSfltDataOut:
-					{
-						RawMessageSfltDataOut *rawMessage = (RawMessageSfltDataOut*)message;
-						
-						printf("data out     -> pid: %-4lu  uid: %-4lu so: %-12llu  proto: %4u  to  : ",rawMessage->pid, rawMessage->uid, rawMessage->so, rawMessage->proto);
-						printfSockaddr((sockaddr*)&rawMessage->to);
-						printf("\n");
-					}
-					break;
-					
-				case MessageTypeSfltConnectIn:
-					{
-						RawMessageSfltConnectIn *rawMessage = (RawMessageSfltConnectIn*)message;
-						
-						printf("connect in   -> pid: %-4lu  uid: %-4lu so: %-12llu  from: ",rawMessage->pid, rawMessage->uid, rawMessage->so);
-						printfSockaddr((sockaddr*)&rawMessage->from);
-						printf("\n");
-					}
-					break;
-					
-				case MessageTypeSfltConnectOut:
-					{
-						RawMessageSfltConnectOut *rawMessage = (RawMessageSfltConnectOut*)message;
-
-						printf("connect out  -> pid: %-4lu  uid: %-4lu so: %-12llu  to: ",rawMessage->pid, rawMessage->uid, rawMessage->so);
-						printfSockaddr((sockaddr*)&rawMessage->to);
-						printf("\n");
-					}
-					break;
-					
-				case MessageTypeSfltBind:
-					{
-						RawMessageSfltBind *rawMessage = (RawMessageSfltBind*)message;
-
-						printf("bind         -> pid: %-4lu  uid: %-4lu so: %-12llu  to: ",rawMessage->pid, rawMessage->uid, rawMessage->so);
-						printfSockaddr((sockaddr*)&rawMessage->to);
-						printf("\n");
-					}
-					break;
-					
-				case MessageTypeSfltSetOption:
-					{
-						RawMessageSfltSetOption *rawMessage = (RawMessageSfltSetOption*)message;
-					
-						printf("set option   -> pid: %-4lu  uid: %-4lu so: %-12llu  opt: Ox%04x(%s) \n",rawMessage->pid, rawMessage->uid, rawMessage->so, (unsigned)rawMessage->optionName, getOptionName(rawMessage->optionName));
-					}
-					break;
-					
-				case MessageTypeSfltGetOption:
-					{
-						RawMessageSfltGetOption *rawMessage = (RawMessageSfltGetOption*)message;
-
-						printf("get option   -> pid: %-4lu  uid: %-4lu so: %-12llu  opt: 0x%04x(%s) \n",rawMessage->pid, rawMessage->uid, rawMessage->so, (unsigned)rawMessage->optionName, getOptionName(rawMessage->optionName));
-					}
-					break;
-					
-				case MessageTypeSfltListen	:
-					{
-						RawMessageSfltListen *rawMessage = (RawMessageSfltListen*)message;
-
-						printf("listen       -> pid: %-4lu  uid: %-4lu so: %-12llu \n",rawMessage->pid, rawMessage->uid, rawMessage->so);
-					}
-					break;
-					
-				case MessageTypeSfltIoctl	:
-					{
-						RawMessageSfltIoctl *rawMessage = (RawMessageSfltIoctl*)message;
-						printf("ioctl        -> pid: %-4lu  uid: %-4lu so: %-12llu \n",rawMessage->pid, rawMessage->uid, rawMessage->so);
-					}
-					break;
-					
-				case MessageTypeSfltAccept	:
-					{
-						RawMessageSfltAccept *rawMessage = (RawMessageSfltAccept*)message;
-						
-						printf("accept       -> pid: %-4lu  uid: %-4lu so: %-12llu  soListen: %llu  local: ",rawMessage->pid, rawMessage->uid, rawMessage->so, rawMessage->soListen);
-						printfSockaddr((sockaddr*)rawMessage->GetLocal());
-						printf("remote: ");
-						printfSockaddr((sockaddr*)rawMessage->GetRemote());
-						printf("\n");
-					}
-					break;
-					//end debug ouput
-					
-				case MessageTypeFirewallClosing:
-					goto close;
-				default:
-					break;
-			}
-			k += message->size;
-		}
-	}
-
-close:;
-	serverConnection.Close();
-	printf("Connection Closed \n");
+	oldHandler = signal(SIGTSTP, SignalHandler);
+    if (oldHandler == SIG_ERR)
+        printf("Could not establish new signal handler SIGSTP\n");
 	
-	int a;
-	scanf("%d",&a);
-
+	
+	while(1)
+	{
+		if(serverConnection.Open(&ReciveMessageHandler, &CloseHandle))
+		{
+			printf("connection opened\n");
+			pthread_mutex_lock(&closeMutex);
+			pthread_cond_wait(&closeCond, &closeMutex);
+			
+			pthread_mutex_unlock(&closeMutex);
+			printf("Connection Closed \n");
+			
+			if(userClosed)
+				break;
+		}
+		
+		sleep(1);
+	}
+	
+	pthread_cond_destroy(&closeCond);
+	pthread_mutex_destroy(&closeMutex);
 	
 	return 0;
 }

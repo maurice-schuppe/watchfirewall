@@ -21,53 +21,56 @@ SocketCookie::IsValid()
 }
 
 bool 
-SocketCookie::SetFromAddress(const sockaddr *socketAddress)
+SocketCookie::SetFrom(const sockaddr *sa)
 {
-	if(this->fromAddress)
+	if(this->from)
 	{
-		delete this->fromAddress;
-		this->fromAddress = NULL;
+		delete this->from;
+		this->from = NULL;
 	}
 	
-	this->fromAddress = (sockaddr*)new UInt8[socketAddress->sa_len];
-	if(this->fromAddress == NULL)
+	this->from = (sockaddr*)new UInt8[sa->sa_len];
+	if(this->from == NULL)
 		return false;
 	
-	memcpy(this->fromAddress, socketAddress, socketAddress->sa_len);
+	memcpy(this->from, sa, sa->sa_len);
 	
 	return true;
 }
 
 bool 
-SocketCookie::SetToAddress(const sockaddr *socketAddress)
+SocketCookie::SetTo(const sockaddr *sa)
 {
-	if(this->toAddress)
+	if(this->to)
 	{
-		delete this->toAddress;
-		this->toAddress = NULL;
+		delete this->to;
+		this->to = NULL;
 	}
 	
-	this->toAddress = (sockaddr*)new UInt8[socketAddress->sa_len];
-	if(this->toAddress == NULL)
+	this->to = (sockaddr*)new UInt8[sa->sa_len];
+	if(this->to == NULL)
 		return false;
 	
-	memcpy(this->toAddress, socketAddress, socketAddress->sa_len);
+	memcpy(this->to, sa, sa->sa_len);
 	
 	return true;
 }
 
 
 bool 
-SocketCookie::AddDeferredData(bool direction, mbuf_t data, mbuf_t control, sflt_data_flag_t flags, sockaddr *socketAddress)
+SocketCookie::AddDeferredData(bool direction, mbuf_t* data, mbuf_t* control, sflt_data_flag_t flags, const sockaddr *socketAddress)
 {
 	DeferredData *deferredData = new(socketAddress->sa_len) DeferredData;
 	if(deferredData)
 	{
-		deferredData->data = data;
-		deferredData->control = control;
+		deferredData->data = data ? *data : NULL;
+		deferredData->control = control ? *control : NULL;
 		deferredData->flags = flags;
-		//TODO: by size
-		memcpy(&deferredData->socketAddress, socketAddress, socketAddress->sa_len);
+		
+		if(socketAddress)
+			memcpy(&deferredData->socketAddress, socketAddress, socketAddress->sa_len);
+		else
+			deferredData->socketAddress = 0;
 		
 		if(deferredDataLast)
 		{
@@ -103,19 +106,13 @@ SocketCookie::ClearDeferredData()
 }
 
 bool 
-SocketCookie::SendDeferredData(bool isUnboundConnection)
+SocketCookie::SendDeferredData()
 {
 	while (deferredDataHead) 
 	{
-		sockaddr *sockAddress = NULL;
-		if(isUnboundConnection)
-			sockAddress = (sockaddr*)&deferredDataHead->socketAddress;
-		
-		
 		if(deferredDataHead->direction)
 		{
-			//TODO: socket address if tcp/ip
-			if(sock_inject_data_in(socket, sockAddress, deferredDataHead->data, deferredDataHead->control, deferredDataHead->flags))
+			if(sock_inject_data_in(socket, deferredDataHead->GetSockAddress(), deferredDataHead->data, deferredDataHead->control, deferredDataHead->flags))
 			{
 				mbuf_freem(deferredDataHead->data);
 				mbuf_freem(deferredDataHead->control);
@@ -123,7 +120,7 @@ SocketCookie::SendDeferredData(bool isUnboundConnection)
 		}
 		else
 		{
-			sock_inject_data_out(socket, sockAddress, deferredDataHead->data, deferredDataHead->control, deferredDataHead->flags);
+			sock_inject_data_out(socket, deferredDataHead->GetSockAddress(), deferredDataHead->data, deferredDataHead->control, deferredDataHead->flags);
 		}
 		
 		DeferredData *old = deferredDataHead;
