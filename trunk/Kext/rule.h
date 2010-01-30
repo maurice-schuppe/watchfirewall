@@ -15,7 +15,8 @@
 enum RuleState 
 {
 	RuleStateActive = 1,
-	RuleStateDeleted = 2
+	RuleStateInactive = 2,
+	RuleStateDeleted = 3
 };
 
 class __attribute__((visibility("hidden"))) Rule: public SimpleBase
@@ -24,6 +25,8 @@ class __attribute__((visibility("hidden"))) Rule: public SimpleBase
 	
 	OSString *processName;
 	OSString *filePath;
+	
+	//file extended data
 	
 	UInt16 sockDomain;//0 for all
 	UInt16 sockType;//0 for all
@@ -113,9 +116,9 @@ public:
 	
 	
 	int AddRule(RawMessageAddRule *messageRule, Rule** rule);
-	int DeleteRule(UInt32 ruleId, Rule** rule);
-	int ActivateRule(UInt32 ruleId, Rule** rule);
-	int DeactivateRule(UInt32 ruleId, Rule** rule);
+	int DeleteRule(UInt32 ruleId);
+	int ActivateRule(UInt32 ruleId);
+	int DeactivateRule(UInt32 ruleId);
 	
 };
 

@@ -159,47 +159,57 @@ Rules::AddRule(RawMessageAddRule *messageRule, Rule** rule)
 	}
 	
 	IOLockLock(lock);
-	if(this->root == NULL)
+	
+	Rule *prev = NULL;
+	Rule* current = this->root;
+	while (current)
 	{
-		this->root = workRule;
-	}
-	else
-	{
-		Rule* c = this->root;
-		int result;
-		while (c)
+		result = workRule->Compare(current);
+		if(result == 0)
 		{
-			result = workRule->Compare(c);
-			if(result == 0)
-			{
-				workRule->Release();
-				c->Retain();
-				*rule = c;
-				result = 1;//rule exist
-				break;
-			}
-			if(result > 0)
-			{
-				//insert before c
-				workRule->next = c;
-				workRule->prev = c->prev;
-
-				c->prev = workRule;
-				
-				if(workRule->prev)
-					workRule->prev->next = workRule;
-				else
-					this->root = workRule;//prev is root, replace
-				
-				//get rule id
-				workRule->Retain();
-				*rule = workRule;
-				result = 0;
-				
-				clock_get_uptime(&lastChangedTime);
-				break;
-			}
+			workRule->Release();
+			current->Retain();
+			*rule = current;
+			result = 1;//rule exist
+			break;
 		}
+		if(result > 0)
+		{
+			//insert before c
+			workRule->next = current;
+			workRule->prev = current->prev;
+
+			current->prev = workRule;
+			
+			if(workRule->prev)
+				workRule->prev->next = workRule;
+			else
+				this->root = workRule;//prev is root, replace
+			
+			//get rule id
+			workRule->Retain();
+			*rule = workRule;
+			result = 0;
+			
+			clock_get_uptime(&lastChangedTime);
+			break;
+		}
+		
+		prev = current;
+		current = current->next;
+	}
+	
+	if(current == NULL)
+	{
+		if(prev)
+			prev->next = workRule;
+		else
+			this->root = workRule;
+
+		//get rule id
+		workRule->Retain();
+		*rule = workRule;
+		result = 0;
 	}
 	
 unlock:
@@ -208,34 +218,8 @@ unlock:
 }
 
 int 
-Rules::DeleteRule(UInt32 ruleId, Rule** rule)
+Rules::DeleteRule(UInt32 ruleId)
 {
-	*rule = NULL;
-	IOLockLock(lock);
-	Rule* workRule = this->root;
-	while (workRule)
-	{
-		if(workRule->id == ruleId)
-		{
-			workRule->state |= RuleStateDeleted;
-			RemoveFromChain(workRule);
-			
-			clock_get_uptime(&lastChangedTime);
-			*rule = workRule;
-			break;
-		}
-		
-		workRule = workRule->next;
-	}
-	
-	IOLockUnlock(lock);
-	return (*rule != NULL) ? 1 : 0;
-}
-
-int 
-Rules::ActivateRule(UInt32 ruleId, Rule** rule)
-{
-	*rule = NULL;
 	int result = -1;
 	IOLockLock(lock);
 	Rule* workRule = this->root;
@@ -243,19 +227,11 @@ Rules::ActivateRule(UInt32 ruleId, Rule** rule)
 	{
 		if(workRule->id == ruleId)
 		{
-			if((workRule->state & RuleStateActive) == 0)
-			{
-				workRule->state |= RuleStateActive;
-				clock_get_uptime(&lastChangedTime);
-				result = 0;
-			}
-			else
-			{
-				result = 1;
-			}
-
-			workRule->Retain();
-			*rule = workRule;
+			workRule->state = RuleStateDeleted;
+			RemoveFromChain(workRule);
+			
+			clock_get_uptime(&lastChangedTime);
+			result = 0;
 			break;
 		}
 		
@@ -267,19 +243,51 @@ Rules::ActivateRule(UInt32 ruleId, Rule** rule)
 }
 
 int 
-Rules::DeactivateRule(UInt32 ruleId, Rule** rule)
+Rules::ActivateRule(UInt32 ruleId)
 {
 	int result = -1;
-	*rule = NULL;
+	
 	IOLockLock(lock);
 	Rule* workRule = this->root;
 	while (workRule)
 	{
 		if(workRule->id == ruleId)
 		{
-			if((workRule->state & RuleStateActive) > 0)
+			if(workRule->state == RuleStateInactive)
 			{
-				workRule->state |= ~RuleStateActive;
+				workRule->state = RuleStateActive;
+				clock_get_uptime(&lastChangedTime);
+				result = 0;
+			}
+			else
+			{
+				result = 1;
+			}
+
+			break;
+		}
+		
+		workRule = workRule->next;
+	}
+	
+	IOLockUnlock(lock);
+	return result;
+}
+
+int 
+Rules::DeactivateRule(UInt32 ruleId)
+{
+	int result = -1;
+
+	IOLockLock(lock);
+	Rule* workRule = this->root;
+	while (workRule)
+	{
+		if(workRule->id == ruleId)
+		{
+			if(workRule->state == RuleStateInactive)
+			{
+				workRule->state = RuleStateActive;
 				clock_get_uptime(&lastChangedTime);
 				result = 0;
 			}
@@ -287,9 +295,6 @@ Rules::DeactivateRule(UInt32 ruleId, Rule** rule)
 			{
 				result = 1;//alredy inactive
 			}
-
-			workRule->Retain();
-			*rule = workRule;
 			break;
 		}
 		
