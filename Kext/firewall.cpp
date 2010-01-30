@@ -103,7 +103,7 @@ Firewall::Attach(void **cookie, socket_t so)
 	
 	if(socketCookie == NULL)
 	{
-		IOLog("can't allocate memory for scoket cookie \n");
+		IOLog("can't allocate memory for socket cookie \n");
 		return ENOMEM;
 	}
 
@@ -116,7 +116,7 @@ Firewall::Attach(void **cookie, socket_t so)
 	}
 	
 	socketCookie->SetSocket(so);
-	socketCookie->state = SocketCookieStateALLOWED;
+	socketCookie->state = SocketCookieStateALLOWED;//SocketCookieStateUNKNOWN;
 	
 	*cookie = socketCookie;
 	firewall.socketCookies.Add(socketCookie);
@@ -171,6 +171,29 @@ Firewall::Notify(void *cookie, socket_t so, sflt_event_t event, void *param)
 #endif CLIENT_DEBUG_MESSAGES
 	
 	//TODO: change socket connection state
+	switch(event)
+	{
+		case sock_evt_connecting:
+			break;
+		case sock_evt_connected:
+			break;
+		case sock_evt_disconnecting:
+			break;
+		case sock_evt_disconnected:
+			break;
+		case sock_evt_flush_read:
+			break;
+		case sock_evt_shutdown:
+			break;
+		case sock_evt_cantrecvmore:
+			break;
+		case sock_evt_cantsendmore:
+			break;
+		case sock_evt_closing:
+			break;
+		case sock_evt_bound:
+			break;
+	}
 }
 
 int		
@@ -325,8 +348,6 @@ Firewall::ConnectIn(void *cookie, socket_t so, const sockaddr *from)
 		return KERN_SUCCESS;
 
 	SocketCookie *scookie = (SocketCookie*)cookie;
-	
-//	Message *message = Message::CreateTextFromCookie("connect in", scookie);
 
 #ifdef CLIENT_DEBUG_MESSAGES
 	if(firewall.countSubscribersForDebug)
@@ -341,7 +362,7 @@ Firewall::ConnectIn(void *cookie, socket_t so, const sockaddr *from)
 	
 	//only for TCP/IP
 	//copy from address or in 
-	scookie->SetFrom(from);//not is bounded
+	//scookie->SetFrom(from);//not is bounded
 
 	if(firewall.firewallUp)
 	{
@@ -397,6 +418,12 @@ Firewall::Bind(void *cookie, socket_t so, const sockaddr *to)
 		message->Release();
 	}
 #endif CLIENT_DEBUG_MESSAGES
+	
+	if(firewall.firewallUp)
+	{
+		//check is posible resive connections for that address
+		//firewall.rules
+	}
 	
 	return KERN_SUCCESS;
 	
@@ -770,8 +797,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 					if(responce == NULL)
 						break;
 					RawMessageRuleDeleted *rawResponce = (RawMessageRuleDeleted*)&responce->raw;
-					Rule *rule; //????
-					switch(firewall.rules.DeleteRule(rawMessageDeleteRule->ruleId, &rule))
+					switch(firewall.rules.DeleteRule(rawMessageDeleteRule->ruleId))
 					{
 						case 0://OK
 							firewall.Send(responce);
@@ -781,9 +807,6 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 							client->Send(responce);
 							break;
 					}
-					
-					if(rule)
-						rule->Release();
 					
 					responce->Release();
 				}
@@ -825,8 +848,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeActivateRule:
 				{
-					Rule *rule;
-					switch(firewall.rules.ActivateRule(((RawMessageActivateRule*)message)->ruleId, &rule))
+					switch(firewall.rules.ActivateRule(((RawMessageActivateRule*)message)->ruleId))
 					{
 						case -1://not exist
 						   break;
@@ -835,15 +857,12 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 						case 1://already activated
 						   break;
 					}
-					if(rule)
-						   rule->Release();
 				}
 				break;
 				
 			case MessageTypeDeactivateRule:
 				{
-					Rule *rule;
-					switch(firewall.rules.DeactivateRule(((RawMessageDeactivateRule*)message)->ruleId, &rule))
+					switch(firewall.rules.DeactivateRule(((RawMessageDeactivateRule*)message)->ruleId))
 					{
 						case -1://not exist
 							break;
@@ -852,9 +871,6 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 						case 1://already deacivated
 							break;
 					}
-					
-					if(rule)
-						rule->Release();
 				}
 				break;
 				

@@ -19,7 +19,7 @@
 #include <IOKit/IOLib.h>
 #include <IOKit/IOLocks.h>
 
-//#define CLIENT_DEBUG_MESSAGES
+#define CLIENT_DEBUG_MESSAGES
 
 #include "rule.h"
 #include "cookie.h"
