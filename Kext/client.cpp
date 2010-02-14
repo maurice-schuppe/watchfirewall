@@ -63,14 +63,14 @@ Client::InitWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 	
 	this->registredMessageClases = MessageClassFirewall | MessageClassCommon;
 	
-	if(this->lockQueue = IOSimpleLockAlloc())
+	if((this->lockQueue = IOSimpleLockAlloc()))
 	{
-		if(this->lockWorkThread = IOLockAlloc())
+		if((this->lockWorkThread = IOLockAlloc()))
 		{
 			this->kernelKontrolReference = kernelKontrolReference;
 			this->unit = unit;
 			
-			if(this->thread = IOCreateThread(Client::SendThread, this))
+			if((this->thread = IOCreateThread(Client::SendThread, this)))
 			{
 				//IOLog("client created \n");
 				this->references = 1;
@@ -100,7 +100,7 @@ Client::CloseSignal()
 void
 Client::Free()
 {
-	u_int32_t ui = this->unit;
+	//u_int32_t ui = this->unit;
  	//IOLog("client begin destroed %u\n", ui);
 	
 	if(this->lockQueue)
