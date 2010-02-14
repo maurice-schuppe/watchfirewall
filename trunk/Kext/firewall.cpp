@@ -699,7 +699,8 @@ Firewall::KcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **uniti
 		return KERN_FAILURE;
 	
 	Client *client = new Client();
-	if(!client) return ENOMEM;
+	if(!client)
+		return ENOMEM;
 	
 	if(client->InitWithClient(kctlref, sac->sc_unit) == false)
 	{
@@ -796,6 +797,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 					Message* responce = Message::CreateRuleDeleted(client->unit, message->messageId, 0, rawMessageDeleteRule->ruleId);
 					if(responce == NULL)
 						break;
+
 					RawMessageRuleDeleted *rawResponce = (RawMessageRuleDeleted*)&responce->raw;
 					switch(firewall.rules.DeleteRule(rawMessageDeleteRule->ruleId))
 					{
@@ -803,7 +805,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 							firewall.Send(responce);
 							break;
 						case 1://not exist
-							rawResponce->actionState = 1;
+							rawResponce->actionState = -1;
 							client->Send(responce);
 							break;
 					}
@@ -848,29 +850,63 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 				
 			case MessageTypeActivateRule:
 				{
-					switch(firewall.rules.ActivateRule(((RawMessageActivateRule*)message)->ruleId))
+					RawMessageActivateRule *rawMessage = (RawMessageActivateRule*)message;
+
+					Message *responce = Message::CreateRuleActivated(client->unit, rawMessage->messageId, 0, rawMessage->ruleId);
+					if(responce == NULL)
+						break;
+
+					RawMessageRuleActivated *rawResponce = (RawMessageRuleActivated*)&responce->raw;
+					switch(firewall.rules.ActivateRule(rawMessage->ruleId))
 					{
 						case -1://not exist
-						   break;
+							rawResponce->actionState = -1;
+							client->Send(responce);
+							break;
+
 						case 0://ok
+							rawResponce->actionState = 0;
+							firewall.Send(responce);
 						   break;
+
 						case 1://already activated
+							rawResponce->actionState = 1;
+							client->Send(responce);
 						   break;
 					}
+
+					responce->Release();
 				}
 				break;
 				
 			case MessageTypeDeactivateRule:
 				{
-					switch(firewall.rules.DeactivateRule(((RawMessageDeactivateRule*)message)->ruleId))
+					RawMessageDeactivateRule *rawMessage = (RawMessageDeactivateRule*)message;
+
+					Message *responce = Message::CreateRuleDeactivated(client->unit, rawMessage->messageId, 0, rawMessage->ruleId);
+					if(responce == NULL)
+						break;
+
+					RawMessageRuleDeactivated *rawResponce = (RawMessageRuleDeactivated*)&responce->raw;
+					switch(firewall.rules.DeactivateRule(rawMessage->ruleId))
 					{
 						case -1://not exist
+							rawResponce->actionState = -1;
+							client->Send(responce);
 							break;
+
 						case 0://ok
+							rawResponce->actionState = 0;
+							firewall.Send(responce);
 							break;
+
 						case 1://already deactivated
+							rawResponce->actionState = 1;
+							client->Send(responce);
 							break;
 					}
+
+					responce->Release();
 				}
 				break;
 				
@@ -883,12 +919,12 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 					if(firewall.firewallUp == false)
 					{
 						firewall.firewallUp = true;
-						rawResponce->actionState = 1;
 						firewall.Send(responce);
 						
 					}
 					else
 					{
+						rawResponce->actionState = 1;
 						client->Send(responce);
 					}
 					
@@ -905,11 +941,11 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 					if(firewall.firewallUp == true)
 					{
 						firewall.firewallUp = false;
-						rawResponce->actionState = 1;
 						firewall.Send(responce);
 					}
 					else
 					{
+						rawResponce->actionState = 1;
 						client->Send(responce);
 					}
 					
@@ -968,7 +1004,9 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 			case MessageTypeUnsubscribeFromInfoRules:
 				{
 					Message* responce = Message::CreateClientUnsubscribedFromInfoRules(client->unit, message->messageId, 0);
-					if(responce == NULL) break;
+					if(responce == NULL)
+						break;
+
 					RawMessageClientUnsubscribedFromInfoRules* rawResponce = (RawMessageClientUnsubscribedFromInfoRules*)&responce->raw;
 					
 					if(client->UnregisterMessageClasses(MessageClassInfoRules))
