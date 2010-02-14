@@ -32,7 +32,7 @@ protocol Firewall::protocols[] =
 };
 
 sflt_filter Firewall::sfltFilter = {
-0xBABABABC,					/* sflt_handle - use a registered creator type - <http://developer.apple.com/datatype/> */
+0xBABABABC,					/* sflt_handle - use a registered creator type - <http://developer.apple.com/data type/> */
 SFLT_GLOBAL | SFLT_EXTENDED,/* sf_flags */
 (char*)MYBUNDLEID,					/* sf_name - cannot be nil else param err results */
 Unregistered,	/* sf_unregistered_func */
@@ -58,7 +58,7 @@ Firewall::RegisterSocketFilters()
 {
 	size_t len_protocols = sizeof(protocols)/sizeof(*protocols);
 	
-	for(int k =0 ; k < len_protocols; k++)
+	for(size_t k =0 ; k < len_protocols; k++)
 	{
 		sfltFilter.sf_handle = protocols[k].handle;
 		errno_t retval = sflt_register(&sfltFilter, protocols[k].domain, protocols[k].type, protocols[k].protocol);
@@ -73,7 +73,7 @@ bool
 Firewall::UnregisterSocketFilters()
 {
 	size_t len_protocols = sizeof(protocols)/sizeof(*protocols);
-	for(int k =0 ; k < len_protocols; k++)
+	for(size_t k =0 ; k < len_protocols; k++)
 	{
 		if(protocols[k].state)	
 			if(!sflt_unregister(protocols[k].handle))
@@ -577,7 +577,7 @@ Firewall::Init()
 bool
 Firewall::Free()
 {
-	IOLog("firewall instance begin destroed \n");
+	IOLog("firewall instance begin destroyed \n");
 
 	closing = true;
 	
@@ -590,7 +590,7 @@ Firewall::Free()
 	if(!UnregisterSocketFilters())
 		return false;
 
-	IOLog("firewall instance begin destroed applications \n");
+	IOLog("firewall instance begin destroyed applications \n");
 	applications.Free();
 	IOSleep(1);
 
@@ -600,7 +600,7 @@ Firewall::Free()
 	if(!socketCookies.Free())
 		return false;
 
-	IOLog("firewall instance destroed \n");
+	IOLog("firewall instance destroyed \n");
 	
 	return true;
 }
@@ -611,7 +611,7 @@ Firewall::Free()
 kern_ctl_reg 
 Firewall::kernelControlRegistration = 
 {
-MYBUNDLEID,								/* use a reverse dns name which includes a name unique to your comany */
+MYBUNDLEID,								/* use a reverse dns name which includes a name unique to your company */
 0,										/* set to 0 for dynamically assigned control ID - CTL_FLAG_REG_ID_UNIT not set */
 0,										/* ctl_unit - ignored when CTL_FLAG_REG_ID_UNIT not set */
 0,//CTL_FLAG_PRIVILEGED, //removed for test										/* privileged access required to access this filter */
@@ -627,7 +627,7 @@ KcGetSocketOption						/* called when the user process makes the getsockopt call
 bool 
 Firewall::RegisterKernelControl()
 {
-	if(this->lockClientsQueue = IOLockAlloc())
+	if((this->lockClientsQueue = IOLockAlloc()))
 	{
 		if(!ctl_register(&kernelControlRegistration, &kernelControlReference))
 			return true;
@@ -868,7 +868,7 @@ Firewall::KcSend(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo, mbuf_t m,
 							break;
 						case 0://ok
 							break;
-						case 1://already deacivated
+						case 1://already deactivated
 							break;
 					}
 				}

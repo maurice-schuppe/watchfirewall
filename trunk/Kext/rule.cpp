@@ -10,9 +10,9 @@ Rule::Init(RawMessageAddRule *message)
 {	
 	if(message)
 	{
-		if(this->processName = OSString::withCString(message->GetProcessName()))
+		if((this->processName = OSString::withCString(message->GetProcessName())))
 		{
-			if(this->filePath = OSString::withCString(message->GetFilePath()))
+			if((this->filePath = OSString::withCString(message->GetFilePath())))
 			{
 				sockaddr *t = (sockaddr*)message->GetSockAddress();
 				if(t)
@@ -88,7 +88,7 @@ Rule::Compare(Rule *toRule)
 	if(result != 0)
 		return result;
 	
-	//get sock address comparrer
+	//get sock address comparer
 	
 	result = (int)this->direction - toRule->direction;
 	if(result != 0)
@@ -135,7 +135,7 @@ Rules::FindRule(const OSString* processName, const OSString* filePath,
 		current = current->next;
 	}
 	
-unlock:
+//unlock:
 	IOLockUnlock(lock);
 	return current;
 }
@@ -212,7 +212,7 @@ Rules::AddRule(RawMessageAddRule *messageRule, Rule** rule)
 		result = 0;
 	}
 	
-unlock:
+//unlock:
 	IOLockUnlock(lock);
 	return result;
 }

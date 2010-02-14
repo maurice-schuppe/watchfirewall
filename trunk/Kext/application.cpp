@@ -54,13 +54,13 @@ Applications::Init()
 {
 	closing = 0;
 	
-	if(lock = IOLockAlloc())
+	if((lock = IOLockAlloc()))
 	{
-		if(lockRoutine = IOLockAlloc())
+		if((lockRoutine = IOLockAlloc()))
 		{
-			if(thread = IOCreateThread(CheckIsLiveRoutine, this))
+			if((thread = IOCreateThread(CheckIsLiveRoutine, this)))
 			{
-				if(processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, CallbackProcessListener, this))
+				if((processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, CallbackProcessListener, this)))
 				{
 					return true;
 				}
