@@ -17,7 +17,7 @@ enum MessagesClass
 
 enum ServerMessagesType 
 {
-	MessageTypeText									= MessageClassCommon | 0x01, //dymmu
+	MessageTypeText									= MessageClassCommon | 0x01, //dummy
 	
 	MessageTypeSfltUnregistered						= MessageClassCommon | 0x02, //debug
 	MessageTypeSfltAttach							= MessageClassCommon | 0x03, //debug
@@ -82,6 +82,21 @@ struct SockAddress
 {
 	UInt8 len;
 	UInt8 family;
+
+	static size_t Copy(const SockAddress *from, void* to)
+	{
+		if(!from)
+		{
+			SockAddress* toAsSockAddress = (SockAddress*)to;
+			toAsSockAddress->family =  0/*AF_UNSPEC*/;
+			toAsSockAddress->len = sizeof(SockAddress);
+
+			return toAsSockAddress->len;
+		}
+
+		memcpy(to, from, from->len);
+		return from->len;
+	}
 };
 
 struct RawRule
@@ -96,12 +111,10 @@ struct RawMessageBase
 	
 	inline void Init(UInt16 size, UInt16 type){this->size = size, this->type = type;}
 	
-	static const SockAddress dummySockAddress;
 };
 
 struct RawMessageSfltUnregistered : public RawMessageBase
 {
-
 	//	static void		Unregistered(sflt_handle handle);
 	inline void Init()
 	{
@@ -179,10 +192,8 @@ struct RawMessageSfltGetPeerName : public RawMessageBase
 		this->pid = pid;
 		this->uid = uid;
 		this->so = so;
-		if(sa)
-			memcpy(&this->sa, sa, sa->len);
-		else
-			this->sa = dummySockAddress;
+
+		SockAddress::Copy(sa, &this->sa);
 	}
 	
 	inline static UInt16 GetNeededSize(SockAddress *sa)
@@ -206,10 +217,8 @@ struct RawMessageSfltGetSockName : public RawMessageBase
  		this->pid = pid;
 		this->uid = uid;
 		this->so = so;
-		if(sa)
-			memcpy(&this->sa, sa, sa->len);
-		else
-			this->sa = dummySockAddress;
+
+		SockAddress::Copy(sa, &this->sa);
 	}
 
 	inline static UInt16 GetNeededSize(SockAddress *sa)
@@ -235,10 +244,8 @@ struct RawMessageSfltDataIn : public RawMessageBase
 		this->uid = uid;
 		this->so = so;
 		this->proto = proto;
-		if(from)
-			memcpy(&this->from, from, from->len);
-		else 
-			this->from = dummySockAddress;
+
+		SockAddress::Copy(from, &this->from);
 	}
 	
 	inline static UInt16 GetNeededSize(SockAddress *sa)
@@ -264,10 +271,8 @@ struct RawMessageSfltDataOut : public RawMessageBase
 		this->uid = uid;
 		this->so = so;
 		this->proto = proto;
-		if(to)
-			memcpy(&this->to, to, to->len);
-		else 
-			this->to = dummySockAddress;
+
+		SockAddress::Copy(to, &this->to);
 	}
 
 	inline static UInt16 GetNeededSize(SockAddress *sa)
@@ -291,10 +296,8 @@ struct RawMessageSfltConnectIn : public RawMessageBase
 		this->pid = pid;
 		this->uid = uid;
 		this->so = so;
-		if(from)
-			memcpy(&this->from, from, from->len);
-		else 
-			this->from = dummySockAddress;
+
+		SockAddress::Copy(from, &this->from);
 	}
 
 	inline static UInt16 GetNeededSize(SockAddress *from)
@@ -318,10 +321,8 @@ struct RawMessageSfltConnectOut : public RawMessageBase
 		this->pid = pid;
 		this->uid = uid;
 		this->so = so;
-		if(to)
-			memcpy(&this->to, to, to->len);
-		else 
-			this->to = dummySockAddress;
+
+		SockAddress::Copy(to, &this->to);
 	}
 
 	inline static UInt16 GetNeededSize(SockAddress *to)
@@ -345,10 +346,8 @@ struct RawMessageSfltBind : public RawMessageBase
 		this->pid = pid;
 		this->uid = uid;
 		this->so = so;
-		if(to)
-			memcpy(&this->to, to, to->len);
-		else 
-			this->to = dummySockAddress;
+
+		SockAddress::Copy(to, &this->to);
 	}
 
 	inline static UInt16 GetNeededSize(SockAddress *sa)
@@ -450,14 +449,8 @@ struct RawMessageSfltAccept : public RawMessageBase
 		this->soListen = soListen;
 		this->so = so;
 		
-		//TODO: copy sockaddr structs
-		if (!local) 
-			local = &dummySockAddress;
-		memcpy(data, local, local->len);
-		
-		if(!remote)
-			remote = &dummySockAddress;
-		memcpy(data + local->len, remote, remote->len);
+		size_t offset = SockAddress::Copy(local, data);
+		SockAddress::Copy(remote, data + offset);
 	}
 	
 	inline SockAddress* GetLocal()
@@ -674,17 +667,8 @@ struct RawMessageSocketData : public RawMessageBase
 		this->bytes = bytes;
 		this->direction = direction;
 		
-		if(!from)
-			from = &dummySockAddress;
-		
-		memcpy(this->data + currentOffset, from, from->len);
-		currentOffset += from->len;
-
-		if(!to)
-			to = &dummySockAddress;
-		
-		memcpy(this->data + currentOffset, to, to->len);
-		currentOffset += to->len;
+		currentOffset += SockAddress::Copy(from, this->data + currentOffset);
+		currentOffset += SockAddress::Copy(to, this->data + currentOffset);
 		
 //		if(processNameSize != 0)
 //		{
