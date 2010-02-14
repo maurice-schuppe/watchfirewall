@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		3D2BC21A10ECDD6F00CC5C36 /* portNames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D2BC21910ECDD6F00CC5C36 /* portNames.cpp */; };
-		3D4DE0AB10EA976C0019BB89 /* messageType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D4DE0AA10EA976C0019BB89 /* messageType.cpp */; };
-		3D4DE0AC10EA976C0019BB89 /* messageType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D4DE0AA10EA976C0019BB89 /* messageType.cpp */; };
 		3DB8B7AA10E77E770070342D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB8B7A710E77E770070342D /* main.m */; };
 		3DB8B7AB10E77E770070342D /* Main.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3DB8B7A810E77E770070342D /* Main.xib */; };
 		3DB8B7C110E77EBF0070342D /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DB8B7AF10E77EBF0070342D /* application.cpp */; };
@@ -28,7 +26,6 @@
 /* Begin PBXFileReference section */
 		3D2BC21810ECDD6F00CC5C36 /* portNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = portNames.h; sourceTree = "<group>"; };
 		3D2BC21910ECDD6F00CC5C36 /* portNames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = portNames.cpp; sourceTree = "<group>"; };
-		3D4DE0AA10EA976C0019BB89 /* messageType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = messageType.cpp; sourceTree = "<group>"; };
 		3DB8B77210E77C7E0070342D /* Watch.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Watch.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DB8B78A10E77D6F0070342D /* ConsoleTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ConsoleTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DB8B79310E77D9E0070342D /* AppTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -113,7 +110,6 @@
 				3DB8B7A210E77E3F0070342D /* messageType.h */,
 				3DB8B7A310E77E3F0070342D /* ServerConnection.cpp */,
 				3DB8B7A410E77E3F0070342D /* ServerConnection.h */,
-				3D4DE0AA10EA976C0019BB89 /* messageType.cpp */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -271,7 +267,6 @@
 				3DB8B7C810E77EBF0070342D /* rule.cpp in Sources */,
 				3DB8B7C910E77EBF0070342D /* simpleBase.cpp in Sources */,
 				3DB8B7CA10E77EBF0070342D /* watch.cpp in Sources */,
-				3D4DE0AC10EA976C0019BB89 /* messageType.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,7 +276,6 @@
 			files = (
 				3DB8B7D510E77F310070342D /* Console.cpp in Sources */,
 				3DB8B7D610E77F600070342D /* ServerConnection.cpp in Sources */,
-				3D4DE0AB10EA976C0019BB89 /* messageType.cpp in Sources */,
 				3D2BC21A10ECDD6F00CC5C36 /* portNames.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
