@@ -101,7 +101,8 @@ struct SockAddress
 
 struct RawRule
 {
-	
+	UInt16 size;
+	UInt32 mask;
 };
 
 struct RawMessageBase 
