@@ -101,27 +101,36 @@ struct SockAddress
 
 struct SockAddressIP4 : SockAddress
 {
+	UInt16	port;//or mask or 0 for all
+	UInt32	addr;
 };
 
 struct SockAddressIP4WithMask : SockAddressIP4
 {
-
+	UInt8	addrMask;
 };
 
 struct SockAddressIP6 : SockAddress
 {
+	UInt16	port;
+	UInt32	flowInfo;
+	UInt8   addr[16];//TODO: replace with struct in6_addr	sin6_addr;	/* IP6 address */
+	UInt32	scopeId;
 };
 
 struct SockAddressIP6WithMask : SockAddressIP6
 {
+	UInt8 addrMask;//??? mask
 };
 
 struct SockAddressUnix : SockAddress
 {
+	char 	path[104];
 };
 
 struct SockAddressUnixWithMask : SockAddressUnix
 {
+	char 	pathMask[104];
 };
 
 struct RawRule
