@@ -84,3 +84,4 @@ public:
 };
 
 #endif WATCH_APPLICATION_H
+

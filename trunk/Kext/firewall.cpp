@@ -61,7 +61,7 @@ Firewall::RegisterSocketFilters()
 	for(size_t k =0 ; k < len_protocols; k++)
 	{
 		sfltFilter.sf_handle = protocols[k].handle;
-		errno_t retval = sflt_register(&sfltFilter, protocols[k].domain, protocols[k].type, protocols[k].protocol);
+		errno_t retval = sflt_register(&sfltFilter, protocols[k].domain, protocols[k].type, protocols[k].proto);
 		if(!retval)
 			protocols[k].state = 1;
 	}
