@@ -155,9 +155,7 @@ Applications::Add(kauth_cred_t cred, vnode_t vnode, const char *filePath)
 		return NULL;
 	
 	char procName[MAXCOMLEN] = {0};
-	//vnode_attr vnodeAttr;
-	//bzero(&vnodeAttr, sizeof(vnode_attr)); 
-	
+
 	Application *result = new Application();
 	if(!result)
 		return NULL;
@@ -179,15 +177,28 @@ Applications::Add(kauth_cred_t cred, vnode_t vnode, const char *filePath)
 		VATTR_INIT(&va);
 		VATTR_WANTED(&va, va_data_size);
 		VATTR_WANTED(&va, va_modify_time);
-		if (
-			vnode_getattr(vnode, &va, vfs_context_current())/* VNOP_GETATTR(vnode, &va, vfs_context_current())*/ == 0  && 
-			VATTR_IS_SUPPORTED(&va, va_data_size)  && 
-			VATTR_IS_SUPPORTED(&va, va_modify_time)  && 
-			va.va_data_size != 0
-			) 
+		VATTR_WANTED(&va, va_create_time);
+
+		if (vnode_getattr(vnode, &va, vfs_context_current()) && va.va_data_size != 0)
 		{
-			IOLog("aplication size is: %llu\n", va.va_data_size);
-		}
+			if(VATTR_IS_SUPPORTED(&va, va_data_size))
+			{
+				//TODO: check for changes
+				result->dataSize = va.va_data_size;
+			}
+			
+			if(VATTR_IS_SUPPORTED(&va, va_modify_time))
+			{
+				//TODO: check for changes
+				result->modifyTime = va.va_modify_time;
+			}
+
+			if(VATTR_IS_SUPPORTED(&va, va_create_time))
+			{
+				//TODO: check for changes
+				result->createTime = va.va_create_time;
+			}
+		} 
 	}
 	else
 	{

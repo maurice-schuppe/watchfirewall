@@ -18,6 +18,11 @@ public:
 	gid_t gid;
 	OSString *processName;
 	OSString *filePath;
+
+	timespec createTime;
+	timespec modifyTime;
+
+	UInt64 dataSize; 
 	
 	Application *prev;
 	Application *next;

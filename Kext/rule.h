@@ -22,20 +22,24 @@ enum RuleState
 class __attribute__((visibility("hidden"))) Rule: public SimpleBase
 {
 	UInt32 id;
+	timespec obtainedTime;
 	
 	OSString *processName;
 	OSString *filePath;
-	
-	//file extended data
+
+	timespec fileCreateTime;
+	timespec fileModifyTime;
+
+	UInt64 fileDataSize; 
+
+	UInt8 ingnoreFileChanges;
 	
 	UInt16 sockDomain;//0 for all
 	UInt16 sockType;//0 for all
 	UInt16 sockProtocol;// 0 for all
-	sockaddr* fromSockAddress;// 0 for all
-	sockaddr* toSockAddress;//
+	SockAddress* fromSockAddress;// 0 for all
+	SockAddress* toSockAddress;//
 	
-	sockaddr* fromSockAddressMask;
-	sockaddr* toSockAddressMask;
 	
 	UInt8 direction;//0 both. 1 incoming, 2 outgoing
 	UInt8 allow;//0 deny, 1 allow
@@ -98,7 +102,6 @@ public:
 		if(rule->prev)
 			rule->prev->next = rule->next;
 		else
-		//if(rule == root)
 			root = rule->next;
 		
 		if(rule->next)
