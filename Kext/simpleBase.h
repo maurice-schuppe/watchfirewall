@@ -26,3 +26,4 @@ public:
 
 
 #endif WATCH_SIMPLE_BASE_H
+

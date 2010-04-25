@@ -33,7 +33,7 @@ struct __attribute__((visibility("hidden"))) protocol
 	sflt_handle handle;
 	int domain;
 	int type;
-	int protocol;
+	int proto;
 	int state;
 };
 
