@@ -78,6 +78,12 @@ enum ClientMessagesType
 	MessageTypeUnsubscribeFromInfoSockets			= MessageClassClient | 0x0C
 };
 
+struct TimeSpec
+{
+	SInt32 sec;
+	SInt32 nsec;
+};
+
 struct SockAddress
 {
 	UInt8 len;
@@ -789,7 +795,8 @@ struct RawMessageAddRule : public RawMessageClientAction
 	UInt16 sockDomain;//0 for all
 	UInt16 sockType;//0 for all
 	UInt16 sockProtocol;// 0 fro all	
-	UInt16 sockAddressOffset;// 0 for all
+	UInt16 fromSockAddressOffset;// 0 for all
+	UInt16 toSockAddressOffset;
 	
 	UInt8 direction;//0 both. 1 incoming, 2 outgoung
 	UInt8 allow;//0 denny, 1 allow
@@ -798,7 +805,8 @@ struct RawMessageAddRule : public RawMessageClientAction
 	
 	char *GetProcessName(){ return (char*)this + processNameOffset; }
 	char *GetFilePath(){ return (char*)this + filePathOffset;}
-	SockAddress *GetSockAddress(){ return (SockAddress*) ((sockAddressOffset) ? (char*)this + sockAddressOffset : 0);}
+	SockAddress *GetFromSockAddress(){ return (SockAddress*) ((fromSockAddressOffset) ? (char*)this + fromSockAddressOffset : 0);}
+	SockAddress *GetToSockAddress(){ return (SockAddress*) ((toSockAddressOffset) ? (char*)this + toSockAddressOffset : 0);}
 	
 	//TODO: by parent struct initialization
 };

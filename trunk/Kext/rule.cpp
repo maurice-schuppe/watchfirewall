@@ -14,13 +14,13 @@ Rule::Init(RawMessageAddRule *message)
 		{
 			if((this->filePath = OSString::withCString(message->GetFilePath())))
 			{
-				sockaddr *t = (sockaddr*)message->GetSockAddress();
+				SockAddress *t = (SockAddress*)message->GetFromSockAddress();
 				if(t)
 				{
-					this->fromSockAddress = (sockaddr*)new char[t->sa_len];
+					this->fromSockAddress = (SockAddress*)new char[t->len];
 					if(this->fromSockAddress)
 					{
-						memcpy(this->fromSockAddress, t, t->sa_len);
+						memcpy(this->fromSockAddress, t, t->len);
 					}
 				}
 
