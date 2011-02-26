@@ -83,7 +83,7 @@ public:
 	static errno_t	SetOption(void *cookie, socket_t so, sockopt_t opt);
 	static errno_t	GetOption(void *cookie, socket_t so, sockopt_t opt);
 	static errno_t	Listen(void *cookie, socket_t so);
-	static errno_t	Ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp);
+	static errno_t	Ioctl(void *cookie, socket_t so, unsigned long request, const char* argp);
 	static errno_t	Accept(void *cookie, socket_t so_listen, socket_t so, const sockaddr *local, const sockaddr *remote);
 	
 #pragma mark clent functions

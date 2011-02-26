@@ -289,5 +289,6 @@ Applications::CheckIsLiveRoutine(void *arg)
 	IOLockUnlock(applications->lockRoutine);
 	applications->thread = NULL;
 	IOExitThread();
+    //thread_terminate(NULL);
 }
 
