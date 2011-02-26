@@ -128,7 +128,7 @@ Firewall::Attach(void **cookie, socket_t so)
 		firewall.Send(message);
 		message->Release();
 	}
-#endif CLIENT_DEBUG_MESSAGES	
+#endif //CLIENT_DEBUG_MESSAGES	
 	
 	return KERN_SUCCESS;
 }
@@ -151,7 +151,7 @@ Firewall::Detach(void *cookie, socket_t so)
 		firewall.Send(message);
 		message->Release();
 	}
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 	
 }
 
@@ -168,7 +168,7 @@ Firewall::Notify(void *cookie, socket_t so, sflt_event_t event, void *param)
 		firewall.Send(message);
 		message->Release();
 	}
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 	
 	//TODO: change socket connection state
 	switch(event)
@@ -210,7 +210,7 @@ Firewall::GetPeerName(void *cookie, socket_t so, struct sockaddr **sa)
 		firewall.Send(message);
 		message->Release();
 	}
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 	
 	return KERN_SUCCESS;
 }
@@ -230,7 +230,7 @@ Firewall::GetSockName(void *cookie, socket_t so, struct sockaddr **sa)
 		firewall.Send(message);
 		message->Release();
 	}	
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 
 	return KERN_SUCCESS;
 }
@@ -249,7 +249,7 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 		firewall.Send(message);
 		message->Release();
 	}
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 	
 	return KERN_SUCCESS;
 	
@@ -293,7 +293,7 @@ Firewall::DataIn(void *cookie, socket_t so, const sockaddr *from, mbuf_t *data, 
 												  NULL);
 		if(rule == NULL)
 		{
-			scookie->state == SocketCookieStateNOT;
+			scookie->state = SocketCookieStateNOT;
 		}
 		
 	}
@@ -335,7 +335,7 @@ Firewall::DataOut(void *cookie, socket_t so, const sockaddr *to, mbuf_t *data, m
 		firewall.Send(message);
 		message->Release();
 	}	
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 
 	return KERN_SUCCESS;
 }
@@ -356,7 +356,7 @@ Firewall::ConnectIn(void *cookie, socket_t so, const sockaddr *from)
 		firewall.Send(message);
 		message->Release();
 	}
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 	
 	return KERN_SUCCESS;
 	
@@ -396,7 +396,7 @@ Firewall::ConnectOut(void *cookie, socket_t so, const sockaddr *to)
 		firewall.Send(message);
 		message->Release();
 	}	
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 
 	return KERN_SUCCESS;
 }
@@ -417,7 +417,7 @@ Firewall::Bind(void *cookie, socket_t so, const sockaddr *to)
 		firewall.Send(message);
 		message->Release();
 	}
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 	
 	if(firewall.firewallUp)
 	{
@@ -446,7 +446,7 @@ Firewall::SetOption(void *cookie, socket_t so, sockopt_t opt)
 		firewall.Send(message);
 		message->Release();
 	}	
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 
 	return KERN_SUCCESS;
 }
@@ -466,7 +466,7 @@ Firewall::GetOption(void *cookie, socket_t so, sockopt_t opt)
 		firewall.Send(message);
 		message->Release();
 	}	
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 
 	return KERN_SUCCESS;
 }
@@ -487,7 +487,7 @@ Firewall::Listen(void *cookie, socket_t so)
 		firewall.Send(message);
 		message->Release();
 	}	
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 
 	return KERN_SUCCESS;
 	
@@ -496,7 +496,7 @@ Firewall::Listen(void *cookie, socket_t so)
 }
 
 errno_t	
-Firewall::Ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp)
+Firewall::Ioctl(void *cookie, socket_t so, unsigned long request, const char* argp)
 {
 
 //	Message *message = Message::CreateTextFromCookie("ioctl", (SocketCookie*)cookie);
@@ -511,7 +511,7 @@ Firewall::Ioctl(void *cookie, socket_t so, u_int32_t request, const char* argp)
 		firewall.Send(message);
 		message->Release();
 	}
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 	
 	return KERN_SUCCESS;
 }
@@ -532,7 +532,7 @@ Firewall::Accept(void *cookie, socket_t so_listen, socket_t so, const struct soc
 		firewall.Send(message);
 		message->Release();
 	}
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 	
 	return KERN_SUCCESS;
 	
@@ -715,7 +715,7 @@ Firewall::KcConnect(kern_ctl_ref kctlref, struct sockaddr_ctl *sac, void **uniti
 
 #ifdef CLIENT_DEBUG_MESSAGES
 	OSIncrementAtomic(&firewall.countSubscribersForDebug);//TODO: debug
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 	
 	IOLockUnlock(firewall.lockClientsQueue);
 	
@@ -758,7 +758,7 @@ Firewall::KcDisconnect(kern_ctl_ref kctlref, u_int32_t unit, void *unitinfo)
 #ifdef CLIENT_DEBUG_MESSAGES
 			if(curr->registredMessageClases & MessageClassCommon)
 				OSDecrementAtomic(&firewall.countSubscribersForDebug);
-#endif CLIENT_DEBUG_MESSAGES
+#endif //CLIENT_DEBUG_MESSAGES
 
 			curr->Release();
 			break;
