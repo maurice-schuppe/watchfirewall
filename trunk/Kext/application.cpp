@@ -58,7 +58,9 @@ Applications::Init()
 	{
 		if((lockRoutine = IOLockAlloc()))
 		{
-			if((thread = IOCreateThread(CheckIsLiveRoutine, this)))
+            
+            if(KERN_SUCCESS == kernel_thread_start(CheckIsLiveRoutine, this, &thread))
+//			if((thread = IOCreateThread(CheckIsLiveRoutine, this)))
 			{
 				if((processListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, CallbackProcessListener, this)))
 				{
@@ -239,7 +241,7 @@ Applications::CallbackProcessListener
 }
 
 void
-Applications::CheckIsLiveRoutine(void *arg)
+Applications::CheckIsLiveRoutine(void *arg, wait_result_t waitResult)
 {
 	Applications *applications = (Applications*) arg;
 	Application *checked = NULL;
@@ -287,8 +289,10 @@ Applications::CheckIsLiveRoutine(void *arg)
 	}	
 
 	IOLockUnlock(applications->lockRoutine);
+    thread_t currentThread = applications->thread;
 	applications->thread = NULL;
-	IOExitThread();
-    //thread_terminate(NULL);
+	//IOExitThread();
+    thread_deallocate(currentThread);
+    thread_terminate(currentThread);
 }
 
