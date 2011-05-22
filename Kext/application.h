@@ -60,7 +60,7 @@ public:
 	Application* Add(kauth_cred_t cred, vnode_t vnode, const char *filePath);
 	void		 AddLocked(kauth_cred_t cred, vnode_t vnode, const char *filePath);
 
-	static void CheckIsLiveRoutine(void *arg);
+	static void CheckIsLiveRoutine(void *arg, wait_result_t waitResult);
 	static int CallbackProcessListener
 	(
 	 kauth_cred_t    credential,

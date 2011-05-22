@@ -61,6 +61,8 @@ Client::InitWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 {
 	//IOLog("client state refernces: %ld; thread: %p; lQueue: %p; lThread: %p; nest: %p \n", this->references, this->thread, this->lockQueue, this->lockWorkThread, this->next);
 	
+    //kernel_thread_start
+    
 	this->registredMessageClases = MessageClassFirewall | MessageClassCommon;
 	
 	if((this->lockQueue = IOSimpleLockAlloc()))
@@ -70,12 +72,18 @@ Client::InitWithClient(kern_ctl_ref kernelKontrolReference, UInt32 unit)
 			this->kernelKontrolReference = kernelKontrolReference;
 			this->unit = unit;
 			
-			if((this->thread = IOCreateThread(Client::SendThread, this)))
-			{
-				//IOLog("client created \n");
-				this->references = 1;
-				return true;
-			}
+            if(KERN_SUCCESS == kernel_thread_start(Client::SendThread, this, &this->thread))
+            {
+                this->references = 1;
+                return true;
+            }
+            
+//			if((this->thread = IOCreateThread(Client::SendThread, this)))
+//			{
+//				//IOLog("client created \n");
+//				this->references = 1;
+//				return true;
+//			}
 			
 			IOLockFree(this->lockWorkThread);
 			//IOLog("client can't create thread \n");//TODO: refactor
@@ -162,7 +170,7 @@ Client::Send(Message* message)
 }
 
 void 
-Client::SendThread(void* arg)
+Client::SendThread(void* arg, wait_result_t waitResult)
 {
 	Client* client = (Client*)arg;
 	client->Retain();
@@ -258,9 +266,13 @@ exitAndClearQueue:
 exit:
 	IOLockUnlock(client->lockWorkThread);
 	//IOLog("exit send thread unit: %lu\n", client->unit);
+    thread_t currentThead = client->thread;
 	client->Release();
-
-	IOExitThread();
+    thread_deallocate(currentThead);
+    thread_terminate(currentThead);
+    //current_thread()
+    
+	//IOExitThread();
 }
 
 bool 

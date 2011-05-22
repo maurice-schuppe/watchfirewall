@@ -33,7 +33,7 @@ public:
 	volatile SInt32 exitState;
 	IOSimpleLock *lockQueue;
 	IOLock *lockWorkThread;
-	IOThread thread;
+	thread_t thread;
 	
 	ClientMessageNode *messageQueueHead;
 	ClientMessageNode *messageQueueLast;
@@ -49,7 +49,7 @@ public:
 	void CloseSignal();
 
 	void Send(Message* message);
-	static void SendThread(void* arg);
+	static void SendThread(void* arg, wait_result_t waitResult);
 	
 	//void ShowSocketStates();
 
